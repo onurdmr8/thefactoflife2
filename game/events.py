@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-BitLife Türkiye - Zenginleştirilmiş Rastgele Olaylar ve Dönüm Noktaları Motoru
+BitLife Türkiye - Zenginleştirilmiş Rastgele Olaylar, Aşk/İlişki Dramaları ve Dönüm Noktaları Motoru
 """
 
 import random
 from typing import Optional
 from .models import Character, ActiveEvent, EventChoice, LifeLog, Person, Pet
-from .data import FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES
+from .data import (
+    FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES,
+    ZODIAC_SIGNS, PERSONALITIES, INTERESTS_POOL
+)
 
 MILESTONE_EVENTS = [
     {
@@ -52,8 +55,22 @@ MILESTONE_EVENTS = [
         ]
     },
     {
-        "id": "teen_bad_habit",
+        "id": "first_school_crush",
         "min_age": 14,
+        "max_age": 15,
+        "title": "Lisede İlk Kalp Çarpıntısı 💓",
+        "description": "Sınıfın en popüler ve sempatik öğrencisi teneffüste yanına gelip ders notlarını istedi ve sana tatlı tatlı gülümsedi!",
+        "image_emoji": "💌",
+        "category": "love",
+        "choices": [
+            {"id": "confess_crush", "text": "Cesaretimi toplayıp okul çıkışı birlikte çay/kahve içmeyi teklif ederim!"},
+            {"id": "write_love_note", "text": "Defterin arasına romantik ve gizemli bir şiir/not bırakırım."},
+            {"id": "shy_away", "text": "Yüzüm kıpkırmızı olur, notları verip heyecanla kaçarım."}
+        ]
+    },
+    {
+        "id": "teen_bad_habit",
+        "min_age": 15,
         "max_age": 16,
         "title": "Okul Arkası Teklifi",
         "description": "Lisede havalı görünen bir grup seni okul bahçesinin arkasına çağırdı: 'Al bir nefes çek, korkak mısın yoksa?' dediler.",
@@ -136,7 +153,100 @@ MILESTONE_EVENTS = [
     }
 ]
 
+PARTNER_EVENTS_POOL = [
+    {
+        "id": "partner_phone_msg",
+        "title": "Gece Yarısı Gelen Şüpheli Mesaj 📱",
+        "description": "Saat gece 01:30... Partnerinin başucundaki telefon titredi ve ekranda 'Uyudun mu? Seni düşündüm 😊' mesajı belirdi!",
+        "image_emoji": "📱",
+        "category": "love",
+        "choices": [
+            {"id": "snoop_phone", "text": "Gizlice parmak iziyle telefonu açıp tüm mesajları oku!"},
+            {"id": "ask_calmly", "text": "Sabah kahvaltıda sakin ama net bir şekilde kim olduğunu sor."},
+            {"id": "make_scene", "text": "Hemen uyandırıp hesap sor ve kıyameti kopar!"}
+        ]
+    },
+    {
+        "id": "partner_anniversary",
+        "title": "Yıl Dönümü Sürprizi Beklentisi 🥂",
+        "description": "Bugün partnerinle ilişkinizin yıl dönümü! Sabah uyanır uyanmaz sana 'Bugün günlerden ne biliyor musun aşkım?' diye sordu.",
+        "image_emoji": "💝",
+        "category": "love",
+        "choices": [
+            {"id": "luxury_celebration", "text": "'Unutur muyum hiç!' deyip Boğaz'da lüks yemeğe götür (6.000 TL)."},
+            {"id": "homemade_romance", "text": "Mum ışığında kendi ellerinle romantik bir akşam yemeği hazırla."},
+            {"id": "admit_forgot", "text": "Unuttuğunu itiraf edip gönlünü almaya çalış."}
+        ]
+    },
+    {
+        "id": "partner_inlaws_dinner",
+        "title": "Kayınvalide & Aile Tanışma Yemeği 🍲",
+        "description": "Partnerinin ailesi bu akşam yemeğe geliyor! Annesi kapıdan girer girmez evi ve seni tepeden tırnağa süzmeye başladı.",
+        "image_emoji": "👵",
+        "category": "love",
+        "choices": [
+            {"id": "charm_inlaws", "text": "En leziz ikramları sunup tatlı dille kalplerini fethet (2.500 TL)."},
+            {"id": "be_natural", "text": "Kendin gibi davran, samimi bir sohbet aç."},
+            {"id": "argue_inlaws", "text": "İğneleyici laflarına dayanamayıp lafı gediğine oturt!"}
+        ]
+    },
+    {
+        "id": "partner_jealousy_crisis",
+        "title": "Kıskançlık Krizi! 🔥",
+        "description": "Sosyal medyada eski bir okul arkadaşının fotoğrafını beğendiğini gören partnerin küplere bindi: 'Kim bu?! Hemen açıkla!' diyor.",
+        "image_emoji": "😤",
+        "category": "love",
+        "choices": [
+            {"id": "reassure_love", "text": "Sarılarak tek sevdiğinin o olduğunu söyle ve takipten çık."},
+            {"id": "defend_freedom", "text": "'Özel alanıma karışamazsın, sadece eski bir arkadaş!' de."},
+            {"id": "turn_tables", "text": "'Asıl senin geçen gün konuştuğun kişi kimdi?!' diyerek üste çık."}
+        ]
+    }
+]
+
 RANDOM_EVENTS_POOL = [
+    {
+        "id": "secret_admirer",
+        "min_age": 16,
+        "max_age": 55,
+        "title": "Gizli Hayrandan Aşk İtirafı! 💌",
+        "description": "Sosyal çevrenden uzun süredir seni uzaktan beğenen çok hoş biri yanına yaklaştı ve gözlerinin içine bakarak duygularını açtı!",
+        "image_emoji": "💘",
+        "category": "love",
+        "choices": [
+            {"id": "give_chance", "text": "Heyecanla karşılık ver ve ilk randevuya çık!"},
+            {"id": "friendzone", "text": "'Seni çok seviyorum ama arkadaş olarak kalalım' de."},
+            {"id": "reject_coldly", "text": "İlgilenmediğini söyleyip hızla uzaklaş."}
+        ]
+    },
+    {
+        "id": "friend_asks_loan",
+        "min_age": 18,
+        "max_age": 70,
+        "title": "Dosttan Borç Talebi 🤝",
+        "description": "Yakın bir arkadaşın çok sıkıştığını söyleyerek senden 15.000 TL borç istedi: 'Kanka söz 2 aya kuruşu kuruşuna ödeyeceğim!'",
+        "image_emoji": "💸",
+        "category": "general",
+        "choices": [
+            {"id": "lend_money", "text": "Dost kara günde belli olur, 15.000 TL borç ver."},
+            {"id": "gift_small", "text": "'Borç olmasın, benden sana 3.000 TL destek olsun' de."},
+            {"id": "refuse_loan", "text": "'Para alışverişi dostluğu bozar' diyerek kibarca reddet."}
+        ]
+    },
+    {
+        "id": "family_reunion",
+        "min_age": 15,
+        "max_age": 80,
+        "title": "Büyük Pazar Aile Kahvaltısı 🥐",
+        "description": "Annen ve baban hafta sonu tüm aileyi bir araya getirmek için büyük bir kahvaltı sofrası kurdu.",
+        "image_emoji": "👨‍👩‍👧‍👦",
+        "category": "general",
+        "choices": [
+            {"id": "go_with_gifts", "text": "En sevdiği pastaneden su böreği ve tatlı alıp git (1.000 TL)."},
+            {"id": "attend_happily", "text": "Keyifle katılıp aile büyüklerinin gönlünü al."},
+            {"id": "skip_reunion", "text": "Bahane uydurup evde uyu."}
+        ]
+    },
     {
         "id": "found_wallet",
         "min_age": 10,
@@ -241,18 +351,6 @@ RANDOM_EVENTS_POOL = [
         ]
     },
     {
-        "id": "dating_blind_date",
-        "min_age": 18,
-        "max_age": 55,
-        "title": "Sürpriz Tanışma Fırsatı",
-        "description": "Yakın bir arkadaşın seni çok kafa dengi biriyle tanıştırmak için akşam yemeği organize etti.",
-        "image_emoji": "🌹",
-        "choices": [
-            {"id": "accept_date", "text": "Şık giyinip yemeğe katıl."},
-            {"id": "refuse_date", "text": "Kibarca teşekkür edip evde kal."}
-        ]
-    },
-    {
         "id": "illegal_offer",
         "min_age": 18,
         "max_age": 60,
@@ -292,8 +390,33 @@ RANDOM_EVENTS_POOL = [
     }
 ]
 
+def _create_romantic_person(char: Character, relation_type: str = "Sevgili") -> Person:
+    partner_gender = "Kadın" if char.gender == "Erkek" else "Erkek"
+    p_names = FIRST_NAMES_FEMALE if partner_gender == "Kadın" else FIRST_NAMES_MALE
+    p_name = f"{random.choice(p_names)} {random.choice(LAST_NAMES)}"
+    p_spec = random.choice(PERSONALITIES)
+    p_interests = random.sample(INTERESTS_POOL, 3)
+    return Person(
+        id=f"person_lover_{len(char.relationships)+1}_{random.randint(10,99)}",
+        name=p_name,
+        relation=relation_type,
+        gender=partner_gender,
+        age=max(14, char.age + random.randint(-1, 2)),
+        relationship_level=85,
+        job="Öğrenci" if char.age < 21 else random.choice(["Mimar", "Avukat", "Doktor", "Tasarımcı", "Mühendis"]),
+        personality=p_spec["id"],
+        zodiac=random.choice(ZODIAC_SIGNS),
+        looks=random.randint(65, 98),
+        smarts=random.randint(60, 95),
+        craziness=max(10, min(95, p_spec["crazy_bias"] + random.randint(-10, 10))),
+        loyalty=max(20, min(100, p_spec["loyalty_bias"] + random.randint(-10, 10))),
+        wealth=random.randint(40, 90),
+        interests=p_interests,
+        memories=[f"{char.age} yaşındayken romantik bir şekilde tanıştınız."]
+    )
+
 def check_for_annual_event(char: Character) -> Optional[ActiveEvent]:
-    """Her yıl için uygun bir dönüm noktası veya rastgele ikilem seçer."""
+    """Her yıl için uygun bir dönüm noktası, ilişki draması veya rastgele ikilem seçer."""
     if not char.is_alive or char.is_in_prison:
         return None
     
@@ -314,7 +437,21 @@ def check_for_annual_event(char: Character) -> Optional[ActiveEvent]:
                     category=m.get("category", "milestone")
                 )
     
-    # 2. Rastgele Olay Şansı (%65 ihtimalle her yaşta bir olay tetiklenir)
+    # 2. Aktif Partner / Eş Varsa Özel İlişki Olayı (%35 İhtimal)
+    partner = next((p for p in char.relationships if p.relation in ["Sevgili", "Nişanlı", "Eş"] and p.is_alive), None)
+    if partner and random.random() < 0.35:
+        pev = random.choice(PARTNER_EVENTS_POOL)
+        choices = [EventChoice(id=c["id"], text=c["text"]) for c in pev["choices"]]
+        return ActiveEvent(
+            id=pev["id"],
+            title=f"{pev['title']} ({partner.name})",
+            description=pev["description"],
+            image_emoji=pev["image_emoji"],
+            choices=choices,
+            category="love"
+        )
+
+    # 3. Genel Rastgele Olay Şansı (%65 ihtimal)
     if random.random() < 0.65:
         eligible_events = [e for e in RANDOM_EVENTS_POOL if e["min_age"] <= char.age <= e["max_age"]]
         if eligible_events:
@@ -326,17 +463,21 @@ def check_for_annual_event(char: Character) -> Optional[ActiveEvent]:
                 description=ev["description"],
                 image_emoji=ev.get("image_emoji", "⚡"),
                 choices=choices,
-                category="random"
+                category=ev.get("category", "random")
             )
             
     return None
 
 def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
-    """Kullanıcının yaptığı seçime göre istatistikleri ve hikayeyi günceller."""
+    """Kullanıcının yaptığı seçime göre istatistikleri, ilişkileri ve hikayeyi günceller."""
     result_text = ""
+    log_cat = "event"
+    log_icon = "⚖️"
+    partner = next((p for p in char.relationships if p.relation in ["Flört", "Sevgili", "Nişanlı", "Eş"] and p.is_alive), None)
     
     if event_id == "school_start":
         char.job_history.append("milestone_school_start")
+        log_cat = "school"
         if choice_id == "study_hard":
             char.smarts = min(100, char.smarts + 8)
             char.school_performance = 90
@@ -346,7 +487,6 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
             result_text = "Koridorda ortalığı birbirine kattın. Müdür yardımcısı sana çikolata vererek sakinleştirdi."
         else:
             char.happiness = min(100, char.happiness + 12)
-            # Yeni okul arkadaşı ekle
             friend_gender = random.choice(["Erkek", "Kadın"])
             f_names = FIRST_NAMES_MALE if friend_gender == "Erkek" else FIRST_NAMES_FEMALE
             f_name = f"{random.choice(f_names)} {random.choice(LAST_NAMES)}"
@@ -356,9 +496,189 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
                 relation="Arkadaş",
                 gender=friend_gender,
                 age=char.age,
-                relationship_level=85
+                relationship_level=85,
+                personality="Sadık & Aileci",
+                zodiac=random.choice(ZODIAC_SIGNS),
+                interests=random.sample(INTERESTS_POOL, 2),
+                memories=["İlkokulun ilk gününde elmanı paylaştığın çocukluk arkadaşın."]
             ))
             result_text = f"Elmanı paylaştığın {f_name} ile en yakın okul arkadaşı oldunuz! (Mutluluk +12)"
+
+    elif event_id == "first_school_crush":
+        char.job_history.append("milestone_first_school_crush")
+        log_cat = "love"
+        log_icon = "💘"
+        if choice_id in ["confess_crush", "write_love_note"]:
+            new_lover = _create_romantic_person(char, "Sevgili")
+            char.relationships.append(new_lover)
+            char.dating_partner_id = new_lover.id
+            if "first_love" not in char.achievements:
+                char.achievements.append("first_love")
+            char.happiness = min(100, char.happiness + 22)
+            result_text = f"Kalbin yerinden çıkacak gibiydi ama {new_lover.name} teklifini gülümseyerek kabul etti! İlk gençlik aşkın başladı! 💘"
+        else:
+            char.happiness = max(0, char.happiness - 5)
+            result_text = "Utangaçlığından dolayı fırsatı kaçırdın ama tatlı bir anı olarak kaldı."
+
+    elif event_id == "partner_phone_msg":
+        log_cat = "love"
+        log_icon = "📱"
+        if not partner:
+            result_text = "Mesaj yanlış numaraymış."
+        elif choice_id == "snoop_phone":
+            if partner.loyalty >= 65:
+                partner.relationship_level = max(10, partner.relationship_level - 20)
+                partner.memories.append("Telefonunu gizlice karıştırdığın için sana kırıldı.")
+                result_text = f"Telefonu karıştırdın; mesaj kuzenindenmiş! Ama {partner.name} uyandığında telefonunu karıştırdığını fark etti ve güveni sarsıldı! (İlişki -20)"
+            else:
+                partner.relationship_level = max(5, partner.relationship_level - 45)
+                char.happiness = max(0, char.happiness - 30)
+                partner.memories.append("Gizli flört mesajlarını yakaladın!")
+                result_text = f"ŞOK! {partner.name}'in gizlice başkasıyla flörtleştiğini yakaladın! Büyük bir kavga çıktı! (İlişki -45)"
+        elif choice_id == "ask_calmly":
+            partner.relationship_level = min(100, partner.relationship_level + 10)
+            result_text = f"Sabah sakince sordun. {partner.name} iş arkadaşının nöbet mesajı olduğunu gösterip olgun yaklaşımın için sana sarıldı. (İlişki +10)"
+        else:
+            partner.relationship_level = max(10, partner.relationship_level - 25)
+            char.happiness = max(0, char.happiness - 15)
+            result_text = f"Gece yarısı bağırıp çağırdın! Oysa mesaj operatörden/kuzeninden gelmiş. {partner.name} aşırı kıskançlığından bunaldı. (İlişki -25)"
+
+    elif event_id == "partner_anniversary":
+        log_cat = "love"
+        log_icon = "💝"
+        if not partner:
+            result_text = "Güzel bir gün geçti."
+        elif choice_id == "luxury_celebration":
+            if char.money >= 6000:
+                char.money -= 6000
+                partner.relationship_level = 100
+                char.happiness = min(100, char.happiness + 20)
+                partner.memories.append("Yıl dönümünüzü Boğaz'da muhteşem bir yemekle kutladınız.")
+                result_text = f"Boğaz'da harika bir kutlama yaptınız! {partner.name} sana bir kez daha aşık oldu! (İlişki %100)"
+            else:
+                partner.relationship_level = min(100, partner.relationship_level + 10)
+                result_text = f"Bütçen lüks restorana yetmese de sahilde yürüyüp romantik bir akşam geçirdiniz."
+        elif choice_id == "homemade_romance":
+            partner.relationship_level = min(100, partner.relationship_level + 18)
+            char.happiness = min(100, char.happiness + 15)
+            partner.memories.append("Yıl dönümünde ellerinle yemek hazırladın.")
+            result_text = f"Kendi ellerinle hazırladığın mum ışığı sofrası {partner.name}'i çok duygulandırdı! (İlişki +18)"
+        else:
+            partner.relationship_level = max(5, partner.relationship_level - 30)
+            char.happiness = max(0, char.happiness - 15)
+            result_text = f"Yıl dönümünü unuttuğun için {partner.name} bütün hafta seninle küstü! (İlişki -30)"
+
+    elif event_id == "partner_inlaws_dinner":
+        log_cat = "love"
+        log_icon = "🍲"
+        if not partner:
+            result_text = "Misafirler ağırlandı."
+        elif choice_id == "charm_inlaws":
+            char.money = max(0, char.money - 2500)
+            partner.relationship_level = min(100, partner.relationship_level + 20)
+            char.karma = min(100, char.karma + 10)
+            partner.memories.append("Ailesini evinizde krallar gibi ağırladın.")
+            result_text = f"Kayınvaliden ve kayınpederin sana bayıldı! '{partner.name} çok şanslıymış!' diyerek övgüler yağdırdılar. (İlişki +20)"
+        elif choice_id == "be_natural":
+            partner.relationship_level = min(100, partner.relationship_level + 10)
+            result_text = "Samimi ve doğal tavrınla akşam yemeği gayet huzurlu geçti. (İlişki +10)"
+        else:
+            partner.relationship_level = max(10, partner.relationship_level - 25)
+            char.happiness = max(0, char.happiness - 15)
+            result_text = f"Masada soğuk rüzgarlar esti! Ailesi gidince {partner.name} ile tartıştınız. (İlişki -25)"
+
+    elif event_id == "partner_jealousy_crisis":
+        log_cat = "love"
+        log_icon = "🔥"
+        if not partner:
+            result_text = "Tartışma kapandı."
+        elif choice_id == "reassure_love":
+            partner.relationship_level = min(100, partner.relationship_level + 12)
+            result_text = f"Gönlünü aldın ve aranızdaki buzlar eridi. {partner.name} sana sıkıca sarıldı. (İlişki +12)"
+        elif choice_id == "defend_freedom":
+            if partner.craziness > 60:
+                partner.relationship_level = max(10, partner.relationship_level - 22)
+                result_text = f"{partner.name} kıskançlıktan köpürdü ve kapıyı çarpıp çıktı! (İlişki -22)"
+            else:
+                partner.relationship_level = min(100, partner.relationship_level + 5)
+                result_text = f"{partner.name} haklı olduğunu kabul edip gereksiz kıskançlık yaptığı için özür diledi."
+        else:
+            partner.relationship_level = max(5, partner.relationship_level - 28)
+            result_text = "İkiniz de birbirinize bağırıp küstünüz! (İlişki -28)"
+
+    elif event_id == "secret_admirer":
+        log_cat = "love"
+        log_icon = "💌"
+        if choice_id == "give_chance":
+            if partner:
+                # Mevcut partner varken şans verirse aldatma riski!
+                new_crush = _create_romantic_person(char, "Flört")
+                char.relationships.append(new_crush)
+                if random.random() < 0.5:
+                    partner.relationship_level = max(5, partner.relationship_level - 40)
+                    result_text = f"Gizli hayranın {new_crush.name} ile buluştun ama {partner.name} bunu duydu ve ortalık karıştı!"
+                else:
+                    result_text = f"{new_crush.name} ile gizli bir flörte başladın! Kalbin iki kişi arasında kaldı..."
+            else:
+                new_lover = _create_romantic_person(char, "Sevgili")
+                char.relationships.append(new_lover)
+                char.dating_partner_id = new_lover.id
+                if "first_love" not in char.achievements:
+                    char.achievements.append("first_love")
+                char.happiness = min(100, char.happiness + 25)
+                result_text = f"Gizli hayranın {new_lover.name} ({new_lover.job}) ile harika bir ilişkiye başladınız! 💘"
+        elif choice_id == "friendzone":
+            new_friend = _create_romantic_person(char, "Arkadaş")
+            char.relationships.append(new_friend)
+            char.happiness = min(100, char.happiness + 8)
+            result_text = f"{new_friend.name} kararını saygıyla karşıladı ve yakın arkadaş oldunuz."
+        else:
+            result_text = "Teklifi geri çevirip yoluna devam ettin."
+
+    elif event_id == "friend_asks_loan":
+        if choice_id == "lend_money":
+            if char.money >= 15000:
+                char.money -= 15000
+                char.karma = min(100, char.karma + 15)
+                for p in char.relationships:
+                    if p.relation == "Arkadaş":
+                        p.relationship_level = 100
+                if random.random() < 0.65:
+                    char.money += 18000
+                    result_text = "Arkadaşın sözünde durdu ve borcunu fazlasıyla (18.000 TL) geri ödedi! Dostluğunuz perçinlendi."
+                else:
+                    result_text = "15.000 TL borç verdin. Arkadaşın minnettar kaldı (Karma +15)."
+            else:
+                result_text = "15.000 TL nakdin olmadığı için veremedin."
+        elif choice_id == "gift_small":
+            if char.money >= 3000:
+                char.money -= 3000
+                char.karma = min(100, char.karma + 12)
+                result_text = "Arkadaşına 3.000 TL karşılıksız destek oldun, gözleri doldu."
+            else:
+                result_text = "Bütçen yetmedi ama manevi destek verdin."
+        else:
+            result_text = "Borç vermeyi kibarca reddettin."
+
+    elif event_id == "family_reunion":
+        if choice_id == "go_with_gifts":
+            char.money = max(0, char.money - 1000)
+            for p in char.relationships:
+                if p.relation in ["Anne", "Baba", "Ağabey", "Abla", "Kardeş"]:
+                    p.relationship_level = min(100, p.relationship_level + 18)
+            char.happiness = min(100, char.happiness + 15)
+            result_text = "Aldığın börekler ve tatlılarla kahvaltının yıldızı oldun! Tüm aileyle ilişkin güçlendi."
+        elif choice_id == "attend_happily":
+            for p in char.relationships:
+                if p.relation in ["Anne", "Baba", "Ağabey", "Abla", "Kardeş"]:
+                    p.relationship_level = min(100, p.relationship_level + 10)
+            char.happiness = min(100, char.happiness + 10)
+            result_text = "Ailenle sıcacık bir pazar kahvaltısı yaptınız."
+        else:
+            for p in char.relationships:
+                if p.relation in ["Anne", "Baba"]:
+                    p.relationship_level = max(0, p.relationship_level - 12)
+            result_text = "Kahvaltıya gitmediğin için annen telefonda sitem etti."
 
     elif event_id == "bayram_pocket_money":
         char.job_history.append("milestone_bayram_pocket_money")
@@ -494,11 +814,11 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
     elif event_id == "retirement_choice":
         char.job_history.append("milestone_retirement_choice")
         if choice_id == "retire_now":
-            Severance = 450000 if char.current_job else 120000
-            char.money += Severance
+            severance = 450000 if char.current_job else 120000
+            char.money += severance
             char.current_job = None
             char.happiness = min(100, char.happiness + 25)
-            result_text = f"Emekli oldun! {Severance:,} TL emeklilik ikramiyeni alıp huzurlu günlere adım attın."
+            result_text = f"Emekli oldun! {severance:,} TL emeklilik ikramiyeni alıp huzurlu günlere adım attın."
         else:
             char.happiness = min(100, char.happiness + 8)
             result_text = "Çalışmayı bırakmadın! Tecrübenle gençlere örnek olmaya devam ediyorsun."
@@ -537,7 +857,7 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
                 char.money -= 8000
                 char.karma = min(100, char.karma + 15)
                 char.happiness = min(100, char.happiness + 12)
-                result_text = "Anons микрофonunda adın yankılandı: 'Çeyrek altın!' Tüm salon seni alkışladı!"
+                result_text = "Anons mikrofonunda adın yankılandı: 'Çeyrek altın!' Tüm salon seni alkışladı!"
             else:
                 result_text = "Cebinde çeyrek altın parası yoktu, zarfla geçiştirdin."
         elif choice_id == "pin_cash":
@@ -561,33 +881,6 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
         else:
             char.happiness = max(0, char.happiness - 15)
             result_text = "Hakkını aramadığın için bütün övgüyü başkası topladı."
-
-    elif event_id == "dating_blind_date":
-        if choice_id == "accept_date":
-            partner_gender = "Kadın" if char.gender == "Erkek" else "Erkek"
-            p_names = FIRST_NAMES_FEMALE if partner_gender == "Kadın" else FIRST_NAMES_MALE
-            p_name = f"{random.choice(p_names)} {random.choice(LAST_NAMES)}"
-            existing = next((p for p in char.relationships if p.relation in ["Sevgili", "Eş"]), None)
-            if not existing:
-                new_lover = Person(
-                    id=f"person_lover_{len(char.relationships)+1}",
-                    name=p_name,
-                    relation="Sevgili",
-                    gender=partner_gender,
-                    age=char.age,
-                    relationship_level=85,
-                    job="Mimar"
-                )
-                char.relationships.append(new_lover)
-                if "first_love" not in char.achievements:
-                    char.achievements.append("first_love")
-                char.happiness = min(100, char.happiness + 20)
-                result_text = f"Randevu muhteşem geçti! {p_name} ile yeni bir aşka yelken açtınız! 💘"
-            else:
-                char.happiness = min(100, char.happiness + 8)
-                result_text = f"Keyifli bir akşam yemeği oldu ve {p_name} ile iyi birer dost oldunuz."
-        else:
-            result_text = "Evde kalıp dinlenmeyi tercih ettin."
 
     elif event_id == "found_wallet":
         if choice_id == "return_wallet":
@@ -722,8 +1015,8 @@ def resolve_event_choice(char: Character, event_id: str, choice_id: str) -> str:
         age=char.age,
         year=char.current_year,
         text=result_text,
-        category="event",
-        icon="⚖️"
+        category=log_cat,
+        icon=log_icon
     ))
     
     char.active_event = None

@@ -313,45 +313,102 @@ function renderLifeFeed() {
     });
 }
 
-// ----------------- İLİŞKİLER VE EVCİL HAYVANLAR -----------------
+// ----------------- İLİŞKİLER, FLÖRT, KISMETAPP VE EVCİL HAYVANLAR -----------------
+
+function getPersonalityLabel(personalityId) {
+    if (!marketData || !marketData.personalities) return personalityId || "Uyumlu";
+    const found = marketData.personalities.find(p => p.id === personalityId);
+    return found ? `${found.emoji} ${found.name}` : (personalityId || "Uyumlu");
+}
+
+function renderPersonCard(person) {
+    const card = document.createElement("div");
+    card.className = "panel-card clickable-card";
+    card.onclick = () => openPersonModal(person.id);
+
+    let badgeClass = "badge-green";
+    if (!person.is_alive) badgeClass = "badge-red";
+    else if (person.relationship_level < 35) badgeClass = "badge-red";
+    else if (person.relationship_level < 65) badgeClass = "badge-yellow";
+
+    const statusBadge = person.is_alive
+        ? `<span class="card-badge ${badgeClass}">İlişki: %${person.relationship_level}</span>`
+        : `<span class="card-badge badge-red">Vefat Etti</span>`;
+
+    const extraBadges = [];
+    if (person.cohabiting && person.is_alive) extraBadges.push(`<span class="person-chip" style="background:rgba(16,185,129,0.18); color:#6ee7b7;">🏠 Aynı Evde</span>`);
+    if (person.has_prenup && person.relation === "Eş") extraBadges.push(`<span class="person-chip" style="background:rgba(245,158,11,0.18); color:#fcd34d;">📜 Sözleşmeli</span>`);
+    if (person.personality) extraBadges.push(`<span class="person-chip">${getPersonalityLabel(person.personality)}</span>`);
+    if (person.zodiac) extraBadges.push(`<span class="person-chip">✨ ${person.zodiac}</span>`);
+    if (person.years_together && person.years_together > 0 && ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
+        extraBadges.push(`<span class="person-chip">⏳ ${person.years_together} Yıl</span>`);
+    }
+
+    const relBarColor = person.relationship_level >= 65 ? "var(--accent-green)" : (person.relationship_level >= 35 ? "var(--accent-yellow)" : "var(--accent-red)");
+
+    card.innerHTML = `
+        <div class="card-title-row">
+            <span class="card-title">
+                ${getRelationEmoji(person.relation)} ${person.name}
+            </span>
+            ${statusBadge}
+        </div>
+        <div class="card-desc">
+            <b>${person.relation}</b> • ${person.age} Yaşında ${person.job ? `• ${person.job}` : ""}
+        </div>
+        ${extraBadges.length > 0 ? `<div class="person-chip-row" style="margin:6px 0 4px;">${extraBadges.join("")}</div>` : ""}
+        ${person.is_alive ? `
+            <div class="stat-progress-bg" style="height:5px; margin-top:6px;">
+                <div class="stat-progress-bar" style="width:${person.relationship_level}%; background:${relBarColor};"></div>
+            </div>
+        ` : ""}
+    `;
+    return card;
+}
 
 function renderRelationships() {
     const listEl = document.getElementById("relationshipsList");
     if (!listEl) return;
     listEl.innerHTML = "";
 
-    if (!gameState.relationships || gameState.relationships.length === 0) {
+    const rels = gameState.relationships || [];
+    if (rels.length === 0) {
         listEl.innerHTML = `<div class="panel-card"><p class="card-desc">Henüz kayıtlı bir ilişkin yok.</p></div>`;
     } else {
-        gameState.relationships.forEach(person => {
-            const card = document.createElement("div");
-            card.className = "panel-card clickable-card";
-            card.onclick = () => openPersonModal(person.id);
+        const romanticRels = rels.filter(p => ["Eş", "Nişanlı", "Sevgili", "Flört"].includes(p.relation));
+        const familyRels = rels.filter(p => ["Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk"].includes(p.relation));
+        const socialRels = rels.filter(p => !["Eş", "Nişanlı", "Sevgili", "Flört", "Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk"].includes(p.relation));
 
-            const statusBadge = person.is_alive
-                ? `<span class="card-badge badge-green">İlişki: %${person.relationship_level}</span>`
-                : `<span class="card-badge badge-red">Vefat Etti</span>`;
+        if (romanticRels.length > 0) {
+            const h = document.createElement("div");
+            h.className = "rel-section-header";
+            h.innerHTML = `<span>💘 Aşk, Flört & Evlilik (${romanticRels.length})</span>`;
+            listEl.appendChild(h);
+            romanticRels.forEach(p => listEl.appendChild(renderPersonCard(p)));
+        }
 
-            card.innerHTML = `
-                <div class="card-title-row">
-                    <span class="card-title">
-                        ${getRelationEmoji(person.relation)} ${person.name}
-                    </span>
-                    ${statusBadge}
-                </div>
-                <div class="card-desc">
-                    ${person.relation} • ${person.age} Yaşında ${person.job ? `• ${person.job}` : ""}
-                </div>
-            `;
-            listEl.appendChild(card);
-        });
+        if (familyRels.length > 0) {
+            const h = document.createElement("div");
+            h.className = "rel-section-header";
+            h.innerHTML = `<span>👨‍👩‍👧‍👦 Aile & Çocuklar (${familyRels.length})</span>`;
+            listEl.appendChild(h);
+            familyRels.forEach(p => listEl.appendChild(renderPersonCard(p)));
+        }
+
+        if (socialRels.length > 0) {
+            const h = document.createElement("div");
+            h.className = "rel-section-header";
+            h.innerHTML = `<span>🤝 Dostlar & Eski İlişkiler (${socialRels.length})</span>`;
+            listEl.appendChild(h);
+            socialRels.forEach(p => listEl.appendChild(renderPersonCard(p)));
+        }
     }
 
     // Evcil hayvanlar
     if (gameState.pets && gameState.pets.length > 0) {
-        const petsTitle = document.createElement("h4");
-        petsTitle.style.cssText = "font-size: 13px; color: var(--text-secondary); margin: 14px 0 8px;";
-        petsTitle.textContent = "🐾 Evcil Hayvanların";
+        const petsTitle = document.createElement("div");
+        petsTitle.className = "rel-section-header";
+        petsTitle.innerHTML = `<span>🐾 Evcil Hayvanların (${gameState.pets.length})</span>`;
         listEl.appendChild(petsTitle);
 
         gameState.pets.forEach(pet => {
@@ -383,12 +440,24 @@ function getRelationEmoji(rel) {
         case "Baba": return "👨";
         case "Ağabey": case "Kardeş": return "👦";
         case "Abla": return "👧";
+        case "Flört": return "🔥";
         case "Sevgili": return "💘";
+        case "Nişanlı": return "💎";
         case "Eş": return "💍";
+        case "Eski Sevgili": case "Eski Eş": return "💔";
         case "Çocuk": return "👶";
         case "Arkadaş": return "🤝";
         default: return "👤";
     }
+}
+
+async function triggerFamilyDinnerQuick() {
+    const aliveParentOrFam = (gameState.relationships || []).find(p => p.is_alive && ["Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk"].includes(p.relation));
+    if (!aliveParentOrFam) {
+        showToast("Aile yemeği düzenleyebileceğin hayatta bir aile üyen yok.", "error");
+        return;
+    }
+    await performActivity("interact_person", { person_id: aliveParentOrFam.id, person_action: "family_dinner" });
 }
 
 // ----------------- KARİYER, EĞİTİM, BECERİLER & ŞİRKET -----------------
@@ -684,7 +753,7 @@ async function performActivity(action, params = {}) {
     }
 }
 
-// ----------------- KİŞİ ETKİLEŞİM MODALI -----------------
+// ----------------- KİŞİ ETKİLEŞİM MODALI & DERİN İLİŞKİ MENÜLERİ -----------------
 
 function openPersonModal(personId) {
     sound.playClick();
@@ -697,32 +766,123 @@ function openPersonModal(personId) {
     document.getElementById("personModalLevel").textContent = `%${person.relationship_level}`;
     document.getElementById("personModalBar").style.width = `${person.relationship_level}%`;
 
+    const extraContainer = document.getElementById("personModalProfileExtra");
+    if (extraContainer) {
+        const interestsHtml = (person.interests && person.interests.length > 0)
+            ? `<div class="person-chip-row">${person.interests.map(i => `<span class="person-chip">${i}</span>`).join("")}</div>`
+            : "";
+
+        const memoriesHtml = (person.memories && person.memories.length > 0)
+            ? `
+                <div class="person-action-group-title">📖 Ortak Anılarınız (${person.memories.length})</div>
+                <div class="memories-timeline">
+                    ${person.memories.slice().reverse().map(m => `<div class="memory-item">• ${m}</div>`).join("")}
+                </div>
+            `
+            : "";
+
+        extraContainer.innerHTML = `
+            <div class="person-chip-row">
+                <span class="person-chip">${getPersonalityLabel(person.personality)}</span>
+                <span class="person-chip">✨ Burç: ${person.zodiac || "Aslan"}</span>
+                ${person.cohabiting ? `<span class="person-chip" style="color:#6ee7b7;">🏠 Aynı Evdesiniz</span>` : ""}
+                ${person.has_prenup ? `<span class="person-chip" style="color:#fcd34d;">📜 Evlilik Sözleşmeli</span>` : ""}
+                ${person.years_together > 0 ? `<span class="person-chip">⏳ ${person.years_together} Yıllık Birliktelik</span>` : ""}
+            </div>
+            ${person.bio ? `<div class="kismet-bio-box" style="margin:6px 0 8px;">"${person.bio}"</div>` : ""}
+            <div class="person-stats-grid">
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>✨ Görünüş</span><span>%${person.looks ?? 65}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-looks" style="width:${person.looks ?? 65}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>🧠 Zeka</span><span>%${person.smarts ?? 65}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-smarts" style="width:${person.smarts ?? 65}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>🤝 Sadakat</span><span>%${person.loyalty ?? 75}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-health" style="width:${person.loyalty ?? 75}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>🤪 Çılgınlık</span><span>%${person.craziness ?? 35}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-happiness" style="width:${person.craziness ?? 35}%"></div></div>
+                </div>
+            </div>
+            ${interestsHtml}
+            ${memoriesHtml}
+        `;
+    }
+
     const actionsContainer = document.getElementById("personModalActions");
     actionsContainer.innerHTML = "";
 
     if (!person.is_alive) {
         actionsContainer.innerHTML = `<p class="card-desc">Bu kişi vefat etti. Huzur içinde yatsın.</p>`;
     } else {
-        const actions = [
-            { id: "chat", text: "💬 Sohbet Et & Dertleş" },
-            { id: "spend_time", text: "🍿 Birlikte Vakit Geçir" },
-            { id: "give_gift", text: "🎁 Hediye Al (2.500 TL)" },
-            { id: "ask_money", text: "💸 Harçlık / Destek İste" },
-            { id: "argue", text: "🤬 Tartış ve Hesap Sor" }
-        ];
+        const actions = [];
+        const isPartner = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
+        const isEx = ["Eski Sevgili", "Eski Eş"].includes(person.relation);
+        const isParent = ["Anne", "Baba"].includes(person.relation);
+        const isChild = person.relation === "Çocuk";
+        const isFriend = person.relation === "Arkadaş";
 
-        if (person.relation === "Sevgili") {
-            actions.push({ id: "propose", text: "💍 Pırlanta Yüzükle Evlenme Teklifi Et (20.000 TL)" });
-            actions.push({ id: "breakup", text: "💔 Ayrıl" });
-        } else if (person.relation === "Eş") {
-            actions.push({ id: "try_baby", text: "🍼 Çocuk Yapmayı Dene" });
-            actions.push({ id: "breakup", text: "💔 Boşanma Davası Aç" });
+        if (isPartner) {
+            actions.push({ id: "modal_date_venue", text: "🌹 Özel Randevuya Çıkar (Mekan Seç)", primary: true });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Özel Romantik Hediye Al (Çiçek, Mücevher, Araba...)" });
+
+            if (person.relation === "Flört") {
+                actions.push({ id: "ask_relationship", text: "💑 'İlişkimizin Adını Koyalım' (Sevgili Ol)" });
+            }
+            if (person.relation === "Sevgili") {
+                actions.push({ id: "modal_propose_ring", text: "💍 Evlenme Teklifi Et (Yüzük Seç)" });
+            }
+            if (person.relation === "Nişanlı") {
+                actions.push({ id: "modal_plan_wedding", text: "👰 Düğün Organize Et (Mekan & Sözleşme Seç)", primary: true });
+            }
+            if (["Sevgili", "Nişanlı"].includes(person.relation) && !person.cohabiting) {
+                actions.push({ id: "move_in", text: "🏠 Aynı Eve Çıkma Teklifi Et (Ortak Kira)" });
+            }
+            if (["Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
+                actions.push({ id: "try_baby", text: "🍼 Çocuk Yapmayı Dene" });
+                actions.push({ id: "couples_therapy", text: "🛋️ Çift Terapisine Git (6.500 TL)" });
+            }
+            actions.push({ id: "compliment", text: "✨ İltifat Et & Gururunu Okşa" });
+            actions.push({ id: "deep_talk", text: "🌙 Gece Boyu Derin Sohbet Et" });
+            actions.push({ id: "cheat", text: "🔥 Gizli Kaçamak Yap (Aldat - Riskli!)" });
+            const breakupLabel = person.relation === "Eş" ? "💔 Boşanma Davası Aç" : (person.relation === "Nişanlı" ? "💔 Nişanı At" : "💔 Ayrıl");
+            actions.push({ id: "breakup", text: breakupLabel });
+        } else if (isEx) {
+            actions.push({ id: "text_ex", text: "📱 Gece Yarısı 'Seni Özledim' Mesajı At & Barışmayı Dene", primary: true });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Gönlünü Almak İçin Hediye Gönder" });
+            actions.push({ id: "chat", text: "💬 Halini Hatırını Sor" });
+            actions.push({ id: "argue", text: "🤬 Eski Defterleri Açıp Tartış" });
+        } else if (isParent) {
+            actions.push({ id: "parent_blessing", text: "🙏 Elini Öp & Hayır Duası Al", primary: true });
+            actions.push({ id: "family_dinner", text: "🍲 Büyük Aile Yemeği Düzenle (2.000 TL)" });
+            actions.push({ id: "ask_money", text: "💸 Harçlık / Maddi Destek İste" });
+            actions.push({ id: "chat", text: "💬 Sohbet Et & Dertleş" });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
+        } else if (isChild) {
+            actions.push({ id: "educate_child", text: "📚 Birlikte Ders Çalış & Eğit (+Zeka)", primary: true });
+            actions.push({ id: "spend_time", text: "🍿 Parka / Sinemaya Götür" });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
+            actions.push({ id: "chat", text: "💬 Sohbet Et" });
+        } else {
+            if (isFriend) {
+                actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)", primary: true });
+            }
+            actions.push({ id: "deep_talk", text: "🌙 Derin Sohbet Et & Dertleş" });
+            actions.push({ id: "spend_time", text: "🍿 Birlikte Vakit Geçir" });
+            actions.push({ id: "compliment", text: "✨ İltifat Et" });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
+            actions.push({ id: "argue", text: "🤬 Tartış ve Hesap Sor" });
         }
 
         actions.forEach(act => {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "btn-choice";
+            btn.className = act.primary ? "btn-primary" : "btn-choice";
+            btn.style.textAlign = "left";
             btn.textContent = act.text;
             btn.onclick = () => handlePersonAction(act.id);
             actionsContainer.appendChild(btn);
@@ -734,9 +894,26 @@ function openPersonModal(personId) {
 
 async function handlePersonAction(actId) {
     if (!activePersonId) return;
-    if (actId === "propose") {
-        await performActivity("propose_marriage", { ring_cost: 20000 });
-        closeModal("personModal");
+    const pid = activePersonId;
+
+    if (actId === "modal_date_venue") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openDateVenueModal(pid);
+        return;
+    }
+    if (actId === "modal_custom_gift") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCustomGiftModal(pid);
+        return;
+    }
+    if (actId === "modal_propose_ring") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openRingProposalModal(pid);
+        return;
+    }
+    if (actId === "modal_plan_wedding") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openWeddingModal(pid);
         return;
     }
     if (actId === "try_baby") {
@@ -744,11 +921,309 @@ async function handlePersonAction(actId) {
         closeModal("personModal");
         return;
     }
+
     await performActivity("interact_person", {
-        person_id: activePersonId,
+        person_id: pid,
         person_action: actId
     });
     closeModal("personModal");
+}
+
+// ----------------- KISMETAPP (FLÖRT UYGULAMASI) & SOSYAL TANIŞMA MODALLARI -----------------
+
+let kismetIndex = 0;
+let activeKismetFilter = "standard";
+
+async function openKismetAppModal(filterType = null) {
+    sound.playClick();
+    if (filterType) {
+        activeKismetFilter = filterType;
+    }
+    document.getElementById("genericModalTitle").textContent = "📱 KısmetApp — Flört & Eşleşme";
+    const body = document.getElementById("genericModalBody");
+
+    // Eğer aday listesi boşsa veya yeni filtre seçildiyse sunucudan üret
+    if (filterType || !gameState.dating_candidates || gameState.dating_candidates.length === 0) {
+        body.innerHTML = `<p class="card-desc">Yakınındaki profiller taranıyor...</p>`;
+        openDialogModal("genericModal");
+        const res = await performActivity("kismet_generate", { filter_type: activeKismetFilter });
+        if (!res || !res.success) {
+            body.innerHTML = `<div class="panel-card"><p class="card-desc">${res ? res.message : "Aday bulunamadı."}</p></div>`;
+            return;
+        }
+        kismetIndex = 0;
+    } else {
+        openDialogModal("genericModal");
+    }
+
+    renderKismetCandidateView();
+}
+
+function renderKismetCandidateView() {
+    const body = document.getElementById("genericModalBody");
+    const candidates = gameState.dating_candidates || [];
+
+    const filterBarHtml = `
+        <div class="kismet-filter-bar">
+            <button type="button" class="filter-pill ${activeKismetFilter === 'standard' ? 'active' : ''}" onclick="openKismetAppModal('standard')">🔥 Standart (Ücretsiz)</button>
+            <button type="button" class="filter-pill ${activeKismetFilter === 'vip_wealth' ? 'active' : ''}" onclick="openKismetAppModal('vip_wealth')">💎 Elit & Zengin (5.000₺)</button>
+            <button type="button" class="filter-pill ${activeKismetFilter === 'vip_looks' ? 'active' : ''}" onclick="openKismetAppModal('vip_looks')">✨ Süper Model (3.000₺)</button>
+            <button type="button" class="filter-pill ${activeKismetFilter === 'vip_smarts' ? 'active' : ''}" onclick="openKismetAppModal('vip_smarts')">🧠 Yüksek Zeka (3.000₺)</button>
+        </div>
+    `;
+
+    if (candidates.length === 0 || kismetIndex >= candidates.length) {
+        body.innerHTML = `
+            ${filterBarHtml}
+            <div class="panel-card" style="text-align:center; padding:22px;">
+                <p class="card-desc" style="margin-bottom:12px;">Bu gruptaki tüm aday profillerini inceledin!</p>
+                <button type="button" class="btn-primary" onclick="openKismetAppModal('${activeKismetFilter}')">🔄 Yeni Aday Profilleri Getir</button>
+            </div>
+        `;
+        return;
+    }
+
+    const c = candidates[kismetIndex];
+    const avatarEmoji = c.gender === "Erkek" ? "🧔" : "👩";
+
+    body.innerHTML = `
+        ${filterBarHtml}
+        <div class="kismet-card">
+            <div class="kismet-top-row">
+                <div style="display:flex; gap:12px; align-items:center;">
+                    <div class="kismet-avatar-circle">${avatarEmoji}</div>
+                    <div>
+                        <div style="font-size:16.5px; font-weight:800; color:#fff;">${c.name}, ${c.age}</div>
+                        <div style="font-size:12px; color:#fbcfe8;">💼 ${c.job} • ✨ ${c.zodiac}</div>
+                        <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">${getPersonalityLabel(c.personality)}</div>
+                    </div>
+                </div>
+                <span class="kismet-compat-badge">💞 %${c.compatibility} Uyum</span>
+            </div>
+
+            <div class="kismet-bio-box">"${c.bio}"</div>
+
+            <div class="person-chip-row">
+                ${(c.interests || []).map(i => `<span class="person-chip">${i}</span>`).join("")}
+            </div>
+
+            <div class="person-stats-grid">
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>✨ Görünüş</span><span>%${c.looks}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-looks" style="width:${c.looks}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>🧠 Zeka</span><span>%${c.smarts}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-smarts" style="width:${c.smarts}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>💰 Varlık</span><span>%${c.wealth}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-health" style="width:${c.wealth}%"></div></div>
+                </div>
+                <div class="person-stat-pill">
+                    <div class="person-stat-pill-header"><span>🤪 Çılgınlık</span><span>%${c.craziness}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-happiness" style="width:${c.craziness}%"></div></div>
+                </div>
+            </div>
+
+            <div class="kismet-swipe-bar">
+                <button type="button" class="btn-swipe-pass" onclick="nextKismetCandidate()">❌ Pas Geç (${kismetIndex + 1}/${candidates.length})</button>
+                <button type="button" class="btn-swipe-like" onclick="matchKismetCandidate('${c.id}', 'Flört')">🔥 Flört Et</button>
+                <button type="button" class="btn-swipe-like" style="background:linear-gradient(135deg,#8b5cf6 0%,#6d28d9 100%);" onclick="matchKismetCandidate('${c.id}', 'Sevgili')">💘 Sevgili Ol</button>
+            </div>
+        </div>
+    `;
+}
+
+function nextKismetCandidate() {
+    sound.playClick();
+    kismetIndex++;
+    renderKismetCandidateView();
+}
+
+async function matchKismetCandidate(candidateId, relationMode) {
+    const res = await performActivity("kismet_swipe", {
+        candidate_id: candidateId,
+        relation_mode: relationMode
+    });
+    if (res && res.success) {
+        closeModal("genericModal");
+    }
+}
+
+function openMeetPlacesModal() {
+    sound.playClick();
+    if (!marketData || !marketData.meet_places) return;
+    document.getElementById("genericModalTitle").textContent = "🥂 Sosyal Ortamlar & Görücü Usulü Tanışma";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">Gittiğin mekana göre tanışacağın kişilerin karakteri, zekası ve maddi durumu değişiklik gösterir:</p>
+        ${marketData.meet_places.map(pl => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${pl.name}</span>
+                    <span class="card-badge badge-green">${pl.cost === 0 ? 'Ücretsiz' : '₺ ' + pl.cost.toLocaleString('tr-TR')}</span>
+                </div>
+                <p class="card-desc">${pl.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectMeetPlace('${pl.id}')">Mekana Git & Tanış</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectMeetPlace(placeId) {
+    await performActivity("meet_place", { place_id: placeId });
+    closeModal("genericModal");
+}
+
+function openDateVenueModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.date_venues) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🌹 Randevu Mekanı Seç: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            <b>${person.name}</b> kişilik tipi: <b>${getPersonalityLabel(person.personality)}</b>. Onun ruhuna uygun bir mekan seçersen ekstra uyum kazanırsın!
+        </p>
+        ${marketData.date_venues.map(v => {
+            const isFav = (v.best_for || []).includes(person.personality);
+            return `
+                <div class="panel-card" style="${isFav ? 'border-color:#f472b6;' : ''}">
+                    <div class="card-title-row">
+                        <span class="card-title">${v.name}</span>
+                        <span class="card-badge ${isFav ? 'badge-purple' : 'badge-green'}">₺ ${v.cost.toLocaleString('tr-TR')}</span>
+                    </div>
+                    <p class="card-desc">
+                        ${v.desc}
+                        ${isFav ? `<br><b style="color:#f472b6;">✨ ${person.name}'ın kişiliğine tam uyumlu favori mekan!</b>` : ""}
+                    </p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectDateVenue('${person.id}', '${v.id}')">Randevuya Çıkar</button>
+                </div>
+            `;
+        }).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectDateVenue(personId, venueId) {
+    await performActivity("venue_date", { person_id: personId, venue_id: venueId });
+    closeModal("genericModal");
+}
+
+function openCustomGiftModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.romantic_gifts) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🎁 Hediye Seç: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = marketData.romantic_gifts.map(g => `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">${g.name}</span>
+                <span class="card-badge badge-green">₺ ${g.cost.toLocaleString('tr-TR')}</span>
+            </div>
+            <p class="card-desc">İlişki Etkisi: <b>+%${g.rel_boost}</b></p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectCustomGift('${person.id}', '${g.id}')">Hediye Et</button>
+        </div>
+    `).join("");
+    openDialogModal("genericModal");
+}
+
+async function selectCustomGift(personId, giftId) {
+    await performActivity("custom_gift", { person_id: personId, gift_id: giftId });
+    closeModal("genericModal");
+}
+
+function openRingProposalModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.engagement_rings) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `💍 Evlilik Teklifi Yüzüğü: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            <b>${person.name}</b> (${getPersonalityLabel(person.personality)}) önünde diz çökmek için bir yüzük seç:
+        </p>
+        ${marketData.engagement_rings.map(r => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${r.name}</span>
+                    <span class="card-badge badge-yellow">₺ ${r.cost.toLocaleString('tr-TR')}</span>
+                </div>
+                <p class="card-desc">Kabul Şansı Bonusu: <b>+%${Math.round((r.bonus_chance || 0.1) * 100)}</b></p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitRingProposal('${person.id}', '${r.id}', ${r.cost})">Diz Çök & Teklif Et 💍</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitRingProposal(personId, ringId, ringCost) {
+    await performActivity("propose_marriage", {
+        person_id: personId,
+        ring_id: ringId,
+        ring_cost: ringCost
+    });
+    closeModal("genericModal");
+}
+
+function openWeddingModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.wedding_venues) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `👰🤵 Düğün & Nikah Organizasyonu: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:var(--accent-yellow); margin-bottom:12px;">
+            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; font-weight:700; color:#fde68a;">
+                <input type="checkbox" id="chkPrenup" style="width:18px; height:18px;">
+                <span>📜 Evlilik Sözleşmesi (Mal Ayrılığı) İmzalat</span>
+            </label>
+            <p class="card-desc" style="margin-top:6px;">
+                Boşanma durumunda servetinin yarı yarıya bölünmesini engeller; ancak nişanlının kişiliğine göre biraz kırgınlık yaratabilir.
+            </p>
+        </div>
+        ${marketData.wedding_venues.map(w => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${w.name}</span>
+                    <span class="card-badge badge-green">Maliyet: ₺ ${w.cost.toLocaleString('tr-TR')}</span>
+                </div>
+                <p class="card-desc">
+                    ${w.desc}<br>
+                    🎁 Beklenen Takı Merasimi Geliri: <b>₺ ${w.min_gifts.toLocaleString('tr-TR')} - ₺ ${w.max_gifts.toLocaleString('tr-TR')}</b>
+                </p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitWeddingPlan('${person.id}', '${w.id}')">Bu Düğünü Yap & Evlen 🥂</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitWeddingPlan(personId, venueId) {
+    const chk = document.getElementById("chkPrenup");
+    const signPrenup = chk ? chk.checked : false;
+    await performActivity("plan_wedding", {
+        person_id: personId,
+        venue_id: venueId,
+        sign_prenup: signPrenup
+    });
+    closeModal("genericModal");
 }
 
 // ----------------- İNTERAKTİF BLACKJACK (21) MASASI -----------------

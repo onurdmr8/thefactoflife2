@@ -828,3 +828,236 @@ dialog.app-dialog::backdrop {
 .toast-success { border-left: 4px solid var(--accent-green); }
 .toast-error { border-left: 4px solid var(--accent-red); }
 .toast-info { border-left: 4px solid var(--accent-blue); }
+
+/* ==================== AŞK, FLÖRT (KISMETAPP) & İLİŞKİ PROFİL STİLLERİ ==================== */
+
+.romance-hub-banner {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.22) 0%, rgba(139, 92, 246, 0.22) 100%);
+    border: 1px solid rgba(236, 72, 153, 0.38);
+    border-radius: 16px;
+    padding: 13px 15px;
+    margin-bottom: 14px;
+}
+
+.romance-hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.romance-hub-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #fbcfe8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.romance-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.btn-romance-action {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(244, 114, 182, 0.35);
+    color: #fce7f3;
+    padding: 9px 10px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+.btn-romance-action:hover {
+    background: rgba(236, 72, 153, 0.28);
+    border-color: #f472b6;
+    transform: translateY(-1px);
+}
+
+.rel-section-header {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 14px 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* KısmetApp (Tinder/Bumble Tarzı Flört Kartı) */
+.kismet-filter-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.kismet-card {
+    background: linear-gradient(180deg, #2e1065 0%, #1e1b4b 45%, #0f172a 100%);
+    border: 1px solid rgba(236, 72, 153, 0.4);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.kismet-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.kismet-avatar-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: rgba(236, 72, 153, 0.2);
+    border: 2px solid #f472b6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    flex-shrink: 0;
+}
+
+.kismet-compat-badge {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+}
+
+.kismet-bio-box {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid #f472b6;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-style: italic;
+    color: #f1f5f9;
+    margin: 10px 0;
+}
+
+.person-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.person-chip {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+}
+
+.person-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+    margin: 10px 0;
+}
+
+.person-stat-pill {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 6px 9px;
+    border-radius: 10px;
+    font-size: 11.5px;
+}
+
+.person-stat-pill-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.kismet-swipe-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.btn-swipe-pass {
+    flex: 1;
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+    padding: 10px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.btn-swipe-pass:hover {
+    background: rgba(239, 68, 68, 0.32);
+}
+
+.btn-swipe-like {
+    flex: 1.4;
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+    border: none;
+    color: #fff;
+    padding: 10px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(236, 72, 153, 0.4);
+    transition: all 0.15s;
+}
+.btn-swipe-like:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(236, 72, 153, 0.6);
+}
+
+.memories-timeline {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    max-height: 115px;
+    overflow-y: auto;
+}
+
+.memory-item {
+    font-size: 11.5px;
+    color: #cbd5e1;
+    padding: 3px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+}
+.memory-item:last-child {
+    border-bottom: none;
+}
+
+.person-action-group-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 8px 0 4px;
+}

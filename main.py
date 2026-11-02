@@ -28,7 +28,9 @@ from game.events import resolve_event_choice
 from game.data import (
     CITIES, JOBS_DATABASE, PART_TIME_JOBS, BUSINESS_TYPES,
     SCHOOL_CLUBS, REAL_ESTATE_MARKET, VEHICLE_MARKET,
-    UNIVERSITIES, PET_BREEDS, ACHIEVEMENT_DEFINITIONS
+    UNIVERSITIES, PET_BREEDS, ACHIEVEMENT_DEFINITIONS,
+    PERSONALITIES, MEET_PLACES, DATE_VENUES, ROMANTIC_GIFTS,
+    ENGAGEMENT_RINGS, WEDDING_VENUES
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -38,6 +40,8 @@ from game.activities import (
     work_harder, ask_for_raise_or_promotion, quit_job,
     find_love_date, make_new_friend, adopt_pet_from_shelter, interact_with_pet,
     propose_marriage, try_for_baby, interact_with_person, set_will_beneficiary,
+    generate_dating_candidates, swipe_dating_candidate, meet_someone_at_place,
+    go_on_venue_date, give_custom_gift, plan_wedding_ceremony, adopt_child_from_agency,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -185,9 +189,19 @@ def handle_activity(req: ActivityRequest):
     elif act == "quit_job":
         res = quit_job(current_character)
 
-    # Aşk, Arkadaşlık, Evcil Hayvan & Vasiyetname
+    # Aşk, Flört, KısmetApp, Evlilik, Arkadaşlık, Evcil Hayvan & Vasiyetname
     elif act == "find_love":
         res = find_love_date(current_character)
+    elif act == "kismet_generate":
+        res = generate_dating_candidates(current_character, p.get("filter_type", "standard"))
+    elif act == "kismet_swipe":
+        res = swipe_dating_candidate(current_character, p.get("candidate_id", ""), p.get("relation_mode", "Flört"))
+    elif act == "meet_place":
+        res = meet_someone_at_place(current_character, p.get("place_id", "cafe"))
+    elif act == "venue_date":
+        res = go_on_venue_date(current_character, p.get("person_id", ""), p.get("venue_id", "tea_simit"))
+    elif act == "custom_gift":
+        res = give_custom_gift(current_character, p.get("person_id", ""), p.get("gift_id", "roses"))
     elif act == "make_friend":
         res = make_new_friend(current_character)
     elif act == "adopt_pet":
@@ -195,9 +209,23 @@ def handle_activity(req: ActivityRequest):
     elif act == "interact_pet":
         res = interact_with_pet(current_character, p.get("pet_id", ""), p.get("pet_action", "play"))
     elif act == "propose_marriage":
-        res = propose_marriage(current_character, int(p.get("ring_cost", 20000)))
+        res = propose_marriage(
+            current_character,
+            int(p.get("ring_cost", 20000)),
+            person_id=p.get("person_id"),
+            ring_id=p.get("ring_id")
+        )
+    elif act == "plan_wedding":
+        res = plan_wedding_ceremony(
+            current_character,
+            p.get("person_id", ""),
+            p.get("venue_id", "salon"),
+            bool(p.get("sign_prenup", False))
+        )
     elif act == "try_baby":
         res = try_for_baby(current_character)
+    elif act == "adopt_child":
+        res = adopt_child_from_agency(current_character)
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -253,7 +281,13 @@ def get_market_data():
         "universities": UNIVERSITIES,
         "pet_breeds": PET_BREEDS,
         "cities": CITIES,
-        "achievements": ACHIEVEMENT_DEFINITIONS
+        "achievements": ACHIEVEMENT_DEFINITIONS,
+        "personalities": PERSONALITIES,
+        "meet_places": MEET_PLACES,
+        "date_venues": DATE_VENUES,
+        "romantic_gifts": ROMANTIC_GIFTS,
+        "engagement_rings": ENGAGEMENT_RINGS,
+        "wedding_venues": WEDDING_VENUES
     }
 
 @app.get("/api/graveyard")

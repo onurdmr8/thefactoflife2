@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 BitLife Türkiye - Zenginleştirilmiş Veri Kütüphanesi
-İsimler, şehirler, meslekler, girişimler, kulüpler, varlıklar, hastalıklar ve başarımlar.
+İsimler, şehirler, meslekler, flört/aşk profilleri, randevu mekanları, düğün paketleri ve başarımlar.
 """
 
 FIRST_NAMES_MALE = [
@@ -53,6 +53,226 @@ PARENT_JOBS = [
     "Banka Müdürü", "Taksici", "Muhasebeci", "Polis", "Aşçı", "Mimar", "Ev Hanımı",
     "Müteahhit", "Eczacı", "Akademisyen", "Kuaför", "Fabrika İşçisi", "Diş Hekimi"
 ]
+
+# ----------------- İNSAN İLİŞKİLERİ & FLÖRT VERİTABANI -----------------
+
+PERSONALITIES = [
+    {"id": "Romantik", "emoji": "🌹", "loyalty_bias": 85, "crazy_bias": 25},
+    {"id": "Eğlenceli", "emoji": "🎉", "loyalty_bias": 75, "crazy_bias": 45},
+    {"id": "Entelektüel", "emoji": "📚", "loyalty_bias": 85, "crazy_bias": 20},
+    {"id": "Sadık & Aileci", "emoji": "🏡", "loyalty_bias": 95, "crazy_bias": 15},
+    {"id": "Hırslı & Kariyerist", "emoji": "💼", "loyalty_bias": 75, "crazy_bias": 30},
+    {"id": "Maceracı", "emoji": "🏕️", "loyalty_bias": 70, "crazy_bias": 50},
+    {"id": "Kıskanç & Tutkulu", "emoji": "🔥", "loyalty_bias": 80, "crazy_bias": 82},
+    {"id": "Materyalist", "emoji": "💎", "loyalty_bias": 55, "crazy_bias": 60},
+    {"id": "Çapkın & Özgür Ruhlu", "emoji": "🦋", "loyalty_bias": 40, "crazy_bias": 65}
+]
+
+INTERESTS_POOL = [
+    "☕ Kahve & Kitap", "✈️ Seyahat & Kamp", "🎸 Canlı Müzik & Konser",
+    "🏋️ Spor & Fitness", "🎬 Sinema & Tiyatro", "🍳 Gastronomi & Gurme",
+    "💻 Teknoloji & Oyun", "📈 Borsa & Yatırım", "🐾 Hayvansever", "🪩 Gece Hayatı"
+]
+
+DATING_BIOS_BY_PERSONALITY = {
+    "Romantik": [
+        "Sahilde gün batımını izleyip şiir konuşabileceğim gerçek aşkı arıyorum 🌅",
+        "Küçük sürprizlere, el ele yürüyüşlere ve samimiyete inanırım 🌹",
+        "Kalbi güzel, sadık ve duygusal zekası yüksek biriyle tanışmak isterim ✨"
+    ],
+    "Eğlenceli": [
+        "Hayat sıkılmak için çok kısa! Konserlere ve festivallere eşlik edecek suç ortağım nerede? 🎶",
+        "Espri anlayışı yüksek, spontane planlara 'evet' diyen biriysen sağa kaydır 😄",
+        "Komik olmayanlarla anlaşamıyorum, enerjisi yüksek olanlar yazsın ⚡"
+    ],
+    "Entelektüel": [
+        "Üçüncü nesil kahve eşliğinde sinema, felsefe ve bilim konuşalım ☕📚",
+        "Sığ sohbetlerden hoşlanmam; zeka en büyük çekiciliktir 🧠",
+        "Müze gezileri, klasik müzik ve derin sohbetler arıyorum 🎻"
+    ],
+    "Sadık & Aileci": [
+        "Ciddi düşünmeyenler zahmet etmesin. Huzurlu bir yuva ve güven arıyorum 🏡",
+        "Pazar kahvaltılarını, aile sıcaklığını ve sadakati her şeyin üstünde tutarım 🤍",
+        "Yalanı asla affetmem, ömürlük bir yol arkadaşı arıyorum 💍"
+    ],
+    "Hırslı & Kariyerist": [
+        "Kariyer odaklıyım, vizyonu geniş ve başarılı insanlardan etkilenirim 🚀",
+        "Birlikte imparatorluk kurabileceğim güçlü bir partner arıyorum 💼",
+        "Zamanım değerli, ne istediğini bilen olgun kişiler tercihimdir ⌚"
+    ],
+    "Maceracı": [
+        "Sırt çantamı alıp kamp yapmaya, yeni ülkeler keşfetmeye bayılırım 🏕️🌍",
+        "Konfor alanından çıkabilen, adrenalin seven bir yol arkadaşı arıyorum 🪂",
+        "Rutin hayattan sıkılanlar burada mı? Hadi yola çıkalım! 🚐"
+    ],
+    "Kıskanç & Tutkulu": [
+        "Sevdiğimi sahiplenirim, gözü benden başkasını görmeyecek biri olmalı 🔥",
+        "Mesajlara geç cevap verilmesinden ve ‘kanka’ ayağından nefret ederim 😤",
+        "Ya tam seversin ya hiç! Tutkulu ve net bir ilişki istiyorum ❤️‍🔥"
+    ],
+    "Materyalist": [
+        "Lüks restoranlar, şık hediyeler ve kaliteli yaşam tarzım vazgeçilmezimdir 💎💅",
+        "Cimri insanlara tahammülüm yok, cömert ve centilmen/zarif olanlar gelsin 🥂",
+        "Standartlarım yüksek, beni şımartacak birini arıyorum 🛍️"
+    ],
+    "Çapkın & Özgür Ruhlu": [
+        "Kısıtlanmaya ve hesap sormalara gelemem, anın tadını çıkaralım 🦋",
+        "Gece hayatı, hız ve eğlence... Fazla ciddiyet bana göre değil 🍸",
+        "Bakalım beni kendine bağlayabilecek kadar etkileyici misin? 😉"
+    ]
+}
+
+MEET_PLACES = [
+    {
+        "id": "library_cafe",
+        "name": "📚 Kitapçı & Üçüncü Nesil Kahveci",
+        "desc": "Entelektüel, romantik ve zeki insanlarla tanışma fırsatı.",
+        "cost": 400,
+        "preferred_personalities": ["Entelektüel", "Romantik", "Sadık & Aileci"]
+    },
+    {
+        "id": "fitness_club",
+        "name": "🏋️ Lüks Spor & Tenis Kulübü",
+        "desc": "Fiziksel görünüşü yüksek, enerjik ve maceracı kişiler.",
+        "cost": 1200,
+        "preferred_personalities": ["Maceracı", "Eğlenceli", "Hırslı & Kariyerist"]
+    },
+    {
+        "id": "night_club",
+        "name": "🪩 Popüler Gece Kulübü & Lounge",
+        "desc": "Eğlenceli, tutkulu veya çapkın karakterlerle hızlı flört.",
+        "cost": 2500,
+        "preferred_personalities": ["Eğlenceli", "Çapkın & Özgür Ruhlu", "Kıskanç & Tutkulu"]
+    },
+    {
+        "id": "business_gala",
+        "name": "🥂 VIP İş & Sanat Müzayedesi",
+        "desc": "Varlıklı, kariyerist ve seçkin cemiyet üyeleri.",
+        "cost": 8000,
+        "preferred_personalities": ["Hırslı & Kariyerist", "Materyalist", "Entelektüel"],
+        "wealth_boost": 35
+    },
+    {
+        "id": "family_match",
+        "name": "👵 Aile & Akraba Tavsiyesi (Görücü Usulü)",
+        "desc": "Annenin/ailenin kefil olduğu, sadık ve evliliğe uygun kısmetler.",
+        "cost": 0,
+        "preferred_personalities": ["Sadık & Aileci", "Romantik", "Hırslı & Kariyerist"]
+    }
+]
+
+DATE_VENUES = [
+    {
+        "id": "tea_simit",
+        "name": "☕ Sahilde Çay, Simit ve Gün Batımı",
+        "desc": "Sıcak, samimi ve mütevazı bir sahil yürüyüşü.",
+        "cost": 500,
+        "rel_boost": 10,
+        "best_for": ["Romantik", "Sadık & Aileci", "Entelektüel"],
+        "disliked_by": ["Materyalist"]
+    },
+    {
+        "id": "cinema",
+        "name": "🎬 Sinema & Kahve Randevusu",
+        "desc": "Vizyon filmi sonrası üçüncü nesil kahvecide derin sohbet.",
+        "cost": 1500,
+        "rel_boost": 14,
+        "best_for": ["Entelektüel", "Eğlenceli", "Romantik"],
+        "disliked_by": []
+    },
+    {
+        "id": "concert",
+        "name": "🎸 Canlı Konser & Festival Gecesi",
+        "desc": "Yüksek enerji, müzik ve dans dolu unutulmaz bir gece.",
+        "cost": 3500,
+        "rel_boost": 18,
+        "best_for": ["Eğlenceli", "Maceracı", "Çapkın & Özgür Ruhlu"],
+        "disliked_by": []
+    },
+    {
+        "id": "bosphorus_dinner",
+        "name": "🕯️ Boğaz'da Mum Işığında Lüks Restoran",
+        "desc": "Boğaz manzarasında keman eşliğinde romantik akşam yemeği.",
+        "cost": 8000,
+        "rel_boost": 24,
+        "best_for": ["Romantik", "Materyalist", "Hırslı & Kariyerist", "Kıskanç & Tutkulu"],
+        "disliked_by": []
+    },
+    {
+        "id": "camping_trip",
+        "name": "🏕️ Doğa & Yıldızlar Altında Glamping",
+        "desc": "Şehirden uzakta kamp ateşi başında yıldızları izleme.",
+        "cost": 12000,
+        "rel_boost": 26,
+        "best_for": ["Maceracı", "Romantik", "Eğlenceli"],
+        "disliked_by": ["Materyalist"]
+    },
+    {
+        "id": "cappadocia",
+        "name": "🎈 Kapadokya Balon Turu & VIP Suit",
+        "desc": "Gün doğumunda sıcak hava balonu ve taş konakta masalsı hafta sonu.",
+        "cost": 35000,
+        "rel_boost": 38,
+        "best_for": ["Romantik", "Materyalist", "Maceracı", "Kıskanç & Tutkulu", "Sadık & Aileci"],
+        "disliked_by": []
+    }
+]
+
+ROMANTIC_GIFTS = [
+    {"id": "roses", "name": "🌹 Kırmızı Gül Buketi & Şiir Kartı", "cost": 1000, "rel_boost": 12},
+    {"id": "perfume", "name": "🍫 Belçika Çikolatası & Özel Parfüm", "cost": 4500, "rel_boost": 18},
+    {"id": "smartphone", "name": "📱 Son Model Akıllı Telefon", "cost": 45000, "rel_boost": 28},
+    {"id": "diamond_set", "name": "💎 Pırlanta Kolye & Lüks Saat", "cost": 120000, "rel_boost": 40},
+    {"id": "luxury_car_gift", "name": "🚗 Kurdeleli Spor Otomobil Sürprizi", "cost": 850000, "rel_boost": 65}
+]
+
+ENGAGEMENT_RINGS = [
+    {"id": "silver_ring", "name": "🥈 Zarif Gümüş Alyans", "cost": 5000, "bonus_chance": 0.05},
+    {"id": "gold_solitaire", "name": "💍 Klasik Altın Tektaş Yüzük", "cost": 35000, "bonus_chance": 0.25},
+    {"id": "emerald_platinum", "name": "💚 Platin Zümrüt & Pırlanta Yüzük", "cost": 75000, "bonus_chance": 0.38},
+    {"id": "royal_diamond", "name": "👑 3 Karat Kraliyet Safir & Pırlantası", "cost": 150000, "bonus_chance": 0.55}
+]
+
+WEDDING_VENUES = [
+    {
+        "id": "city_hall",
+        "name": "🏛️ Sade Nikah Dairesi Töreni",
+        "desc": "Yakın aile ve şahitler huzurunda sade ve ekonomik nikah.",
+        "cost": 5000,
+        "min_gifts": 10000,
+        "max_gifts": 35000,
+        "hap_boost": 15
+    },
+    {
+        "id": "wedding_hall",
+        "name": "💃 Geleneksel Salon Düğünü & Takı Merasimi",
+        "desc": "Halaylar, altınlar ve kalabalık akrabalarla görkemli salon düğünü.",
+        "cost": 60000,
+        "min_gifts": 85000,
+        "max_gifts": 240000,
+        "hap_boost": 30
+    },
+    {
+        "id": "country_beach",
+        "name": "🌿 Bohem Kır & Sahil Düğünü",
+        "desc": "Deniz kenarında gün batımında canlı orkestralı romantik düğün.",
+        "cost": 140000,
+        "min_gifts": 160000,
+        "max_gifts": 420000,
+        "hap_boost": 40
+    },
+    {
+        "id": "palace_wedding",
+        "name": "🏰 Boğaz'da Tarihi Yalı & Saray Düğünü",
+        "desc": "Cemiyet hayatının konuştuğu, havai fişekli efsanevi saray düğünü.",
+        "cost": 300000,
+        "min_gifts": 350000,
+        "max_gifts": 950000,
+        "hap_boost": 50
+    }
+]
+
+# ----------------- EĞİTİM, İŞ VE DİĞER VERİLER -----------------
 
 SCHOOL_CLUBS = [
     {"id": "robotics", "name": "💻 Bilişim ve Robotik Kulübü", "skill": "coding", "smarts_boost": 6},
@@ -328,10 +548,11 @@ PET_NAMES = [
 ACHIEVEMENT_DEFINITIONS = [
     {"id": "born", "icon": "🍼", "title": "Hayata Merhaba", "desc": "Dünyaya gözlerini açtın."},
     {"id": "first_love", "icon": "💘", "title": "İlk Kıvılcım", "desc": "İlk kez aşık oldun ve sevgili edindin."},
+    {"id": "heartbreaker", "icon": "🔥", "title": "Kalp Hırsızı", "desc": "KısmetApp veya sosyal ortamda 3 farklı kişiyle flört ettin."},
+    {"id": "married", "icon": "💍", "title": "Bir Yastıkta", "desc": "Düğün yapıp dünyaevine girdin."},
+    {"id": "child", "icon": "👶", "title": "Geleceğe Miras", "desc": "Bir çocuk sahibi oldun veya evlat edindin."},
     {"id": "graduate", "icon": "🎓", "title": "Diplomalı Birey", "desc": "Üniversiteden başarıyla mezun oldun."},
     {"id": "driver", "icon": "🚗", "title": "Direksiyon Başı", "desc": "Ehliyet sınavını geçip sürücü belgesi aldın."},
-    {"id": "married", "icon": "💍", "title": "Bir Yastıkta", "desc": "Evlendin ve yuva kurdun."},
-    {"id": "child", "icon": "👶", "title": "Geleceğe Miras", "desc": "Bir çocuk sahibi oldun."},
     {"id": "homeowner", "icon": "🏠", "title": "Tapu Sahibi", "desc": "İlk gayrimenkulünü satın aldın."},
     {"id": "boss", "icon": "🏢", "title": "Kendi İşinin Patronu", "desc": "Bir şirket veya dükkan kurdun."},
     {"id": "millionaire", "icon": "💰", "title": "Milyoner Kulübü", "desc": "Net servetin 1.000.000 TL'yi aştı."},

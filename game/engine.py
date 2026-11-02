@@ -12,7 +12,8 @@ from typing import Optional, Dict, Any, List
 from .models import Character, Person, Pet, Asset, Stock, SocialMediaAccount, LifeLog
 from .data import (
     FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES, CITIES,
-    ZODIAC_SIGNS, PARENT_JOBS, ILLNESSES, INITIAL_STOCKS
+    ZODIAC_SIGNS, PARENT_JOBS, ILLNESSES, INITIAL_STOCKS,
+    PERSONALITIES, INTERESTS_POOL
 )
 from .events import check_for_annual_event
 
@@ -114,7 +115,16 @@ class GameEngine:
             age=mother_age,
             relationship_level=random.randint(82, 100),
             job=random.choice(PARENT_JOBS),
-            money_generosity=random.randint(55, 95)
+            money_generosity=random.randint(55, 95),
+            personality=random.choice([p["id"] for p in PERSONALITIES]),
+            zodiac=random.choice(ZODIAC_SIGNS),
+            looks=random.randint(50, 92),
+            smarts=random.randint(50, 95),
+            loyalty=random.randint(85, 100),
+            craziness=random.randint(15, 60),
+            wealth=random.randint(40, 88),
+            interests=random.sample(INTERESTS_POOL, 3),
+            memories=[f"{birth_year}: Seni dünyaya getirdi."]
         ))
         
         char.relationships.append(Person(
@@ -125,7 +135,16 @@ class GameEngine:
             age=father_age,
             relationship_level=random.randint(78, 100),
             job=random.choice(PARENT_JOBS),
-            money_generosity=random.randint(50, 90)
+            money_generosity=random.randint(50, 90),
+            personality=random.choice([p["id"] for p in PERSONALITIES]),
+            zodiac=random.choice(ZODIAC_SIGNS),
+            looks=random.randint(50, 92),
+            smarts=random.randint(50, 95),
+            loyalty=random.randint(80, 100),
+            craziness=random.randint(15, 65),
+            wealth=random.randint(45, 90),
+            interests=random.sample(INTERESTS_POOL, 3),
+            memories=[f"{birth_year}: Doğumunda hastane koridorunda heyecanla bekledi."]
         ))
         
         if random.random() < 0.50:
@@ -138,7 +157,13 @@ class GameEngine:
                 relation="Ağabey" if sib_gender == "Erkek" else "Abla",
                 gender=sib_gender,
                 age=sib_age,
-                relationship_level=random.randint(72, 95)
+                relationship_level=random.randint(72, 95),
+                personality=random.choice([p["id"] for p in PERSONALITIES]),
+                zodiac=random.choice(ZODIAC_SIGNS),
+                looks=random.randint(45, 92),
+                smarts=random.randint(45, 92),
+                interests=random.sample(INTERESTS_POOL, 2),
+                memories=[f"{birth_year}: Kardeşin olarak seninle büyümeye başladı."]
             ))
             
         for s in INITIAL_STOCKS:
@@ -266,7 +291,8 @@ class GameEngine:
 
         # 5. Temel Yaşam Gideri (18+ Yaş)
         if char.age >= 18 and not char.is_in_prison and not char.current_school:
-            living_cost = 120000
+            is_cohabiting = any(p.cohabiting and p.is_alive for p in char.relationships)
+            living_cost = 65000 if is_cohabiting else 120000
             annual_expense += living_cost
 
         char.annual_income_last = annual_income
@@ -319,6 +345,14 @@ class GameEngine:
         for person in char.relationships:
             if person.is_alive:
                 person.age += 1
+                if person.relation in ["Flört", "Sevgili", "Nişanlı", "Eş"]:
+                    person.years_together += 1
+                    if person.years_together in [5, 10, 25, 50]:
+                        person.memories.append(f"{char.current_year}: Birlikte {person.years_together}. yılınızı kutladınız!")
+                        char.happiness = min(100, char.happiness + 8)
+                        annual_summary_lines.append(f"💖 {person.name} ile birlikteliğinizin {person.years_together}. yıl dönümü!")
+                if person.relation == "Çocuk" and person.age == 6 and not person.interests:
+                    person.interests = random.sample(INTERESTS_POOL, 2)
                 if person.age > 72:
                     death_chance = (person.age - 70) * 0.035
                     if random.random() < death_chance:
