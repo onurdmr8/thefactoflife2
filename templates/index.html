@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BitLife Türkiye - Hayat Simülatörü</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Bildirim Toast Alanı -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Üst Başlık (Araç Çubuğu, Karakter Profili ve Stat Barları) -->
+    <header class="top-header">
+        <div class="top-utility-bar">
+            <div class="brand-logo">
+                <span>🧬 BITLIFE TÜRKİYE</span>
+            </div>
+            <div class="utility-actions">
+                <button type="button" id="btnSoundToggle" class="btn-icon-pill" onclick="toggleSound()" title="Sesi Aç/Kapat">
+                    🔊
+                </button>
+                <button type="button" class="btn-icon-pill" onclick="openAchievementsModal()">
+                    🏆 <span id="achCountBadge">1/15</span>
+                </button>
+                <button type="button" class="btn-icon-pill" onclick="openGraveyardModal()">
+                    ⚰️ Mezarlık
+                </button>
+                <button type="button" class="btn-icon-pill" onclick="openNewCustomLifeModal()">
+                    ✨ Yeni
+                </button>
+            </div>
+        </div>
+
+        <div class="char-identity">
+            <div class="char-avatar-wrap">
+                <div id="charAvatar" class="char-avatar">👶</div>
+                <div class="char-main-info">
+                    <h1>
+                        <span id="charName">Yükleniyor...</span>
+                        <span id="charAge" class="badge-age">0 Yaş</span>
+                    </h1>
+                    <div id="charSubtitle" class="char-subtitle">İstanbul, Türkiye</div>
+                </div>
+            </div>
+            <div class="char-bank-box">
+                <div id="charMoney" class="char-money">₺ 0</div>
+                <div id="charNetworth" class="char-networth">Net: ₺ 0</div>
+            </div>
+        </div>
+
+        <!-- İkincil Durum Rozetleri (Kuşak, Şöhret, Karma, Stres, Hastalık, Hapis) -->
+        <div id="statusChipsRow" class="status-chips-row"></div>
+
+        <!-- 4 Temel Stat Barı (Mutluluk, Sağlık, Zeka, Görünüş) -->
+        <div class="stat-bars-grid">
+            <div class="stat-item">
+                <div class="stat-header">
+                    <span>😊 Mutluluk</span>
+                    <span id="happinessVal">%0</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div id="happinessBar" class="stat-progress-bar bar-happiness"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-header">
+                    <span>💚 Sağlık</span>
+                    <span id="healthVal">%0</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div id="healthBar" class="stat-progress-bar bar-health"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-header">
+                    <span>🧠 Zeka</span>
+                    <span id="smartsVal">%0</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div id="smartsBar" class="stat-progress-bar bar-smarts"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-header">
+                    <span>✨ Görünüş</span>
+                    <span id="looksVal">%0</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div id="looksBar" class="stat-progress-bar bar-looks"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ana Görünüm Alanı (Sekmeler) -->
+    <main class="main-viewport">
+        <!-- Sekme 1: Hayat Günlüğü (Feed) -->
+        <section id="tabLife" class="tab-content active">
+            <div class="filter-pills">
+                <button type="button" class="filter-pill active" onclick="setLogFilter('all', this)">📋 Tümü</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('milestone', this)">🌟 Dönüm Noktası</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('career', this)">💼 Kariyer</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('school', this)">🎓 Eğitim</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('love', this)">💘 Aşk & Aile</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('health', this)">🩺 Sağlık</button>
+                <button type="button" class="filter-pill" onclick="setLogFilter('crime', this)">🚨 Suç</button>
+            </div>
+            <div id="lifeFeed" class="life-feed"></div>
+        </section>
+
+        <!-- Sekme 2: İlişkiler & Evcil Hayvanlar -->
+        <section id="tabRelationships" class="tab-content">
+            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <h3 style="font-size: 15px; font-weight: 800;">👥 Aile, Dostlar & Evcil Hayvanlar</h3>
+                <div style="display: flex; gap: 6px;">
+                    <button type="button" class="btn-action-outline" onclick="performActivity('find_love')">💘 Flört Bul</button>
+                    <button type="button" class="btn-action-outline" onclick="performActivity('make_friend')">🤝 Arkadaş Edin</button>
+                    <button type="button" class="btn-action-outline" onclick="openPetsModal()">🐾 Barınak</button>
+                </div>
+            </div>
+            <div id="relationshipsList"></div>
+        </section>
+
+        <!-- Sekme 3: Kariyer, Okul, Beceriler & Girişimcilik -->
+        <section id="tabCareer" class="tab-content">
+            <div id="careerContent"></div>
+        </section>
+
+        <!-- Sekme 4: Aktiviteler -->
+        <section id="tabActivities" class="tab-content">
+            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 10px;">⚡ Hayat Aktiviteleri & Mekanlar</h3>
+            
+            <div class="activity-grid">
+                <button type="button" class="activity-btn" onclick="performActivity('doctor_checkup')">
+                    <span>🩺</span>
+                    <div>Doktora Git</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="performActivity('gym_workout')">
+                    <span>🏋️</span>
+                    <div>Spor Salonu</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="performActivity('meditation')">
+                    <span>🧘</span>
+                    <div>Meditasyon</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openPlasticSurgeryModal()">
+                    <span>💉</span>
+                    <div>Estetik Cerrahi</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openSkillsModal()">
+                    <span>🎯</span>
+                    <div>Kurs & Beceri</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="performActivity('take_driving_license')">
+                    <span>🚗</span>
+                    <div>Ehliyet Al</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openBlackjackModal()">
+                    <span>🃏</span>
+                    <div>Blackjack (21)</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="performActivity('scratch_card')">
+                    <span>🎟️</span>
+                    <div>Kazı Kazan</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openStocksModal()">
+                    <span>📈</span>
+                    <div>Borsa & Kripto</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openBusinessModal()">
+                    <span>🏢</span>
+                    <div>Şirket Kur</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openRealEstateModal()">
+                    <span>🏠</span>
+                    <div>Emlakçı</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openVehiclesModal()">
+                    <span>🏎️</span>
+                    <div>Oto Galeri</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openPetsModal()">
+                    <span>🐾</span>
+                    <div>Hayvan Sahiplen</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openCrimeModal()">
+                    <span>🦹</span>
+                    <div>Suç & Firar</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openSocialMediaModal()">
+                    <span>📱</span>
+                    <div>Sosyal Medya</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openVacationModal()">
+                    <span>✈️</span>
+                    <div>Tatile Çık</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openWillModal()">
+                    <span>📜</span>
+                    <div>Vasiyetname</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openNewCustomLifeModal()">
+                    <span>✨</span>
+                    <div>Yeni Hayat</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Sekme 5: Varlıklar & Finans -->
+        <section id="tabAssets" class="tab-content">
+            <div id="assetsContent"></div>
+        </section>
+    </main>
+
+    <!-- Yaş İlerle Butonu (Age Up) -->
+    <div class="age-up-dock">
+        <button type="button" id="btnAgeUp" class="btn-age-up">
+            <span class="icon-plus">+</span>
+            <span>1 Yaş İlerle</span>
+        </button>
+    </div>
+
+    <!-- Alt Navigasyon Çubuğu -->
+    <nav class="bottom-nav">
+        <button type="button" class="nav-item active" data-tab="tabLife">
+            <span class="nav-icon">📜</span>
+            <span>Hayat</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="tabRelationships">
+            <span class="nav-icon">👥</span>
+            <span>İlişkiler</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="tabCareer">
+            <span class="nav-icon">💼</span>
+            <span>Kariyer</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="tabActivities">
+            <span class="nav-icon">⚡</span>
+            <span>Aktiviteler</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="tabAssets">
+            <span class="nav-icon">💎</span>
+            <span>Varlıklar</span>
+        </button>
+    </nav>
+
+    <!-- ==================== NATIVE <dialog> MODALLAR ==================== -->
+
+    <!-- 1. Zorunlu Olay / İkilem Karar Modalı (closedby="none") -->
+    <dialog id="eventModal" class="app-dialog" closedby="none" aria-labelledby="eventTitle">
+        <div class="modal-header">
+            <h3 id="eventTitle">⚡ Bir Olay Gerçekleşti</h3>
+        </div>
+        <div class="modal-body">
+            <p id="eventDesc"></p>
+        </div>
+        <div id="eventChoices" class="modal-footer"></div>
+    </dialog>
+
+    <!-- 2. Kişi Etkileşim Modalı (closedby="any") -->
+    <dialog id="personModal" class="app-dialog" closedby="any" aria-labelledby="personModalName">
+        <div class="modal-header">
+            <h3 id="personModalName">👤 Kişi</h3>
+            <button type="button" class="btn-close-modal" aria-label="Kapat" onclick="closeModal('personModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <p id="personModalDetails" class="card-desc" style="margin-bottom: 12px;"></p>
+            <div style="margin-bottom: 16px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+                    <span>İlişki Seviyesi:</span>
+                    <span id="personModalLevel" style="font-weight:700;">%0</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div id="personModalBar" class="stat-progress-bar bar-health"></div>
+                </div>
+            </div>
+            <div id="personModalActions" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </dialog>
+
+    <!-- 3. Genel Pazar / İşlem Modalı (closedby="any") -->
+    <dialog id="genericModal" class="app-dialog" closedby="any" aria-labelledby="genericModalTitle">
+        <div class="modal-header">
+            <h3 id="genericModalTitle">Bilgi</h3>
+            <button type="button" class="btn-close-modal" aria-label="Kapat" onclick="closeModal('genericModal')">✕</button>
+        </div>
+        <div id="genericModalBody" class="modal-body"></div>
+    </dialog>
+
+    <!-- 4. Mezar Taşı ve Ölüm Modalı (closedby="none") -->
+    <dialog id="deathModal" class="app-dialog" closedby="none" aria-labelledby="tombName">
+        <div class="modal-body" style="padding: 22px 18px 10px;">
+            <div class="tombstone-card">
+                <div class="tombstone-rip">R. I. P.</div>
+                <h2 id="tombName" class="tombstone-name">Ad Soyad</h2>
+                <div id="tombDates" class="tombstone-dates">2000 - 2085 (85 Yaşında)</div>
+                <div id="tombTitle" class="tombstone-title">Onurlu Vatandaş</div>
+                <p id="tombReason" class="tombstone-reason">Huzur içinde vefat etti.</p>
+            </div>
+            <p id="tombNetWorth" style="text-align: center; font-weight: 800; color: var(--accent-green); margin-bottom: 10px;">Miras: ₺ 0</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-primary" onclick="continueAsChild()">👑 Çocuğun Olarak Devam Et (Miras Devri)</button>
+            <button type="button" class="btn-choice" style="text-align: center;" onclick="openNewCustomLifeModal()">✨ Sıfırdan Yeni Bir Hayata Başla</button>
+        </div>
+    </dialog>
+
+    <!-- 5. Özel Karakter Oluşturma Modalı (closedby="any") -->
+    <dialog id="customLifeModal" class="app-dialog" closedby="any" aria-labelledby="customLifeTitle">
+        <div class="modal-header">
+            <h3 id="customLifeTitle">✨ Kendi Karakterini Yarat</h3>
+            <button type="button" class="btn-close-modal" aria-label="Kapat" onclick="closeModal('customLifeModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="inputFirstName">Adın</label>
+                <input type="text" id="inputFirstName" class="form-input" placeholder="Örn: Onur (Boş bırakırsan rastgele)" autofocus>
+            </div>
+            <div class="form-group">
+                <label for="inputLastName">Soyadın</label>
+                <input type="text" id="inputLastName" class="form-input" placeholder="Örn: Demir (Boş bırakırsan rastgele)">
+            </div>
+            <div class="form-group">
+                <label for="inputGender">Cinsiyet</label>
+                <select id="inputGender" class="form-select">
+                    <option value="Erkek">Erkek ♂️</option>
+                    <option value="Kadın">Kadın ♀️</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="inputCity">Doğum Şehri</label>
+                <select id="inputCity" class="form-select"></select>
+            </div>
+            <button type="button" class="btn-primary" style="margin-top: 8px;" onclick="submitCustomLife()">Hayata Başla 🚀</button>
+        </div>
+    </dialog>
+
+</div>
+
+<script src="/static/js/audio.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

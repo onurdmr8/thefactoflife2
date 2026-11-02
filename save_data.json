@@ -1,0 +1,991 @@
+{
+  "character": {
+    "id": "36e3e26d",
+    "first_name": "Onur",
+    "last_name": "Demir",
+    "gender": "Erkek",
+    "birth_year": 2001,
+    "current_year": 2031,
+    "age": 30,
+    "city": "İstanbul",
+    "country": "Türkiye",
+    "zodiac": "İkizler ♊",
+    "generation": 1,
+    "happiness": 100,
+    "health": 100,
+    "smarts": 100,
+    "looks": 100,
+    "fame": 0,
+    "karma": 100,
+    "stress": 85,
+    "skills": {
+      "coding": 58,
+      "music": 28,
+      "athletics": 30,
+      "charisma": 20,
+      "martial_arts": 17
+    },
+    "money": 12261781,
+    "debt": 0,
+    "net_worth": 21522477,
+    "annual_income_last": 5837326,
+    "annual_expense_last": 210000,
+    "will_beneficiary": "all_children",
+    "criminal_record": [],
+    "is_in_prison": false,
+    "prison_years_left": 0,
+    "prison_sentence": 0,
+    "military_status": "Tamamlandı",
+    "education_level": "Üniversite",
+    "current_school": null,
+    "school_years_left": 0,
+    "school_performance": 90,
+    "school_club": null,
+    "has_drivers_license": true,
+    "current_job": {
+      "id": "accountant",
+      "title": "Mali Müşavir / Denetçi",
+      "category": "Kurumsal",
+      "salary": 5221244,
+      "required_education": "Üniversite",
+      "required_smarts": 65,
+      "performance": 65,
+      "stress": 100,
+      "experience_years": 6,
+      "level": 9
+    },
+    "part_time_job": {
+      "id": "pt_barista",
+      "title": "Hafta Sonu Baristası",
+      "category": "Yarı Zamanlı",
+      "salary": 96000,
+      "required_education": "Yok",
+      "required_smarts": 0,
+      "performance": 80,
+      "stress": 20,
+      "experience_years": 0,
+      "level": 1
+    },
+    "business": {
+      "id": "coffee_shop",
+      "name": "Üçüncü Nesil Butik Kahveci",
+      "sector": "Kafe",
+      "capital_invested": 950000,
+      "valuation": 2023223,
+      "annual_profit": 340000,
+      "employees": 4,
+      "reputation": 75,
+      "years_active": 5
+    },
+    "job_history": [
+      "milestone_school_start",
+      "milestone_bayram_pocket_money",
+      "milestone_middle_school_bully",
+      "milestone_teen_bad_habit",
+      "milestone_driving_license_age",
+      "milestone_university_choice",
+      "milestone_military_call"
+    ],
+    "is_alive": true,
+    "death_reason": null,
+    "tombstone_title": null,
+    "relationships": [
+      {
+        "id": "person_mother",
+        "name": "Ada Demir",
+        "relation": "Anne",
+        "gender": "Kadın",
+        "age": 54,
+        "relationship_level": 100,
+        "is_alive": true,
+        "job": "Ev Hanımı",
+        "money_generosity": 70
+      },
+      {
+        "id": "person_father",
+        "name": "Tuna Demir",
+        "relation": "Baba",
+        "gender": "Erkek",
+        "age": 57,
+        "relationship_level": 92,
+        "is_alive": true,
+        "job": "Esnaf",
+        "money_generosity": 69
+      },
+      {
+        "id": "person_lover_3_80",
+        "name": "Zeynep Özkan",
+        "relation": "Eş",
+        "gender": "Kadın",
+        "age": 30,
+        "relationship_level": 100,
+        "is_alive": true,
+        "job": "Yazılımcı",
+        "money_generosity": 53
+      },
+      {
+        "id": "friend_4_79",
+        "name": "Deniz Aktaş",
+        "relation": "Arkadaş",
+        "gender": "Kadın",
+        "age": 30,
+        "relationship_level": 72,
+        "is_alive": true,
+        "job": "Sosyal Çevre",
+        "money_generosity": 50
+      },
+      {
+        "id": "friend_5_14",
+        "name": "Tarık Yalçın",
+        "relation": "Arkadaş",
+        "gender": "Erkek",
+        "age": 32,
+        "relationship_level": 80,
+        "is_alive": true,
+        "job": "Sosyal Çevre",
+        "money_generosity": 50
+      },
+      {
+        "id": "person_child_6_57",
+        "name": "Kuzey Demir",
+        "relation": "Çocuk",
+        "gender": "Erkek",
+        "age": 1,
+        "relationship_level": 100,
+        "is_alive": true,
+        "job": null,
+        "money_generosity": 50
+      }
+    ],
+    "pets": [
+      {
+        "id": "pet_1",
+        "name": "Şanslı",
+        "species": "Kedi",
+        "breed": "Tekir",
+        "age": 20,
+        "relationship_level": 100,
+        "health": 100,
+        "is_alive": false
+      },
+      {
+        "id": "pet_2",
+        "name": "Şanslı",
+        "species": "Kedi",
+        "breed": "Tekir",
+        "age": 19,
+        "relationship_level": 100,
+        "health": 100,
+        "is_alive": false
+      },
+      {
+        "id": "pet_3_94",
+        "name": "Karamel",
+        "species": "Kedi",
+        "breed": "Tekir Sokak Kedisi (Barınak)",
+        "age": 11,
+        "relationship_level": 100,
+        "health": 100,
+        "is_alive": true
+      }
+    ],
+    "assets": [
+      {
+        "id": "house_1_72",
+        "name": "2+1 Aile Apartman Dairesi",
+        "asset_type": "Ev",
+        "purchase_price": 2950000,
+        "current_value": 3635788,
+        "condition": 100,
+        "annual_cost": 45000,
+        "annual_income": 250000,
+        "is_rented_out": true
+      },
+      {
+        "id": "house_2_82",
+        "name": "2+1 Aile Apartman Dairesi",
+        "asset_type": "Ev",
+        "purchase_price": 2950000,
+        "current_value": 3601685,
+        "condition": 100,
+        "annual_cost": 45000,
+        "annual_income": 250000,
+        "is_rented_out": true
+      }
+    ],
+    "stocks": {
+      "BISTECH": {
+        "symbol": "BISTECH",
+        "name": "Bistech Yazılım & Teknoloji",
+        "shares": 0,
+        "avg_buy_price": 0.0,
+        "current_price": 600.88,
+        "history": [
+          231.22,
+          222.96,
+          264.7,
+          290.26,
+          316.75,
+          380.1,
+          386.42,
+          382.75,
+          336.24,
+          333.02,
+          405.78,
+          491.75,
+          558.38,
+          594.35,
+          600.88
+        ]
+      },
+      "PETRO": {
+        "symbol": "PETRO",
+        "name": "Marmara Enerji & Rafineri",
+        "shares": 0,
+        "avg_buy_price": 0.0,
+        "current_price": 112.77,
+        "history": [
+          104.18,
+          108.6,
+          103.76,
+          107.5,
+          111.61,
+          109.6,
+          101.22,
+          99.47,
+          106.32,
+          100.78,
+          109.11,
+          112.33,
+          106.91,
+          103.11,
+          112.77
+        ]
+      },
+      "HAVACILIK": {
+        "symbol": "HAVACILIK",
+        "name": "Türk Gökleri Havayolları",
+        "shares": 0,
+        "avg_buy_price": 0.0,
+        "current_price": 637.86,
+        "history": [
+          471.22,
+          546.4,
+          585.33,
+          648.58,
+          670.73,
+          591.5,
+          548.11,
+          626.36,
+          597.3,
+          640.21,
+          668.13,
+          732.39,
+          726.73,
+          698.03,
+          637.86
+        ]
+      },
+      "MOONCOIN": {
+        "symbol": "MOONCOIN",
+        "name": "Moon Kripto Token",
+        "shares": 0,
+        "avg_buy_price": 0.0,
+        "current_price": 85.69,
+        "history": [
+          26.14,
+          33.73,
+          25.34,
+          28.48,
+          31.62,
+          45.54,
+          46.38,
+          63.26,
+          46.98,
+          41.14,
+          36.71,
+          47.42,
+          40.15,
+          59.74,
+          85.69
+        ]
+      },
+      "ALTIN": {
+        "symbol": "ALTIN",
+        "name": "Gram Altın Yatırım Fonu",
+        "shares": 0,
+        "avg_buy_price": 0.0,
+        "current_price": 3658.86,
+        "history": [
+          3876.76,
+          3812.02,
+          3833.62,
+          3885.81,
+          4155.21,
+          4382.65,
+          4497.2,
+          4263.16,
+          4028.94,
+          3886.38,
+          4056.39,
+          3998.81,
+          3885.06,
+          3797.13,
+          3658.86
+        ]
+      }
+    },
+    "social_media": {},
+    "illnesses": [],
+    "logs": [
+      {
+        "age": 0,
+        "year": 2001,
+        "text": "👶 İstanbul, Türkiye sınırları içinde dünyaya gözlerini açtın. Annen: Ada Demir (Ev Hanımı), Baban: Tuna Demir (Esnaf).",
+        "category": "milestone",
+        "icon": "🍼"
+      },
+      {
+        "age": 1,
+        "year": 2002,
+        "text": "'Tükenmişlik Sendromu' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 1,
+        "year": 2002,
+        "text": "1 Yaşına bastın. 🤒 Sana 'Tükenmişlik Sendromu' teşhisi kondu! Doktora görünmelisin.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 2,
+        "year": 2003,
+        "text": "2 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 3,
+        "year": 2004,
+        "text": "3 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 4,
+        "year": 2005,
+        "text": "4 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 5,
+        "year": 2006,
+        "text": "5 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 6,
+        "year": 2007,
+        "text": "🎒 İstanbul İlkokulu'na başladın.",
+        "category": "school",
+        "icon": "🎒"
+      },
+      {
+        "age": 6,
+        "year": 2007,
+        "text": "6 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 6,
+        "year": 2007,
+        "text": "Ön sıraya geçip dersi can kulağıyla dinledin. Öğretmenin seni çok sevdi! (Zeka +8)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 7,
+        "year": 2008,
+        "text": "7 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 7,
+        "year": 2008,
+        "text": "Yavru kediyi sahiplendin ve adını 'Şanslı' koydun! (Mutluluk +20, Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 8,
+        "year": 2009,
+        "text": "8 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 8,
+        "year": 2009,
+        "text": "Bütün büyüklerin elini öptün ve toplam 4,628 TL bayram harçlığı topladın!",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 9,
+        "year": 2010,
+        "text": "9 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 9,
+        "year": 2010,
+        "text": "Yavru kediyi sahiplendin ve adını 'Şanslı' koydun! (Mutluluk +20, Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 10,
+        "year": 2011,
+        "text": "📘 İlkokulu bitirip İstanbul Ortaokulu'na geçtin.",
+        "category": "school",
+        "icon": "📘"
+      },
+      {
+        "age": 10,
+        "year": 2011,
+        "text": "10 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 10,
+        "year": 2011,
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 11,
+        "year": 2012,
+        "text": "11 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 11,
+        "year": 2012,
+        "text": "Kavgada dudağın patladı ama cesaretinle okulda saygı kazandın.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 12,
+        "year": 2013,
+        "text": "12 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 13,
+        "year": 2014,
+        "text": "'Gastrit & Mide Ağrısı' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 13,
+        "year": 2014,
+        "text": "13 Yaşına bastın. 🤒 Sana 'Gastrit & Mide Ağrısı' teşhisi kondu! Doktora görünmelisin.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 13,
+        "year": 2014,
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 14,
+        "year": 2015,
+        "text": "🏫 İstanbul Anadolu Lisesi'ne kayıt oldun!",
+        "category": "school",
+        "icon": "🏫"
+      },
+      {
+        "age": 14,
+        "year": 2015,
+        "text": "14 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 14,
+        "year": 2015,
+        "text": "İradeni korudun ve teklifi reddettin. (Sağlık +6, Zeka +5)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 15,
+        "year": 2016,
+        "text": "15 Yaşına bastın.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 15,
+        "year": 2016,
+        "text": "Halı sahada 4 gol atıp maçın yıldızı oldun! Maç sonu baklavalar senden soruldu! ⚽",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 15,
+        "year": 2016,
+        "text": "💻 Bilişim ve Robotik Kulübü üyesi oldun! Hem sosyal çevren genişledi hem de yeteneklerin gelişti.",
+        "category": "school",
+        "icon": "🏅"
+      },
+      {
+        "age": 15,
+        "year": 2016,
+        "text": "'Hafta Sonu Baristası' olarak yarı zamanlı işe başladın (Yıllık Ek Gelir: 96,000 TL)!",
+        "category": "career",
+        "icon": "⏱️"
+      },
+      {
+        "age": 16,
+        "year": 2017,
+        "text": "16 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 17,
+        "year": 2018,
+        "text": "17 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 17,
+        "year": 2018,
+        "text": "Kayıt aldığını görünce saldırgan panikleyip kaçtı.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 18,
+        "year": 2019,
+        "text": "🎓 Liseden başarıyla mezun oldun!",
+        "category": "school",
+        "icon": "🎓"
+      },
+      {
+        "age": 18,
+        "year": 2019,
+        "text": "18 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 18,
+        "year": 2019,
+        "text": "Tebrikler! Direksiyon sınavını başarıyla geçtin ve B Sınıfı Ehliyetini aldın! 🚗",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 19,
+        "year": 2020,
+        "text": "19 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 19,
+        "year": 2020,
+        "text": "Üniversiteye yerleşerek akademik hayatına adım attın! (Zeka +10)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "20 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "6 ay boyunca kışlada vatani görevini başarıyla yerine getirdin ve terhis oldun! 🪖",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "🐾 'Karamel' (Tekir Sokak Kedisi (Barınak)) adlı sevimli dostu sahiplendin!",
+        "category": "general",
+        "icon": "🐾"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "Zeynep Özkan (20 yaşında, Yazılımcı) ile tanıştın ve sevgili oldunuz! ❤️",
+        "category": "love",
+        "icon": "💘"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "Doktor tedavisiyle 'Tükenmişlik Sendromu' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "Doktor tedavisiyle 'Gastrit & Mide Ağrısı' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 20,
+        "year": 2021,
+        "text": "Deniz Aktaş ile sıkı bir dostluk kurdun!",
+        "category": "general",
+        "icon": "🤝"
+      },
+      {
+        "age": 21,
+        "year": 2022,
+        "text": "21 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 22,
+        "year": 2023,
+        "text": "22 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 22,
+        "year": 2023,
+        "text": "💻 Bilişim ve Robotik Kulübü üyesi oldun! Hem sosyal çevren genişledi hem de yeteneklerin gelişti.",
+        "category": "school",
+        "icon": "🏅"
+      },
+      {
+        "age": 23,
+        "year": 2024,
+        "text": "🎓 Kep attın! 'Üniversite (Lisans)' eğitimini başarıyla tamamlayıp diplomanı aldın!",
+        "category": "school",
+        "icon": "🎓"
+      },
+      {
+        "age": 23,
+        "year": 2024,
+        "text": "23 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 23,
+        "year": 2024,
+        "text": "Ekstra 30.000 TL kira farkı ödedin, bütçen sarsıldı.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 24,
+        "year": 2025,
+        "text": "'Astım Krizi' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 24,
+        "year": 2025,
+        "text": "24 Yaşına bastın. ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🤒 Sana 'Astım Krizi' teşhisi kondu! Doktora görünmelisin.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 24,
+        "year": 2025,
+        "text": "Mülakatı geçtin! 'Mali Müşavir / Denetçi' olarak işe başladın (Yıllık: 750,000 TL)!",
+        "category": "career",
+        "icon": "💼"
+      },
+      {
+        "age": 25,
+        "year": 2026,
+        "text": "25 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +750,000 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏆 BAŞARIM: Milyoner Kulübü! Net servetin 1 Milyon TL'yi aştı!",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 25,
+        "year": 2026,
+        "text": "Doktor tedavisiyle 'Astım Krizi' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 25,
+        "year": 2026,
+        "text": "🏢 Kendi işinin patronu oldun! 'Üçüncü Nesil Butik Kahveci' resmen faaliyete başladı!",
+        "category": "career",
+        "icon": "🏢"
+      },
+      {
+        "age": 26,
+        "year": 2027,
+        "text": "26 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +795,000 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏢 'Üçüncü Nesil Butik Kahveci' yıllık şirket kârı: +410,829 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "27 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +842,700 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏢 'Üçüncü Nesil Butik Kahveci' yıllık şirket kârı: +345,177 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "Riskli tüyolara kulak asmadın.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,089,779 TL/yıl (Kademe 2)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,329,530 TL/yıl (Kademe 3)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,622,026 TL/yıl (Kademe 4)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,978,871 TL/yıl (Kademe 5)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 2,414,222 TL/yıl (Kademe 6)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 2,945,350 TL/yıl (Kademe 7)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 3,593,327 TL/yıl (Kademe 8)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 4,383,858 TL/yıl (Kademe 9)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 28,
+        "year": 2029,
+        "text": "'Şiddetli Migren' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 28,
+        "year": 2029,
+        "text": "28 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +4,383,858 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏢 'Üçüncü Nesil Butik Kahveci' yıllık şirket kârı: +327,230 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 28,
+        "year": 2029,
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 28,
+        "year": 2029,
+        "text": "🏠 '2+1 Aile Apartman Dairesi' tapusunu aldın! Yıllık 250,000 TL kira geliri sağlayacak.",
+        "category": "milestone",
+        "icon": "🏠"
+      },
+      {
+        "age": 28,
+        "year": 2029,
+        "text": "🏠 '2+1 Aile Apartman Dairesi' tapusunu aldın! Yıllık 250,000 TL kira geliri sağlayacak.",
+        "category": "milestone",
+        "icon": "🏠"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "'Gıda Zehirlenmesi' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "29 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +4,646,889 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏢 'Üçüncü Nesil Butik Kahveci' yıllık şirket kârı: +403,820 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Anons микрофonunda adın yankılandı: 'Çeyrek altın!' Tüm salon seni alkışladı!",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Doktor tedavisiyle 'Şiddetli Migren' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Doktor tedavisiyle 'Gıda Zehirlenmesi' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Botoks ve Dolgu operasyonun harika geçti! Görünüşün göz kamaştırıyor. (Görünüş +9)",
+        "category": "health",
+        "icon": "✨"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Burun Estetiği operasyonun harika geçti! Görünüşün göz kamaştırıyor. (Görünüş +16)",
+        "category": "health",
+        "icon": "✨"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Mikro FUE Saç Ekimi operasyonun harika geçti! Görünüşün göz kamaştırıyor. (Görünüş +14)",
+        "category": "health",
+        "icon": "✨"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "Tarık Yalçın ile sıkı bir dostluk kurdun!",
+        "category": "general",
+        "icon": "🤝"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "💍 Zeynep Özkan teklifini kabul etti! Görkemli düğünde akrabalar 63,406 TL değerinde altın ve para taktı!",
+        "category": "love",
+        "icon": "👰"
+      },
+      {
+        "age": 29,
+        "year": 2030,
+        "text": "👶 Dünyalar tatlısı bir oğlunuz doğdu! Adını Kuzey Demir koydunuz!",
+        "category": "love",
+        "icon": "🍼"
+      },
+      {
+        "age": 30,
+        "year": 2031,
+        "text": "30 Yaşına bastın. 💼 Mali Müşavir / Denetçi maaşı: +4,925,702 TL. | ⏱️ Hafta Sonu Baristası ek geliri: +96,000 TL. | 🏢 'Üçüncü Nesil Butik Kahveci' yıllık şirket kârı: +315,624 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 30,
+        "year": 2031,
+        "text": "Biletine ikramiye çıkmadı.",
+        "category": "event",
+        "icon": "⚖️"
+      }
+    ],
+    "active_event": null,
+    "blackjack": {
+      "active": false,
+      "bet": 1000,
+      "player_cards": [
+        "A♠️",
+        "3♣️"
+      ],
+      "dealer_cards": [
+        "8♦️",
+        "7♥️",
+        "J♠️"
+      ],
+      "player_total": 14,
+      "dealer_total": 25,
+      "status": "won"
+    },
+    "spouse_id": "person_lover_3_80",
+    "dating_partner_id": "person_lover_3_80",
+    "achievements": [
+      "born",
+      "driver",
+      "graduate",
+      "first_love",
+      "millionaire",
+      "boss",
+      "homeowner",
+      "married",
+      "child",
+      "multimillionaire"
+    ]
+  },
+  "graveyard": []
+}
