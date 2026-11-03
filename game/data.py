@@ -992,6 +992,292 @@ KISS_STYLES = [
     }
 ]
 
+DATE_OUTFITS = [
+    {
+        "id": "formal_glam",
+        "name": "👔 / 👗 Jilet Gibi Şık (Takım Elbise / Şık Gece Elbisesi)",
+        "desc": "Lüks restoranlar ve elit mekanlar için kusursuz prestij.",
+        "cost": 2500,
+        "style": "Lüks & Prestij",
+        "suitable_venues": ["bosphorus_dinner", "cappadocia"]
+    },
+    {
+        "id": "cool_trendy",
+        "name": "🕶️ Cool & Trend Sokak Şıklığı (Deri Ceket / Özel Parfüm)",
+        "desc": "Konserler, kokteyl barlar ve genç mekanlar için çekici ve havalı.",
+        "cost": 1000,
+        "style": "Havalı & Çekici",
+        "suitable_venues": ["concert", "cinema", "bosphorus_dinner"]
+    },
+    {
+        "id": "smart_casual",
+        "name": "👕 Sade, Temiz & Doğal (Kot Pantolon, Beyaz Gömlek/Tişört)",
+        "desc": "Sahil yürüyüşleri ve samimi sohbetler için abartısız şıklık.",
+        "cost": 0,
+        "style": "Doğal & Samimi",
+        "suitable_venues": ["tea_simit", "cinema", "camping_trip"]
+    },
+    {
+        "id": "sloppy_tracksuit",
+        "name": "🩳 Özensiz & Salaş (Eski Eşofman & Terlik)",
+        "desc": "Hiç özenilmemiş, partneri şoke edecek bir felaket tercihi.",
+        "cost": 0,
+        "style": "Özensiz / Rezalet",
+        "suitable_venues": []
+    }
+]
+
+DATE_GREETINGS = [
+    {
+        "id": "flower_chocolate",
+        "name": "🌹 Kırmızı Gül & El Yapımı Çikolata ile Karşıla (850 TL)",
+        "desc": "Romantik ve zarif bir karşılama jesti.",
+        "cost": 850,
+        "reaction": "Gözleri parıldayarak gülü kokladı: 'Çok incesin, bunu hiç beklemiyordum!' diyerek boynuna sarıldı."
+    },
+    {
+        "id": "passionate_hug",
+        "name": "🫂 Gözlerinin İçine Bakıp Sıcacık Sarıl & İltifat Et",
+        "desc": "Doğal, samimi ve sımsıcak bir ilk temas.",
+        "cost": 0,
+        "reaction": "Sana sımsıkı sarıldı, kokunu içine çekti: 'Seni görmek o kadar iyi geldi ki...' dedi."
+    },
+    {
+        "id": "flirty_hand_kiss",
+        "name": "✨ Elini Nazikçe Öp: 'Bu Akşam Büyüleyici Görünüyorsun'",
+        "desc": "Centilmen, flörtöz ve karizmatik bir hareket.",
+        "cost": 0,
+        "reaction": "Yanakları hafifçe kızardı ve gülümsedi: 'Sen de fena değilsin hani...' dedi."
+    },
+    {
+        "id": "casual_smile",
+        "name": "👋 Havalı Bir Gülümsemeyle 'Hoş Geldin, Hadi Geçelim' De",
+        "desc": "Sakin, dengeli ve mesafeli bir merhaba.",
+        "cost": 0,
+        "reaction": "'Hoş bulduk!' diyerek neşeyle masaya doğru yöneldi."
+    }
+]
+
+DATE_CONVERSATION_TOPICS = [
+    {
+        "id": "topic_destiny",
+        "question": "Sence iki insanın karşılaşması sadece bir tesadüf mü, yoksa kaderin bir oyunu mu?",
+        "options": [
+            {
+                "id": "destiny_romantic",
+                "text": "Binlerce insanın arasında gözlerimizin buluşması asla tesadüf olamaz. Biz bir araya gelmeliydik.",
+                "type": "Romantik",
+                "favorite_personalities": ["Romantik", "Sadık & Aileci", "Kıskanç & Tutkulu"],
+                "partner_reply": "Gözleri nemlendi ve gülümsedi: 'Ben de aynı şeyi hissediyordum... Kalbimi erittin.'"
+            },
+            {
+                "id": "destiny_action",
+                "text": "Tesadüf sadece kapıyı aralar; asıl önemli olan o kapıdan cesaretle geçip elini tutabilmek.",
+                "type": "Karizmatik",
+                "favorite_personalities": ["Hırslı & Kariyerist", "Entelektüel", "Maceracı"],
+                "partner_reply": "Tebessümle kadehini kaldırdı: 'İşte tam duymak istediğim vizyoner ve cesur yanıt!'"
+            },
+            {
+                "id": "destiny_humor",
+                "text": "Bence kader 'Bu ikisi bir araya gelip sabaha kadar gülsün' dedi, gerisi teferruat!",
+                "type": "Eğlenceli",
+                "favorite_personalities": ["Eğlenceli", "Çapkın & Özgür Ruhlu"],
+                "partner_reply": "Kahkahayı bastı: 'İlahi! Senin yanında somurtmak imkansız gerçekten :D'"
+            },
+            {
+                "id": "destiny_cynic",
+                "text": "Algoritmalar ve istatistik işte, fazla mistik anlamlar yükleyip hayal dünyasında yaşamaya gerek yok.",
+                "type": "Soğuk",
+                "favorite_personalities": ["Materyalist"],
+                "partner_reply": "Kaşlarını kaldırdı ve biraz soğuk baktı: 'Biraz fazla duygusuz bir yaklaşım değil mi?'"
+            }
+        ]
+    },
+    {
+        "id": "topic_passion",
+        "question": "Eğer yarın sabah sınırsız paran ve zamanın olsa, hayatını ilk neye adardın?",
+        "options": [
+            {
+                "id": "passion_world_travel",
+                "text": "Senin elinden tutar, tek bir sırt çantasıyla tüm dünyayı ve okyanusları keşfe çıkardım.",
+                "type": "Maceracı",
+                "favorite_personalities": ["Maceracı", "Romantik", "Çapkın & Özgür Ruhlu"],
+                "partner_reply": "Heyecanla öne doğru eğildi: 'İnanılmaz! Bu benim de en büyük çocukluk hayalim!'"
+            },
+            {
+                "id": "passion_empire",
+                "text": "Tüm sektörleri domine eden devasa bir marka kurar, gücümü ve vizyonumu kanıtlardım.",
+                "type": "Hırslı",
+                "favorite_personalities": ["Hırslı & Kariyerist", "Materyalist"],
+                "partner_reply": "Gözlerinde saygı dolu bir ışıltı belirdi: 'Azimli ve hedefleri olan insanlara bayılıyorum.'"
+            },
+            {
+                "id": "passion_quiet_home",
+                "text": "Ege'de taş bir ev alır; sevdiğimle şömine başında kitap okur, sakin ve huzurlu yaşardım.",
+                "type": "Huzurlu",
+                "favorite_personalities": ["Sadık & Aileci", "Entelektüel"],
+                "partner_reply": "İç çekerek elini göğsüne koydu: 'Huzur... Dünyadaki her şeyden daha kıymetli.'"
+            },
+            {
+                "id": "passion_lazy",
+                "text": "Akşama kadar yatar, televizyon izlerdim herhalde. Yorulmaya hiç niyetim yok.",
+                "type": "Tembel",
+                "favorite_personalities": [],
+                "partner_reply": "Hafifçe gözlerini devirdi: 'Demek hiç tutkun yok... Biraz üzücü.'"
+            }
+        ]
+    },
+    {
+        "id": "topic_redflag",
+        "question": "Bir ilişkide senin için 'Asla affetmem, kapıyı çarpar çıkarım' dediğin kırmızı çizgi nedir?",
+        "options": [
+            {
+                "id": "redflag_loyalty",
+                "text": "Sadakatsizlik ve yalan. Güven bir kez kırıldı mı o cam bir daha birleşmez, şeffaflık şart.",
+                "type": "Sadık",
+                "favorite_personalities": ["Sadık & Aileci", "Kıskanç & Tutkulu", "Romantik"],
+                "partner_reply": "Başını onaylayarak salladı: 'Sonuna kadar katılıyorum. Güven yoksa sevgi bir hiçtir.'"
+            },
+            {
+                "id": "redflag_freedom",
+                "text": "Beni kısıtlamaya ve değiştirmeye çalışmak. Olduğum gibi sevilmediğim yerde durmam.",
+                "type": "Özgürlükçü",
+                "favorite_personalities": ["Çapkın & Özgür Ruhlu", "Maceracı"],
+                "partner_reply": "Göz kırptı: 'Harika bir duruş! Herkesin kendi alanı ve özgürlüğü olmalı.'"
+            },
+            {
+                "id": "redflag_respect",
+                "text": "Saygısızlık ve manipülasyon. Fikirlerime ve ruhuma saygı duymayan biriyle ömür geçmez.",
+                "type": "Olgun",
+                "favorite_personalities": ["Entelektüel", "Hırslı & Kariyerist"],
+                "partner_reply": "Masaya eğilip elini tuttu: 'Çok olgun ve asil bir bakış açısı.'"
+            },
+            {
+                "id": "redflag_toxic",
+                "text": "Beni sosyal medyada kıskandırmaya kalkması! Öyle bir şey olursa intikamım acı olur!",
+                "type": "Toksik",
+                "favorite_personalities": [],
+                "partner_reply": "Hafifçe geri çekilip gergince güldü: 'Vay canına... Biraz ürkütücüsün sanırım.'"
+            }
+        ]
+    }
+]
+
+DATE_MID_EVENTS = [
+    {
+        "id": "waiter_spill",
+        "title": "🥤 Garsonun Sakarlığı & Kaza",
+        "desc": "Garson acele ederken masaya çarptı ve içecek partnerinin koluna sıçradı!",
+        "options": [
+            {
+                "id": "hero_protect",
+                "text": "Hemen peçeteyi alıp partnerinin kolunu nazikçe sildin ve 'Sen iyi misin?' diyerek sarıldın.",
+                "effect_score": 15,
+                "note": "Partnerin koruyucu ve ilgili tavrına hayran kaldı!"
+            },
+            {
+                "id": "laugh_ease",
+                "text": "Gülümseyip garsonu teselli ettin: 'Nazar çıktı! Bu akşamın tek kusuru bu olsun' dedin.",
+                "effect_score": 14,
+                "note": "Pozitif ve kriz çözücü enerjine bayıldı!"
+            },
+            {
+                "id": "angry_yell",
+                "text": "Garsona bağırıp şefi masaya çağırdın, mekanı birbirine kattın.",
+                "effect_score": -20,
+                "note": "Partnerin yerin dibine geçti ve senden soğudu!"
+            }
+        ]
+    },
+    {
+        "id": "live_music_slow",
+        "title": "🕯️ Romantik Şarkı & Loş Işıklar",
+        "desc": "Mekanda ışıklar kısıldı ve büyüleyici bir akustik aşk şarkısı çalmaya başladı.",
+        "options": [
+            {
+                "id": "dance_floor",
+                "text": "Elini tutup piste davet ettin; beline sarılarak gözlerinin içine baka baka dans ettiniz.",
+                "effect_score": 18,
+                "note": "Romantizm tavan yaptı, kalbi küt küt attı!"
+            },
+            {
+                "id": "toast_whisper",
+                "text": "Masanın altından elini sıkıca tuttun ve kadeh kaldırıp şarkıyı fısıldadın.",
+                "effect_score": 14,
+                "note": "Gözlerindeki tutku partnerini büyüledi!"
+            },
+            {
+                "id": "phone_distract",
+                "text": "O sırada telefonuna gelen bildirimi açıp Instagram'da gezinmeye başladın.",
+                "effect_score": -22,
+                "note": "Büyük saygısızlık! Yüzünü astı ve soğudu."
+            }
+        ]
+    },
+    {
+        "id": "bill_settlement",
+        "title": "💳 Hesap Masaya Geldi",
+        "desc": "Garson deri sümen içinde hesabı masaya bıraktı. Partnerin hafifçe çantasına uzandı.",
+        "options": [
+            {
+                "id": "stealth_paid",
+                "text": "Gülümseyerek 'Tuvalete gittiğimde çoktan hallettim, bu akşam benim misafirimsin' dedin.",
+                "effect_score": 16,
+                "note": "Karizmatik ve cömert tavrınla gözlerini kamaştırdın!"
+            },
+            {
+                "id": "gentle_offer",
+                "text": "Elini nazikçe tuttun: 'Lütfen bırak ben ödeyeyim, seninle olmak her şeye değer' dedin.",
+                "effect_score": 12,
+                "note": "Zarif ve centilmen teklifin çok hoşuna gitti."
+            },
+            {
+                "id": "split_exact",
+                "text": "Hesap makinesini açıp kuruşu kuruşuna Alman usulü bölüşmeyi teklif ettin.",
+                "effect_score": 4,
+                "note": "Eşitlikçi davrandın ama romantik hava biraz dağıldı."
+            },
+            {
+                "id": "forgot_wallet",
+                "text": "'Aaa cüzdanımı evde unutmuşum, sen ödeyebilir misin?' dedin.",
+                "effect_score": -18,
+                "note": "Rezalet! Partnerin hesabı öderken utancından kızardı."
+            }
+        ]
+    }
+]
+
+DATE_FINALES = [
+    {
+        "id": "passionate_kiss",
+        "name": "💋 Dudaktan Tutkulu Bir Veda Busesi Kondur (Aşk Patlaması)",
+        "high_text": "Gözlerini gözlerinden ayırmadan beline sarıldın ve dudaklarına unutulmaz bir öpücük kondurdun! Karşılık verdi, kalpleriniz göğüs kafesinizden fırlayacak gibiydi! 🔥",
+        "low_text": "Öpmeye yeltendin ama geri çekilip yanağını çevirdi: 'Sanırım biraz hızlı gidiyoruz...' diyerek utandı.",
+        "chemistry_min": 65
+    },
+    {
+        "id": "invite_coffee",
+        "name": "☕ 'Geceyi Bitirmeyelim, Yukarı Bir Kahve / Şarap İçmeye Gelir Misin?'",
+        "high_text": "Gözlerinin içine bakıp muzipçe gülümsedi: 'Ben de tam bunu sormanı bekliyordum...' Elini tutup birlikte eve çıktınız! 🔥",
+        "low_text": "Tebessüm etti: 'Bu akşam harikaydı ama eve gitsem iyi olur, başka sefere...' diyerek veda etti.",
+        "chemistry_min": 72
+    },
+    {
+        "id": "warm_hug_promise",
+        "name": "🫂 Sımsıkı Sarıl & 'Bu Hayatımın En Güzel Gecesiydi' De",
+        "high_text": "Birbirinizin kalp atışlarını duyacak kadar sımsıkı sarıldınız. 'Beni yarın yine ara' diye fısıldayıp saçlarını okşadı.",
+        "low_text": "Sıcak bir sarılmayla vedalaştınız, tatlı bir anı olarak kaldı.",
+        "chemistry_min": 45
+    },
+    {
+        "id": "gentle_cheek_kiss",
+        "name": "✨ Yanağına Zarif Bir Öpücük Kondurup 'İyi Geceler' De",
+        "high_text": "Yanağına tatlı bir öpücük kondurdun. Gülümseyerek içeri girdi ve 5 dakika sonra 'Eve sağ salim vardın mı?' mesajı attı.",
+        "low_text": "Kibar bir iyi geceler dileyip ayrıldınız.",
+        "chemistry_min": 30
+    }
+]
+
 DETAILED_DATE_SCENARIOS = {
     "mid_scenarios": [
         {

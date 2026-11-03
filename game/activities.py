@@ -24,7 +24,8 @@ from .data import (
     TENANT_MANAGEMENT_ACTIONS, WELLNESS_SERVICES,
     KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES,
     PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
-    HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL
+    HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL,
+    DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_MID_EVENTS, DATE_FINALES
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -3220,6 +3221,169 @@ def do_detailed_date(char: Character, person_id: str, venue_id: str, mid_choice:
         "success": True,
         "message": summary_msg,
         "rel_boost": total_boost
+    }
+
+
+def run_date_simulation(
+    char: Character,
+    person_id: str,
+    venue_id: str,
+    outfit_id: str = "smart_casual",
+    greeting_id: str = "passionate_hug",
+    dialogue_id: str = "topic_destiny",
+    dialogue_choice_id: str = "destiny_romantic",
+    mid_event_id: str = "live_music_slow",
+    mid_choice_id: str = "dance_floor",
+    finale_id: str = "passionate_kiss"
+) -> Dict[str, Any]:
+    """Tam teşekküllü, adım adım interaktif Aşk & Randevu Simülasyonu Motoru."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Partner bulunamadı."}
+
+    venue = next((v for v in DATE_VENUES if v["id"] == venue_id), DATE_VENUES[0])
+    outfit = next((o for o in DATE_OUTFITS if o["id"] == outfit_id), DATE_OUTFITS[2])
+    greeting = next((g for g in DATE_GREETINGS if g["id"] == greeting_id), DATE_GREETINGS[1])
+
+    total_cost = venue["cost"] + outfit["cost"] + greeting["cost"]
+    if char.money < total_cost:
+        return {"success": False, "message": f"Bu randevu kombinasyonu için {total_cost:,} TL gerekli (Nakit: {char.money:,} TL)."}
+
+    char.money -= total_cost
+
+    # 1. Başlangıç Kimyası Hesabı (0-100)
+    chemistry = int(person.relationship_level * 0.35 + char.looks * 0.25 + char.skills.get("charisma", 20) * 0.2)
+
+    # 2. Kıyafet & Mekan Uyumu
+    outfit_log = ""
+    if outfit["id"] == "sloppy_tracksuit":
+        chemistry = max(10, chemistry - 30)
+        outfit_log = f"😬 {person.name} senin eski eşofman ve terlikle geldiğini görünce şoke oldu: 'Şaka mısın sen?!' diyerek yüzünü astı!"
+    elif outfit["id"] in outfit.get("suitable_venues", []) or venue["id"] in outfit.get("suitable_venues", []):
+        chemistry = min(100, chemistry + 15)
+        outfit_log = f"✨ '{outfit['name']}' tercihin {venue['name']} ortamına tam oturdu! {person.name} şıklığına hayran kaldı."
+    else:
+        chemistry = min(100, chemistry + 5)
+        outfit_log = f"👔 Kıyafetinle hoş ve özenli bir intiba bıraktın."
+
+    # 3. İlk Karşılama
+    greeting_log = greeting["reaction"]
+    if greeting["id"] == "flower_chocolate":
+        chemistry = min(100, chemistry + 12)
+    elif greeting["id"] in ["passionate_hug", "flirty_hand_kiss"]:
+        chemistry = min(100, chemistry + 8)
+    else:
+        chemistry = min(100, chemistry + 4)
+
+    # 4. Mekan Uyumu
+    venue_log = ""
+    if person.personality in venue.get("disliked_by", []):
+        chemistry = max(10, chemistry - 15)
+        venue_log = f"😒 {person.name} ({person.personality}) bu tarz mekanlardan hoşlanmadığını hissettirdi."
+    elif person.personality in venue.get("best_for", []):
+        chemistry = min(100, chemistry + 15)
+        venue_log = f"😍 {person.name} mekan tercihine bayıldı: 'Beni o kadar iyi tanıyorsun ki!' dedi."
+    else:
+        venue_log = f"🍷 {venue['name']} masanızda samimi bir atmosfer oluştu."
+
+    # 5. Masa Sohbeti ve Soru-Cevap
+    topic = next((t for t in DATE_CONVERSATION_TOPICS if t["id"] == dialogue_id), DATE_CONVERSATION_TOPICS[0])
+    chosen_opt = next((o for o in topic["options"] if o["id"] == dialogue_choice_id), topic["options"][0])
+
+    dialogue_log = chosen_opt["partner_reply"]
+    if person.personality in chosen_opt.get("favorite_personalities", []):
+        chemistry = min(100, chemistry + 18)
+    elif chosen_opt["type"] in ["Toksik", "Soğuk", "Tembel"]:
+        chemistry = max(5, chemistry - 18)
+    else:
+        chemistry = min(100, chemistry + 8)
+
+    # 6. Randevu Ortası Olayı (Mid Event)
+    mid_event = next((e for e in DATE_MID_EVENTS if e["id"] == mid_event_id), DATE_MID_EVENTS[0])
+    mid_choice = next((o for o in mid_event["options"] if o["id"] == mid_choice_id), mid_event["options"][0])
+
+    mid_score = mid_choice.get("effect_score", 10)
+    chemistry = max(5, min(100, chemistry + mid_score))
+    mid_log = f"{mid_choice['note']}"
+
+    # 7. Final Kapanış Hamlesi
+    finale = next((f for f in DATE_FINALES if f["id"] == finale_id), DATE_FINALES[0])
+    finale_success = chemistry >= finale.get("chemistry_min", 40)
+    finale_log = finale["high_text"] if finale_success else finale["low_text"]
+
+    if finale_success:
+        chemistry = min(100, chemistry + 10)
+    else:
+        chemistry = max(10, chemistry - 10)
+
+    # 8. Skor, Yıldız ve Sonuç
+    if chemistry >= 85:
+        stars = 5
+        rating_title = "🌟🌟🌟🌟🌟 KUSURSUZ & BÜYÜLEYİCİ RANDEVU! (10/10)"
+        rel_boost = random.randint(30, 42)
+        char.happiness = min(100, char.happiness + 35)
+        char.stress = max(0, char.stress - 25)
+    elif chemistry >= 68:
+        stars = 4
+        rating_title = "🌟🌟🌟🌟 ÇOK BAŞARILI & TUTKULU BİR GECE! (8/10)"
+        rel_boost = random.randint(22, 30)
+        char.happiness = min(100, char.happiness + 25)
+        char.stress = max(0, char.stress - 18)
+    elif chemistry >= 48:
+        stars = 3
+        rating_title = "🌟🌟🌟 KEYİFLİ & TATLI BİR BULUŞMA (6/10)"
+        rel_boost = random.randint(14, 20)
+        char.happiness = min(100, char.happiness + 16)
+        char.stress = max(0, char.stress - 10)
+    elif chemistry >= 30:
+        stars = 2
+        rating_title = "🌟🌟 ORTALAMA & BİRAZ KARMAŞIK (4/10)"
+        rel_boost = random.randint(5, 10)
+        char.happiness = min(100, char.happiness + 5)
+    else:
+        stars = 1
+        rating_title = "💥 FELAKET & SOĞUK RANDEVU (2/10)"
+        rel_boost = -15
+        char.happiness = max(10, char.happiness - 20)
+        char.stress = min(100, char.stress + 20)
+
+    person.relationship_level = max(5, min(100, person.relationship_level + rel_boost))
+
+    # Flört Terfisi (Sevgili Olma)
+    promoted_to_lover = False
+    if person.relation == "Flört" and chemistry >= 68:
+        existing_partner = next((p for p in char.relationships if p.relation in ["Sevgili", "Nişanlı", "Eş"] and p.id != person.id and p.is_alive), None)
+        if not existing_partner:
+            person.relation = "Sevgili"
+            char.dating_partner_id = person.id
+            promoted_to_lover = True
+            if "first_date" not in char.achievements:
+                char.achievements.append("first_date")
+
+    # Özel Anı Kaydı
+    memory = f"'{venue['name']}' randevusu ({rating_title}): {outfit['name']} ile buluştunuz, kimya %{chemistry} oldu."
+    person.memories.append(memory)
+
+    summary_log = f"🌹 DATE SİMÜLASYONU ({person.name}): {rating_title} | Kimya: %{chemistry} | {outfit_log} {dialogue_log} {finale_log} (İlişki: {rel_boost:+d})"
+    if promoted_to_lover:
+        summary_log += " 💘 Artık resmen SEVGİLİSİNİZ!"
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=summary_log, category="love", icon="🌹"))
+
+    return {
+        "success": True,
+        "message": summary_log,
+        "rating_title": rating_title,
+        "stars": stars,
+        "chemistry": chemistry,
+        "rel_boost": rel_boost,
+        "promoted_to_lover": promoted_to_lover,
+        "outfit_log": outfit_log,
+        "greeting_log": greeting_log,
+        "venue_log": venue_log,
+        "dialogue_log": dialogue_log,
+        "mid_log": mid_log,
+        "finale_log": finale_log
     }
 
 def do_detailed_fight(char: Character, person_id: str, topic_id: str, attitude_id: str) -> Dict[str, Any]:

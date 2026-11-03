@@ -3740,77 +3740,460 @@ async function submitDetailedKiss(personId, kissId) {
     closeModal("genericModal");
 }
 
+let dateSimState = {
+    personId: null,
+    step: 1,
+    venueId: "tea_simit",
+    outfitId: "smart_casual",
+    greetingId: "passionate_hug",
+    dialogueId: "topic_destiny",
+    dialogueChoiceId: null,
+    midEventId: "live_music_slow",
+    midChoiceId: null,
+    finaleId: null,
+    chemistry: 50,
+    cost: 0
+};
+
+function openDateSimPickerModal() {
+    sound.playClick();
+    const dateable = (gameState.relationships || []).filter(p => p.is_alive && ["Flört", "Sevgili", "Nişanlı", "Eş", "Sınıf Arkadaşı", "İş Arkadaşı", "Arkadaş"].includes(p.relation));
+    document.getElementById("genericModalTitle").textContent = "🌹 Aşk & Randevu Simülatörü (Date Sim)";
+    const body = document.getElementById("genericModalBody");
+
+    if (dateable.length === 0) {
+        body.innerHTML = `
+            <div class="panel-card" style="text-align:center; padding:20px;">
+                <div style="font-size:36px; margin-bottom:10px;">💔</div>
+                <div class="card-title" style="margin-bottom:6px;">Buluşacak Kimse Yok</div>
+                <p class="card-desc" style="margin-bottom:16px;">
+                    Şu anda randevuya çıkabileceğin bir flörtün, sevgilin veya arkadaşın bulunmuyor.
+                    Hemen KısmetApp'e girerek yeni biriyle tanışabilirsin!
+                </p>
+                <button type="button" class="btn-primary" onclick="closeModal('genericModal'); openKismetAppModal();">📱 KısmetApp'e Git</button>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `
+            <p class="card-desc" style="margin-bottom:12px;">
+                Kiminle unutulmaz bir randevuya çıkmak istiyorsun? Kıyafetini seç, diyalogları yönet ve aranızdaki kimyayı zirveye taşı!
+            </p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                ${dateable.map(p => `
+                    <button type="button" class="btn-choice" style="display:flex; align-items:center; justify-content:space-between; padding:12px;" onclick="closeModal('genericModal'); openDetailedDateModal('${p.id}');">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:24px;">${getRelationEmoji(p.relation)}</span>
+                            <div style="text-align:left;">
+                                <div style="font-weight:700; color:var(--text-primary);">${p.name}</div>
+                                <div style="font-size:12px; color:var(--text-secondary);">${p.relation} • ${p.age} Yaş • ${getPersonalityLabel(p.personality)}</div>
+                            </div>
+                        </div>
+                        <span class="card-badge badge-green">Sevgi: %${p.relationship_level}</span>
+                    </button>
+                `).join("")}
+            </div>
+        `;
+    }
+    openDialogModal("genericModal");
+}
+
 function openDetailedDateModal(personId) {
     sound.playClick();
     const person = (gameState.relationships || []).find(p => p.id === personId);
     if (!person) return;
+
+    const baseChem = Math.min(100, Math.max(30, Math.round((person.relationship_level || 50) * 0.4 + (gameState.looks || 50) * 0.3 + (gameState.skills?.charisma || 20) * 0.3)));
+    const outfits = (marketData && marketData.date_outfits) || [];
+    const greetings = (marketData && marketData.date_greetings) || [];
+    const venues = (marketData && marketData.date_venues) || [];
+    const convos = (marketData && marketData.date_conversations) || [];
+    const midEvents = (marketData && marketData.date_mid_events) || [];
+
+    dateSimState = {
+        personId: personId,
+        step: 1,
+        venueId: venues[0]?.id || "tea_simit",
+        outfitId: outfits[2]?.id || "smart_casual",
+        greetingId: greetings[1]?.id || "passionate_hug",
+        dialogueId: convos[Math.floor(Math.random() * (convos.length || 1))]?.id || "topic_destiny",
+        dialogueChoiceId: null,
+        midEventId: midEvents[Math.floor(Math.random() * (midEvents.length || 1))]?.id || "live_music_slow",
+        midChoiceId: null,
+        finaleId: null,
+        chemistry: baseChem,
+        cost: 0
+    };
+
+    renderDateSimStep1();
+    openDialogModal("genericModal");
+}
+
+function renderDateSimStep1() {
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+    if (!person) return;
+
+    const outfits = (marketData && marketData.date_outfits) || [];
+    const greetings = (marketData && marketData.date_greetings) || [];
     const venues = (marketData && marketData.date_venues) || [];
 
-    document.getElementById("genericModalTitle").textContent = `🌹 Özel Randevu Simülasyonu: ${person.name}`;
+    document.getElementById("genericModalTitle").textContent = `🌹 Date Simülatörü: ${person.name}`;
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
         <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
             <div class="card-title-row">
-                <span class="card-title">✨ ${person.name} ile Büyüleyici Bir Akşam</span>
+                <span class="card-title">✨ ${getRelationEmoji(person.relation)} ${person.name} ile Özel Randevu</span>
                 <span class="card-badge badge-green">Nakit: ₺ ${gameState.money.toLocaleString('tr-TR')}</span>
             </div>
-            <p class="card-desc" style="font-size:12.5px; margin-top:4px;">
-                Partnerinin kişiliği: <b>${getPersonalityLabel(person.personality)}</b>. Randevuyu adım adım tasarla!
-            </p>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
+                Kişilik: <b>${getPersonalityLabel(person.personality)}</b> • Görünüş: <b>%${person.looks ?? 70}</b> • Başlangıç Kimyası: <b>%${dateSimState.chemistry}</b>
+            </div>
+            <div class="stat-progress-bg" style="height:6px; margin-top:8px;">
+                <div class="stat-progress-bar" style="width:${dateSimState.chemistry}%; background:linear-gradient(90deg, #ec4899, #f43f5e);"></div>
+            </div>
         </div>
 
-        <form id="detailedDateForm" onsubmit="event.preventDefault(); submitDetailedDateForm('${person.id}');">
-            <div class="person-action-group-title">1. Adım: Randevu Mekanı Seç</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <select id="dateVenueSelect" class="form-select" style="font-size:13px; padding:10px;">
-                    ${venues.map(v => {
-                        const isFav = (v.best_for || []).includes(person.personality);
-                        return `<option value="${v.id}">${v.name} (${v.cost === 0 ? 'Ücretsiz' : '₺ ' + v.cost.toLocaleString('tr-TR')}) ${isFav ? '★ Uyumlu' : ''}</option>`;
-                    }).join("")}
-                </select>
-            </div>
+        <div class="person-action-group-title">1. Adım: Randevu Kıyafetin (Ne Giyiyorsun?)</div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <select id="dateSimOutfit" class="form-select" style="font-size:13px; padding:10px;" onchange="updateDateSimTotalCost()">
+                ${outfits.map(o => `
+                    <option value="${o.id}" ${o.id === dateSimState.outfitId ? 'selected' : ''}>
+                        ${o.name} (${o.cost === 0 ? 'Ücretsiz' : '₺ ' + o.cost.toLocaleString('tr-TR')})
+                    </option>
+                `).join("")}
+            </select>
+        </div>
 
-            <div class="person-action-group-title">2. Adım: Randevu Ortasında Tavrın & Anı</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <select id="dateMidSelect" class="form-select" style="font-size:13px; padding:10px;">
-                    <option value="pay_all">💳 Hesabın Tamamını Karizmatikçe Tek Başına Öde</option>
-                    <option value="dance_slow">💃 Elinden Tutup Piste Yavaş Dansa Kaldır (Göz Göze)</option>
-                    <option value="vulnerable_truth">🥺 Tüm Kırılganlığınla En Büyük Hayalini & Kalbini Aç</option>
-                    <option value="sing_toast">🥂 Kadeh Kaldırıp Şarkıya Neşeyle Eşlik Et</option>
-                    <option value="hold_hands">🤲 Masanın Altından Elini Sıkıca Tutup Okşa</option>
-                    <option value="witty_flirt">😏 Zekice ve Flörtöz Bir Espriyle Tansiyonu Yükselt</option>
-                    <option value="split_bill">🤝 'Alman Usulü Kırışalım mı?' Teklifi Yap</option>
-                    <option value="listen_them">👂 İlgiyi Ona Verip Tüm Hayallerini Pürdikkat Dinle</option>
-                </select>
-            </div>
+        <div class="person-action-group-title">2. Adım: İlk Karşılama Jesti (Buluşma Anı)</div>
+        <div class="form-group" style="margin-bottom:12px;">
+            <select id="dateSimGreeting" class="form-select" style="font-size:13px; padding:10px;" onchange="updateDateSimTotalCost()">
+                ${greetings.map(g => `
+                    <option value="${g.id}" ${g.id === dateSimState.greetingId ? 'selected' : ''}>
+                        ${g.name} (${g.cost === 0 ? 'Ücretsiz' : '₺ ' + g.cost.toLocaleString('tr-TR')})
+                    </option>
+                `).join("")}
+            </select>
+        </div>
 
-            <div class="person-action-group-title">3. Adım: Geceyi Noktalama & Veda</div>
-            <div class="form-group" style="margin-bottom:14px;">
-                <select id="dateEndSelect" class="form-select" style="font-size:13px; padding:10px;">
-                    <option value="kiss_goodbye">💋 Kapısının Önünde Yanağına/Dudağına Unutulmaz Bir Veda Busesi Kondur</option>
-                    <option value="invite_coffee">☕ 'Geceyi Bitirmeyelim, Yukarı Bir Kahve İçmeye Gelir Misin?' Daveti Yap</option>
-                    <option value="warm_hug_walk">🫂 Sımsıkı Sarılıp 'Bu Hayatımın En Güzel Gecesiydi' Deyip Ayrıl</option>
-                </select>
-            </div>
+        <div class="person-action-group-title">3. Adım: Randevu Mekanı Seç</div>
+        <div class="form-group" style="margin-bottom:14px;">
+            <select id="dateSimVenue" class="form-select" style="font-size:13px; padding:10px;" onchange="updateDateSimTotalCost()">
+                ${venues.map(v => {
+                    const isFav = (v.best_for || []).includes(person.personality);
+                    return `
+                        <option value="${v.id}" ${v.id === dateSimState.venueId ? 'selected' : ''}>
+                            ${v.name} (${v.cost === 0 ? 'Ücretsiz' : '₺ ' + v.cost.toLocaleString('tr-TR')}) ${isFav ? '★ Uyumlu' : ''}
+                        </option>
+                    `;
+                }).join("")}
+            </select>
+        </div>
 
-            <button type="submit" class="btn-primary" style="font-size:15px; padding:12px; margin-top:6px;">🌹 Randevuyu Yaşa & Başlat</button>
-        </form>
+        <div id="dateSimCostPreview" class="panel-card" style="margin-bottom:12px; background:rgba(255,255,255,0.03); text-align:center;">
+            <!-- Dinamik Bütçe Hesabı -->
+        </div>
+
+        <button type="button" class="btn-primary" style="font-size:15px; padding:12px; width:100%;" onclick="startDateSimMeeting()">
+            🚀 Randevuya Başla (Mekana Git)
+        </button>
     `;
-    openDialogModal("genericModal");
+    updateDateSimTotalCost();
 }
 
-async function submitDetailedDateForm(personId) {
-    const venueId = document.getElementById("dateVenueSelect")?.value || "tea_simit";
-    const midChoice = document.getElementById("dateMidSelect")?.value || "dance_slow";
-    const endChoice = document.getElementById("dateEndSelect")?.value || "kiss_goodbye";
-    await performActivity("detailed_date", {
-        person_id: personId,
-        venue_id: venueId,
-        mid_choice: midChoice,
-        end_choice: endChoice
-    });
-    closeModal("genericModal");
+function updateDateSimTotalCost() {
+    const outfitSelect = document.getElementById("dateSimOutfit");
+    const greetingSelect = document.getElementById("dateSimGreeting");
+    const venueSelect = document.getElementById("dateSimVenue");
+    if (!outfitSelect || !greetingSelect || !venueSelect) return;
+
+    dateSimState.outfitId = outfitSelect.value;
+    dateSimState.greetingId = greetingSelect.value;
+    dateSimState.venueId = venueSelect.value;
+
+    const outfit = (marketData?.date_outfits || []).find(o => o.id === dateSimState.outfitId);
+    const greeting = (marketData?.date_greetings || []).find(g => g.id === dateSimState.greetingId);
+    const venue = (marketData?.date_venues || []).find(v => v.id === dateSimState.venueId);
+
+    const total = (outfit?.cost || 0) + (greeting?.cost || 0) + (venue?.cost || 0);
+    dateSimState.cost = total;
+
+    const preview = document.getElementById("dateSimCostPreview");
+    if (preview) {
+        const affordable = gameState.money >= total;
+        preview.innerHTML = `
+            <div style="font-size:13px; font-weight:700; color:${affordable ? 'var(--accent-green)' : 'var(--accent-red)'};">
+                Toplam Randevu Masrafı: ₺ ${total.toLocaleString('tr-TR')}
+            </div>
+            ${!affordable ? `<div style="font-size:11px; color:#f87171; margin-top:2px;">⚠️ Yetersiz bakiye! Daha uygun bir mekan veya kıyafet seç.</div>` : `<div style="font-size:11px; color:#94a3b8; margin-top:2px;">Kalan Nakit: ₺ ${(gameState.money - total).toLocaleString('tr-TR')}</div>`}
+        `;
+    }
+}
+
+function startDateSimMeeting() {
+    sound.playClick();
+    if (gameState.money < dateSimState.cost) {
+        showToast("Bu randevu için yeterli paran yok!", "error");
+        return;
+    }
+
+    const outfit = (marketData?.date_outfits || []).find(o => o.id === dateSimState.outfitId);
+    const venue = (marketData?.date_venues || []).find(v => v.id === dateSimState.venueId);
+    const greeting = (marketData?.date_greetings || []).find(g => g.id === dateSimState.greetingId);
+
+    // Kıyafet & Mekan etkisi
+    if (outfit?.id === "sloppy_tracksuit") {
+        dateSimState.chemistry = Math.max(10, dateSimState.chemistry - 25);
+    } else if (venue?.id && (outfit?.suitable_venues || []).includes(venue.id)) {
+        dateSimState.chemistry = Math.min(100, dateSimState.chemistry + 14);
+    } else {
+        dateSimState.chemistry = Math.min(100, dateSimState.chemistry + 5);
+    }
+
+    // Karşılama etkisi
+    if (greeting?.id === "flower_chocolate") {
+        dateSimState.chemistry = Math.min(100, dateSimState.chemistry + 10);
+    } else {
+        dateSimState.chemistry = Math.min(100, dateSimState.chemistry + 6);
+    }
+
+    renderDateSimDialogue();
+}
+
+function renderDateSimDialogue() {
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+    const convos = (marketData && marketData.date_conversations) || [];
+    const topic = convos.find(c => c.id === dateSimState.dialogueId) || convos[0];
+    const venue = (marketData?.date_venues || []).find(v => v.id === dateSimState.venueId);
+
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">🍷 ${venue?.name || 'Masa Sohbeti'}</span>
+                <span class="card-badge badge-green">❤️ Kimya: %${dateSimState.chemistry}</span>
+            </div>
+            <div class="stat-progress-bg" style="height:7px; margin-top:8px;">
+                <div class="stat-progress-bar" style="width:${dateSimState.chemistry}%; background:linear-gradient(90deg, #ec4899, #f43f5e); transition:width 0.4s ease;"></div>
+            </div>
+        </div>
+
+        <div style="background:rgba(236,72,153,0.08); border-left:3px solid #ec4899; border-radius:8px; padding:12px; margin-bottom:14px;">
+            <div style="font-size:11px; font-weight:700; color:#f472b6; text-transform:uppercase;">${person.name} Soruyor:</div>
+            <div style="font-size:14px; font-weight:600; color:#f8fafc; font-style:italic; margin-top:4px;">
+                "${topic.question}"
+            </div>
+        </div>
+
+        <div class="person-action-group-title">Senin Yanıtın (Diyaloğu Yönet)</div>
+        <div id="dateSimDialogueOptions" style="display:flex; flex-direction:column; gap:8px;">
+            ${topic.options.map(opt => `
+                <button type="button" class="btn-choice" style="text-align:left; padding:11px 13px;" onclick="chooseDateDialogueOption('${opt.id}')">
+                    <div style="font-weight:600; color:#f1f5f9; font-size:13px;">${opt.text}</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-top:2px;">Tarz: ${opt.type}</div>
+                </button>
+            `).join("")}
+        </div>
+        <div id="dateSimDialogueFeedback" style="display:none; margin-top:12px;"></div>
+    `;
+}
+
+function chooseDateDialogueOption(optionId) {
+    sound.playClick();
+    dateSimState.dialogueChoiceId = optionId;
+    const convos = (marketData && marketData.date_conversations) || [];
+    const topic = convos.find(c => c.id === dateSimState.dialogueId) || convos[0];
+    const opt = topic.options.find(o => o.id === optionId);
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+
+    let delta = 8;
+    if (person && (opt.favorite_personalities || []).includes(person.personality)) {
+        delta = 18;
+    } else if (["Toksik", "Soğuk", "Tembel"].includes(opt.type)) {
+        delta = -18;
+    }
+
+    dateSimState.chemistry = Math.max(5, Math.min(100, dateSimState.chemistry + delta));
+
+    const optionsContainer = document.getElementById("dateSimDialogueOptions");
+    const feedbackBox = document.getElementById("dateSimDialogueFeedback");
+
+    if (optionsContainer) optionsContainer.style.display = "none";
+    if (feedbackBox) {
+        feedbackBox.style.display = "block";
+        feedbackBox.innerHTML = `
+            <div class="panel-card" style="border-left:3px solid ${delta >= 0 ? '#4ade80' : '#f87171'}; padding:12px; margin-bottom:12px;">
+                <div style="font-size:11px; font-weight:700; color:${delta >= 0 ? '#4ade80' : '#f87171'};">
+                    ${person.name}'in Tepkisi (${delta >= 0 ? '+' + delta : delta}% Kimya):
+                </div>
+                <div style="font-size:13px; font-style:italic; color:#e2e8f0; margin-top:4px;">
+                    "${opt.partner_reply}"
+                </div>
+            </div>
+            <button type="button" class="btn-primary" style="width:100%; padding:11px;" onclick="renderDateSimMidEvent()">
+                Devam Et (Randevu Ortası Sürprizi) ➔
+            </button>
+        `;
+    }
+}
+
+function renderDateSimMidEvent() {
+    sound.playClick();
+    const midEvents = (marketData && marketData.date_mid_events) || [];
+    const eventObj = midEvents.find(e => e.id === dateSimState.midEventId) || midEvents[0];
+
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">${eventObj.title}</span>
+                <span class="card-badge badge-green">❤️ Kimya: %${dateSimState.chemistry}</span>
+            </div>
+            <div class="stat-progress-bg" style="height:7px; margin-top:8px;">
+                <div class="stat-progress-bar" style="width:${dateSimState.chemistry}%; background:linear-gradient(90deg, #ec4899, #f43f5e);"></div>
+            </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px; color:#cbd5e1;">
+            ${eventObj.desc}
+        </div>
+
+        <div class="person-action-group-title">Nasıl Tepki Vereceksin?</div>
+        <div id="dateSimMidOptions" style="display:flex; flex-direction:column; gap:8px;">
+            ${eventObj.options.map(opt => `
+                <button type="button" class="btn-choice" style="text-align:left; padding:11px 13px;" onclick="chooseDateMidEventOption('${opt.id}')">
+                    <div style="font-weight:600; color:#f1f5f9; font-size:13px;">${opt.text}</div>
+                </button>
+            `).join("")}
+        </div>
+        <div id="dateSimMidFeedback" style="display:none; margin-top:12px;"></div>
+    `;
+}
+
+function chooseDateMidEventOption(optionId) {
+    sound.playClick();
+    dateSimState.midChoiceId = optionId;
+    const midEvents = (marketData && marketData.date_mid_events) || [];
+    const eventObj = midEvents.find(e => e.id === dateSimState.midEventId) || midEvents[0];
+    const opt = eventObj.options.find(o => o.id === optionId);
+
+    const delta = opt.effect_score || 10;
+    dateSimState.chemistry = Math.max(5, Math.min(100, dateSimState.chemistry + delta));
+
+    const optionsContainer = document.getElementById("dateSimMidOptions");
+    const feedbackBox = document.getElementById("dateSimMidFeedback");
+
+    if (optionsContainer) optionsContainer.style.display = "none";
+    if (feedbackBox) {
+        feedbackBox.style.display = "block";
+        feedbackBox.innerHTML = `
+            <div class="panel-card" style="border-left:3px solid ${delta >= 0 ? '#4ade80' : '#f87171'}; padding:12px; margin-bottom:12px;">
+                <div style="font-size:13px; color:#e2e8f0;">
+                    ${opt.note} (${delta >= 0 ? '+' + delta : delta}% Kimya)
+                </div>
+            </div>
+            <button type="button" class="btn-primary" style="width:100%; padding:11px;" onclick="renderDateSimFinale()">
+                Devam Et (Gecenin Kapanışı & Veda) ➔
+            </button>
+        `;
+    }
+}
+
+function renderDateSimFinale() {
+    sound.playClick();
+    const finales = (marketData && marketData.date_finales) || [];
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">🌙 Gecenin Sonu & Veda Hamlesi</span>
+                <span class="card-badge badge-green">❤️ Kimya: %${dateSimState.chemistry}</span>
+            </div>
+            <div class="stat-progress-bg" style="height:7px; margin-top:8px;">
+                <div class="stat-progress-bar" style="width:${dateSimState.chemistry}%; background:linear-gradient(90deg, #ec4899, #f43f5e);"></div>
+            </div>
+        </div>
+
+        <p class="card-desc" style="margin-bottom:14px;">
+            Kapının önünde göz göze duruyorsunuz. Gece sona eriyor; partnerinin gözlerinde beklenti dolu bir bakış var. Nasıl bir veda yapacaksın?
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${finales.map(f => `
+                <button type="button" class="btn-choice" style="text-align:left; padding:12px;" onclick="submitDateSimFinale('${f.id}')">
+                    <div style="font-weight:700; color:#f8fafc; font-size:13.5px;">${f.name}</div>
+                    <div style="font-size:11px; color:#cbd5e1; margin-top:2px;">Gereken Asgari Kimya: %${f.chemistry_min}</div>
+                </button>
+            `).join("")}
+        </div>
+    `;
+}
+
+async function submitDateSimFinale(finaleId) {
+    sound.playClick();
+    dateSimState.finaleId = finaleId;
+
+    const payload = {
+        person_id: dateSimState.personId,
+        venue_id: dateSimState.venueId,
+        outfit_id: dateSimState.outfitId,
+        greeting_id: dateSimState.greetingId,
+        dialogue_id: dateSimState.dialogueId,
+        dialogue_choice_id: dateSimState.dialogueChoiceId,
+        mid_event_id: dateSimState.midEventId,
+        mid_choice_id: dateSimState.midChoiceId,
+        finale_id: dateSimState.finaleId
+    };
+
+    const res = await performActivity("run_date_simulation", payload);
+    if (!res || !res.success) {
+        closeModal("genericModal");
+        return;
+    }
+
+    renderDateSimScorecard(res);
+}
+
+function renderDateSimScorecard(res) {
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+    const body = document.getElementById("genericModalBody");
+    document.getElementById("genericModalTitle").textContent = "🏆 Randevu Karnesi & Sonuç";
+
+    body.innerHTML = `
+        <div class="panel-card" style="text-align:center; padding:18px; border-color:#ec4899; margin-bottom:14px;">
+            <div style="font-size:20px; font-weight:800; color:#fb7185; margin-bottom:6px;">
+                ${res.rating_title || '🌹 Büyüleyici Randevu'}
+            </div>
+            <div style="font-size:13px; color:#cbd5e1;">
+                Nihai Aşk Kimyası: <b style="color:#f43f5e;">%${res.chemistry || dateSimState.chemistry}</b> • İlişki: <b style="color:var(--accent-green);">${res.rel_boost > 0 ? '+' : ''}${res.rel_boost}</b>
+            </div>
+        </div>
+
+        ${res.promoted_to_lover ? `
+            <div class="panel-card" style="background:linear-gradient(135deg, rgba(236,72,153,0.2), rgba(244,63,94,0.3)); border-color:#f43f5e; text-align:center; padding:14px; margin-bottom:14px;">
+                <div style="font-size:24px; margin-bottom:4px;">💘🎉</div>
+                <div style="font-weight:800; color:#fff; font-size:15px;">GÖNLÜNÜ FETHETTİN! ARTIK SEVGİLİSİNİZ!</div>
+                <div style="font-size:12px; color:#fbcfe8; margin-top:2px;">${person?.name || 'Partnerin'} ile birbirinize duyduğunuz aşk resmiyet kazandı!</div>
+            </div>
+        ` : ''}
+
+        <div class="panel-card" style="margin-bottom:14px;">
+            <div class="person-action-group-title" style="margin-top:0;">📖 Geceden Öne Çıkan Anlar</div>
+            <div class="memories-timeline" style="margin-top:6px;">
+                ${res.outfit_log ? `<div class="memory-item">• ${res.outfit_log}</div>` : ''}
+                ${res.greeting_log ? `<div class="memory-item">• ${res.greeting_log}</div>` : ''}
+                ${res.dialogue_log ? `<div class="memory-item">• "${res.dialogue_log}"</div>` : ''}
+                ${res.mid_log ? `<div class="memory-item">• ${res.mid_log}</div>` : ''}
+                ${res.finale_log ? `<div class="memory-item">• ${res.finale_log}</div>` : ''}
+            </div>
+        </div>
+
+        <button type="button" class="btn-primary" style="width:100%; padding:12px; font-size:14.5px;" onclick="closeModal('genericModal');">
+            ✨ Harika! Hayata Devam Et
+        </button>
+    `;
 }
 
 function openDetailedFightModal(personId) {

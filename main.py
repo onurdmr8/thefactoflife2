@@ -38,7 +38,8 @@ from game.data import (
     TENANT_MANAGEMENT_ACTIONS, WELLNESS_SERVICES,
     KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES,
     PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
-    HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL
+    HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL,
+    DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_MID_EVENTS, DATE_FINALES
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -59,7 +60,7 @@ from game.activities import (
     do_couple_business, do_divorce_court, do_pro_sports_action,
     do_relationship_conflict, do_company_management_action,
     do_tenant_action, do_car_care_action, do_wellness_action,
-    do_detailed_kiss, do_detailed_date, do_detailed_fight,
+    do_detailed_kiss, do_detailed_date, do_detailed_fight, run_date_simulation,
     do_parent_care_action, do_sibling_action, do_parenting_action, do_friend_action, do_consolidated_chat,
     do_hookup, do_flirt_opening, do_situationship_talk, do_confess_love, do_hard_launch, do_handle_ex_midnight_text,
     do_friend_to_lover, do_classmate_action, do_coworker_action, do_boss_action,
@@ -318,6 +319,19 @@ def handle_activity(req: ActivityRequest):
         res = do_detailed_kiss(current_character, p.get("person_id", ""), p.get("kiss_id", "lips_gentle"))
     elif act == "detailed_date":
         res = do_detailed_date(current_character, p.get("person_id", ""), p.get("venue_id", "tea_simit"), p.get("mid_choice", ""), p.get("end_choice", ""))
+    elif act in ["run_date_simulation", "date_sim"]:
+        res = run_date_simulation(
+            current_character,
+            person_id=p.get("person_id", ""),
+            venue_id=p.get("venue_id", "tea_simit"),
+            outfit_id=p.get("outfit_id", "smart_casual"),
+            greeting_id=p.get("greeting_id", "passionate_hug"),
+            dialogue_id=p.get("dialogue_id", "topic_destiny"),
+            dialogue_choice_id=p.get("dialogue_choice_id", "destiny_romantic"),
+            mid_event_id=p.get("mid_event_id", "live_music_slow"),
+            mid_choice_id=p.get("mid_choice_id", "dance_floor"),
+            finale_id=p.get("finale_id", "passionate_kiss")
+        )
     elif act == "detailed_fight":
         res = do_detailed_fight(current_character, p.get("person_id", ""), p.get("topic_id", "jealousy_dm"), p.get("attitude_id", "calm_ultimatum"))
     elif act == "parent_care":
@@ -441,7 +455,12 @@ def get_market_data():
         "hookup_protection_choices": HOOKUP_PROTECTION_CHOICES,
         "dating_opening_lines": DATING_OPENING_LINES,
         "red_flags_pool": RED_FLAGS_POOL,
-        "green_flags_pool": GREEN_FLAGS_POOL
+        "green_flags_pool": GREEN_FLAGS_POOL,
+        "date_outfits": DATE_OUTFITS,
+        "date_greetings": DATE_GREETINGS,
+        "date_conversations": DATE_CONVERSATION_TOPICS,
+        "date_mid_events": DATE_MID_EVENTS,
+        "date_finales": DATE_FINALES
     }
 
 @app.get("/api/graveyard")
