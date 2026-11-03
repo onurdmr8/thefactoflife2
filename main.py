@@ -9,7 +9,7 @@ import sys
 import webbrowser
 import uvicorn
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -86,6 +86,14 @@ def _sync_net_worth(char: Character):
 @app.get("/", response_class=HTMLResponse)
 async def get_index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
+
+@app.get("/manifest.json")
+async def get_manifest():
+    return FileResponse(os.path.join(static_dir, "manifest.json"), media_type="application/manifest+json")
+
+@app.get("/sw.js")
+async def get_service_worker():
+    return FileResponse(os.path.join(static_dir, "sw.js"), media_type="application/javascript")
 
 @app.post("/api/new_game")
 def start_new_game(req: NewGameRequest):
