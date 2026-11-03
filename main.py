@@ -62,6 +62,7 @@ from game.activities import (
     do_detailed_kiss, do_detailed_date, do_detailed_fight,
     do_parent_care_action, do_sibling_action, do_parenting_action, do_friend_action, do_consolidated_chat,
     do_hookup, do_flirt_opening, do_situationship_talk, do_confess_love, do_hard_launch, do_handle_ex_midnight_text,
+    do_friend_to_lover, do_classmate_action, do_coworker_action, do_boss_action,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -341,6 +342,14 @@ def handle_activity(req: ActivityRequest):
         res = do_hard_launch(current_character, p.get("person_id", ""))
     elif act == "handle_ex_midnight_text":
         res = do_handle_ex_midnight_text(current_character, p.get("person_id", ""), p.get("choice_id", "show_partner"))
+    elif act == "friend_to_lover":
+        res = do_friend_to_lover(current_character, p.get("person_id", ""), p.get("action_id", "friend_hookup"))
+    elif act == "classmate_action":
+        res = do_classmate_action(current_character, p.get("person_id", ""), p.get("action_id", "hangout_canteen"))
+    elif act == "coworker_action":
+        res = do_coworker_action(current_character, p.get("person_id", ""), p.get("action_id", "happy_hour"))
+    elif act == "boss_action":
+        res = do_boss_action(current_character, p.get("person_id", ""), p.get("action_id", "suck_up_boss"))
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":

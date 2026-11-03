@@ -16,6 +16,7 @@ from .data import (
     PERSONALITIES, INTERESTS_POOL, LOVE_LANGUAGES
 )
 from .events import check_for_annual_event
+from .activities import populate_classmates_if_needed, populate_coworkers_if_needed
 
 SAVE_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "save_data.json")
 
@@ -210,17 +211,47 @@ class GameEngine:
             char.education_level = "İlkokul"
             char.current_school = f"{char.city} İlkokulu"
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🎒 {char.current_school}'na başladın.", category="school", icon="🎒"))
+            populate_classmates_if_needed(char)
         elif char.age == 10:
+            for p in char.relationships:
+                if p.relation == "Sınıf Arkadaşı":
+                    if p.relationship_level >= 65:
+                        p.relation = "Arkadaş"
+                        p.memories.append("İlkokuldan sonra da bağınızı koparmadınız; artık yakın dostsunuz.")
+                    else:
+                        p.relation = "Eski Sınıf Arkadaşı"
+                elif p.relation == "Öğretmen":
+                    p.relation = "Eski Öğretmen"
             char.education_level = "Ortaokul"
             char.current_school = f"{char.city} Ortaokulu"
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"📘 İlkokulu bitirip {char.current_school}'na geçtin.", category="school", icon="📘"))
+            populate_classmates_if_needed(char)
         elif char.age == 14:
+            for p in char.relationships:
+                if p.relation == "Sınıf Arkadaşı":
+                    if p.relationship_level >= 65:
+                        p.relation = "Arkadaş"
+                        p.memories.append("Ortaokuldan sonra da bağınızı koparmadınız; artık yakın dostsunuz.")
+                    else:
+                        p.relation = "Eski Sınıf Arkadaşı"
+                elif p.relation == "Öğretmen":
+                    p.relation = "Eski Öğretmen"
             char.education_level = "Lise"
             char.current_school = f"{char.city} Anadolu Lisesi"
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🏫 {char.current_school}'ne kayıt oldun!", category="school", icon="🏫"))
+            populate_classmates_if_needed(char)
         elif char.age == 18 and char.education_level == "Lise":
             char.current_school = None
             char.school_club = None
+            for p in char.relationships:
+                if p.relation == "Sınıf Arkadaşı":
+                    if p.relationship_level >= 65:
+                        p.relation = "Arkadaş"
+                        p.memories.append("Liseden mezun olduktan sonra da dostluğunuz devam etti.")
+                    else:
+                        p.relation = "Eski Sınıf Arkadaşı"
+                elif p.relation == "Öğretmen":
+                    p.relation = "Eski Öğretmen"
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text="🎓 Liseden başarıyla mezun oldun!", category="school", icon="🎓"))
 
         # Üniversite Mezuniyet Takibi
@@ -233,6 +264,15 @@ class GameEngine:
                 char.smarts = min(100, char.smarts + 8)
                 if "graduate" not in char.achievements:
                     char.achievements.append("graduate")
+                for p in char.relationships:
+                    if p.relation == "Sınıf Arkadaşı":
+                        if p.relationship_level >= 65:
+                            p.relation = "Arkadaş"
+                            p.memories.append(f"{grad_school} mezuniyetinden sonra da dostluğunuz devam etti.")
+                        else:
+                            p.relation = "Eski Sınıf Arkadaşı"
+                    elif p.relation == "Öğretmen":
+                        p.relation = "Eski Öğretmen"
                 char.logs.append(LifeLog(
                     age=char.age,
                     year=char.current_year,

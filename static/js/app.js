@@ -418,6 +418,46 @@ function renderPersonCard(person) {
                     <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'text_ex'})">📱 Barışma Mesajı</button>
                 </footer>
             `;
+        } else if (person.relation === "Sınıf Arkadaşı") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('classmate_action', {person_id: '${person.id}', action_id: 'hangout_canteen'})">🥪 Tost Ismarla</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('classmate_action', {person_id: '${person.id}', action_id: 'cheat_homework'})">📝 Kopya İste</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('classmate_action', {person_id: '${person.id}', action_id: 'school_crush'})">💌 Aşk Mektubu</button>
+                </footer>
+            `;
+        } else if (person.relation === "Öğretmen") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('classmate_action', {person_id: '${person.id}', action_id: 'suck_up_teacher'})">🍎 Yağ Çek</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('classmate_action', {person_id: '${person.id}', action_id: 'prank_teacher'})">🤪 Şaka Yap</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('consolidated_chat', {person_id: '${person.id}'})">💬 Akıl Danış</button>
+                </footer>
+            `;
+        } else if (person.relation === "İş Arkadaşı") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'happy_hour'})">🍻 Pub'a Git</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'office_romance'})">💌 Kahveye Çağır</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'office_hookup'})">🔥 Kaçamak</button>
+                </footer>
+            `;
+        } else if (person.relation === "Patron") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'suck_up_boss'})">☕ Kahve Götür</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'flirt_with_boss'})">💼 Flört Et</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'ask_raise'})">📈 Zam İste</button>
+                </footer>
+            `;
+        } else if (person.relation === "Arkadaş") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="openFriendActionModal('${person.id}')">🤝 Dostluk</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('friend_to_lover', {person_id: '${person.id}', action_id: 'friend_hookup'})">🔥 Kaçamak</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('friend_to_lover', {person_id: '${person.id}', action_id: 'confess_friend'})">💘 Aşk İtirafı</button>
+                </footer>
+            `;
         } else {
             quickActionsHtml = `
                 <footer class="person-card-footer">
@@ -497,7 +537,8 @@ function renderRelationships() {
     } else {
         const romanticRels = rels.filter(p => ["Eş", "Nişanlı", "Sevgili", "Flört"].includes(p.relation));
         const familyRels = rels.filter(p => ["Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk", "Torun"].includes(p.relation));
-        const socialRels = rels.filter(p => !["Eş", "Nişanlı", "Sevgili", "Flört", "Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk", "Torun"].includes(p.relation));
+        const workSchoolRels = rels.filter(p => ["Sınıf Arkadaşı", "Öğretmen", "İş Arkadaşı", "Patron"].includes(p.relation));
+        const socialRels = rels.filter(p => !["Eş", "Nişanlı", "Sevgili", "Flört", "Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk", "Torun", "Sınıf Arkadaşı", "Öğretmen", "İş Arkadaşı", "Patron"].includes(p.relation));
 
         if (romanticRels.length > 0) {
             const h = document.createElement("div");
@@ -513,6 +554,14 @@ function renderRelationships() {
             h.innerHTML = `<span>👨‍👩‍👧‍👦 Aile & Çocuklar (${familyRels.length})</span>`;
             listEl.appendChild(h);
             familyRels.forEach(p => listEl.appendChild(renderPersonCard(p)));
+        }
+
+        if (workSchoolRels.length > 0) {
+            const h = document.createElement("div");
+            h.className = "rel-section-header";
+            h.innerHTML = `<span>🎒💼 Okul & İş Çevresi (${workSchoolRels.length})</span>`;
+            listEl.appendChild(h);
+            workSchoolRels.forEach(p => listEl.appendChild(renderPersonCard(p)));
         }
 
         if (socialRels.length > 0) {
@@ -567,6 +616,10 @@ function getRelationEmoji(rel) {
         case "Eski Sevgili": case "Eski Eş": return "💔";
         case "Çocuk": return "👶";
         case "Arkadaş": return "🤝";
+        case "Sınıf Arkadaşı": case "Eski Sınıf Arkadaşı": return "🎒";
+        case "Öğretmen": case "Eski Öğretmen": return "🧑‍🏫";
+        case "İş Arkadaşı": case "Eski İş Arkadaşı": return "💼";
+        case "Patron": case "Eski Patron": return "👔";
         default: return "👤";
     }
 }
@@ -989,6 +1042,10 @@ function openPersonModal(personId) {
     const isSibling = ["Kardeş", "Abla", "Ağabey"].includes(person.relation);
     const isChild = person.relation === "Çocuk";
     const isFriend = person.relation === "Arkadaş";
+    const isClassmate = person.relation === "Sınıf Arkadaşı";
+    const isTeacher = person.relation === "Öğretmen";
+    const isCoworker = person.relation === "İş Arkadaşı";
+    const isBoss = person.relation === "Patron";
 
     const extraContainer = document.getElementById("personModalProfileExtra");
     if (extraContainer) {
@@ -1144,12 +1201,38 @@ function openPersonModal(personId) {
             actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Babalık Testi Yaptır (8.000 TL)" });
         } else if (isFriend) {
             actions.push({ id: "modal_friend_action", text: "🤝 Dostluk Sınavı & Sadakat (Borç / Sır / Gece İmdadı / Yolculuk)", primary: true });
+            actions.push({ id: "friend_hookup", text: "🔥🤫 Yatak Arkadaşlığı / Kaçamak Teklif Et (Friends with Benefits)" });
+            actions.push({ id: "confess_friend", text: "💘😭 Friendzone'u Kır & Aşkını İtiraf Et (Sevgili Ol)" });
             actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)" });
             actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)" });
             actions.push({ id: "consolidated_chat", text: "💬 Samimi Sohbet & Dertleş" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
             actions.push({ id: "modal_detailed_kiss", text: "💋 Beklenmedik Bir Şekilde Öp (Aşka Çevirmeyi Dene)" });
             actions.push({ id: "modal_detailed_fight", text: "🤬 Yüzleş ve Hesap Sor" });
+        } else if (isClassmate) {
+            actions.push({ id: "school_crush", text: "💌 Sıra Altından Aşk Mektubu Ver (Okul Aşkı)", primary: true });
+            actions.push({ id: "cheat_homework", text: "📝 Sınavda Dirseği Çek & Kopya İste (+Okul Başarısı)" });
+            actions.push({ id: "hangout_canteen", text: "🥪 Kantinde Tost & Ayran Ismarla (80 TL)" });
+            actions.push({ id: "prom_invitation", text: "💃 Mezuniyet Balosu Eşi Olmayı Teklif Et" });
+            actions.push({ id: "stand_up_bully", text: "💥 Koridorda Laf Atarsa Dik Dur & Boyun Eğme" });
+            actions.push({ id: "consolidated_chat", text: "💬 Teneffüste Sohbet Et & Dedikodu Yap" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Kavga Et & Tartış" });
+        } else if (isTeacher) {
+            actions.push({ id: "suck_up_teacher", text: "🍎 Tahtayı Sil & Hocaya Yağ Çek (+Sözlü Notu)", primary: true });
+            actions.push({ id: "prank_teacher", text: "🤪 Sırasına Tebeşir / Raptiye Koy (Muziplik Yap)" });
+            actions.push({ id: "consolidated_chat", text: "💬 Odasına Gidip Dersler Hakkında Akıl Danış" });
+        } else if (isCoworker) {
+            actions.push({ id: "office_romance", text: "💌 Mesai Sonrası Kahveye Davet Et (Ofis Aşkı Başlat)", primary: true });
+            actions.push({ id: "office_hookup", text: "🔥🏢 Cuma Mesai Bitimi Ofiste Gizli Kaçamak Yap" });
+            actions.push({ id: "happy_hour", text: "🍻 İş Çıkışı Pub'a Git & Patronu Çekiştir (600 TL)" });
+            actions.push({ id: "steal_credit", text: "😈 Sunumda Emeğini Çal & Patronun Gözüne Gir (+Performans, -Dostluk)" });
+            actions.push({ id: "consolidated_chat", text: "💬 Kahve Molasında Sohbet Et & Dertleş" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Toplantıda Sert Tartış & Hesap Sor" });
+        } else if (isBoss) {
+            actions.push({ id: "suck_up_boss", text: "☕ Özel Filtre Kahve Götür & Stratejisini Öv (+Performans)", primary: true });
+            actions.push({ id: "flirt_with_boss", text: "💼🔥 Lüks Akşam Yemeğinde Yakınlaş (Patronla Yasak Aşk / Zam Riski)", primary: true });
+            actions.push({ id: "ask_raise", text: "📈 Yüz Yüze Görüşüp Zam Talep Et" });
+            actions.push({ id: "consolidated_chat", text: "💬 Odasında Şirket Vizyonu Hakkında Konuş" });
         } else {
             actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)", primary: true });
             actions.push({ id: "consolidated_chat", text: "💬 Samimi Sohbet & Hal Hatır Sor" });
@@ -1281,6 +1364,26 @@ async function handlePersonAction(actId) {
     }
     if (actId === "try_baby") {
         await performActivity("try_baby");
+        closeModal("personModal");
+        return;
+    }
+    if (["friend_hookup", "confess_friend"].includes(actId)) {
+        await performActivity("friend_to_lover", { person_id: pid, action_id: actId });
+        closeModal("personModal");
+        return;
+    }
+    if (["school_crush", "cheat_homework", "hangout_canteen", "prom_invitation", "stand_up_bully", "suck_up_teacher", "prank_teacher"].includes(actId)) {
+        await performActivity("classmate_action", { person_id: pid, action_id: actId });
+        closeModal("personModal");
+        return;
+    }
+    if (["office_romance", "office_hookup", "happy_hour", "steal_credit"].includes(actId)) {
+        await performActivity("coworker_action", { person_id: pid, action_id: actId });
+        closeModal("personModal");
+        return;
+    }
+    if (["suck_up_boss", "flirt_with_boss", "ask_raise"].includes(actId)) {
+        await performActivity("boss_action", { person_id: pid, action_id: actId });
         closeModal("personModal");
         return;
     }

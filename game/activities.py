@@ -179,6 +179,7 @@ def apply_for_university(char: Character, faculty_id: str) -> Dict[str, Any]:
     char.school_years_left = faculty["duration"]
     char.smarts = min(100, char.smarts + 10)
     char.happiness = min(100, char.happiness + 15)
+    populate_classmates_if_needed(char)
     if "graduate" not in char.achievements:
         char.achievements.append("graduate")
     msg = f"Tebrikler! {faculty['name']} bölümüne kabul edildin!"
@@ -215,6 +216,7 @@ def apply_for_job(char: Character, job_id: str, chosen_opt: int) -> Dict[str, An
     )
     char.current_job = new_job
     char.happiness = min(100, char.happiness + 18)
+    populate_coworkers_if_needed(char)
     msg = f"Mülakatı geçtin! '{job_spec['title']}' olarak işe başladın (Yıllık: {job_spec['salary']:,} TL)!"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="💼"))
     return {"success": True, "message": msg}
@@ -332,6 +334,17 @@ def quit_job(char: Character) -> Dict[str, Any]:
     if char.part_time_job:
         titles.append(char.part_time_job.title)
         char.part_time_job = None
+
+    for p in char.relationships:
+        if p.relation == "İş Arkadaşı":
+            if p.relationship_level >= 65:
+                p.relation = "Arkadaş"
+                p.memories.append("İşten ayrıldıktan sonra bile dostluğunuz devam etti.")
+            else:
+                p.relation = "Eski İş Arkadaşı"
+        elif p.relation == "Patron":
+            p.relation = "Eski Patron"
+
     msg = f"{', '.join(titles)} görevinden istifa ettin."
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="👋"))
     return {"success": True, "message": msg}
@@ -3823,6 +3836,339 @@ def do_handle_ex_midnight_text(char: Character, person_id: str, choice_id: str) 
         
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="📱"))
     return {"success": True, "message": msg}
+
+# ----------------- SINIF ARKADAŞLARI, İŞ ARKADAŞLARI & ARKADAŞLARLA AŞK -----------------
+
+def populate_classmates_if_needed(char: Character):
+    """Karakter okuldayken sınıf arkadaşları ve bir öğretmen üretir."""
+    if not char.current_school:
+        return
+    has_classmates = any(p.relation == "Sınıf Arkadaşı" and p.is_alive for p in char.relationships)
+    if has_classmates:
+        return
+
+    traits = [
+        {"desc": "Sınıfın Popüleri & Havalısı", "looks": random.randint(85, 98), "smarts": random.randint(60, 85), "crazy": random.randint(40, 75), "p": "Eğlenceli"},
+        {"desc": "Sıra Arkadaşın & İnek Öğrenci", "looks": random.randint(55, 80), "smarts": random.randint(85, 99), "crazy": random.randint(15, 35), "p": "Entelektüel"},
+        {"desc": "Arka Sıranın Haylazı & Komiği", "looks": random.randint(60, 85), "smarts": random.randint(50, 75), "crazy": random.randint(60, 90), "p": "Çapkın & Özgür Ruhlu"}
+    ]
+    for idx, tr in enumerate(traits):
+        c_gender = random.choice(["Erkek", "Kadın"])
+        c_names = FIRST_NAMES_MALE if c_gender == "Erkek" else FIRST_NAMES_FEMALE
+        c_name = f"{random.choice(c_names)} {random.choice(LAST_NAMES)}"
+        c_age = max(6, char.age + random.randint(-1, 1))
+        classmate = Person(
+            id=f"classmate_{len(char.relationships)+1}_{idx}",
+            name=c_name,
+            relation="Sınıf Arkadaşı",
+            gender=c_gender,
+            age=c_age,
+            relationship_level=random.randint(60, 80),
+            personality=tr["p"],
+            looks=tr["looks"],
+            smarts=tr["smarts"],
+            craziness=tr["crazy"],
+            loyalty=random.randint(65, 90),
+            bio=tr["desc"],
+            memories=[f"{char.current_school} sınıf arkadaşın."]
+        )
+        char.relationships.append(classmate)
+
+    # 1 Öğretmen / Hoca
+    t_gender = random.choice(["Erkek", "Kadın"])
+    t_names = FIRST_NAMES_MALE if t_gender == "Erkek" else FIRST_NAMES_FEMALE
+    t_name = f"{random.choice(t_names)} {random.choice(LAST_NAMES)}"
+    teacher_job = "Sınıf Öğretmeni" if char.age < 11 else ("Bölüm Profesörü" if "Üniversite" in (char.current_school or "") else "Matematik / Edebiyat Hocası")
+    teacher = Person(
+        id=f"teacher_{len(char.relationships)+1}",
+        name=t_name,
+        relation="Öğretmen",
+        gender=t_gender,
+        age=random.randint(32, 56),
+        job=teacher_job,
+        relationship_level=random.randint(65, 80),
+        personality=random.choice(["Sadık & Aileci", "Entelektüel", "Geleneksel & Muhafazakar"]),
+        smarts=random.randint(80, 98),
+        memories=[f"{char.current_school} okulundaki hocan."]
+    )
+    char.relationships.append(teacher)
+
+
+def populate_coworkers_if_needed(char: Character):
+    """Karakter işe girdiğinde mesai arkadaşları ve bir patron/müdür üretir."""
+    if not char.current_job:
+        return
+    has_coworkers = any(p.relation == "İş Arkadaşı" and p.is_alive for p in char.relationships)
+    if has_coworkers:
+        return
+
+    for idx in range(2):
+        w_gender = random.choice(["Erkek", "Kadın"])
+        w_names = FIRST_NAMES_MALE if w_gender == "Erkek" else FIRST_NAMES_FEMALE
+        w_name = f"{random.choice(w_names)} {random.choice(LAST_NAMES)}"
+        w_age = max(20, min(58, char.age + random.randint(-4, 7)))
+        coworker = Person(
+            id=f"coworker_{len(char.relationships)+1}_{idx}",
+            name=w_name,
+            relation="İş Arkadaşı",
+            gender=w_gender,
+            age=w_age,
+            job=f"{char.current_job.title} Ekip Üyesi",
+            relationship_level=random.randint(60, 80),
+            personality=random.choice(["Romantik", "Eğlenceli", "Hırslı & Kariyerist", "Uyumlu"]),
+            looks=random.randint(65, 95),
+            smarts=random.randint(65, 95),
+            loyalty=random.randint(60, 90),
+            memories=[f"{char.current_job.title} pozisyonundaki çalışma arkadaşın."]
+        )
+        char.relationships.append(coworker)
+
+    # 1 Patron / Departman Müdürü
+    b_gender = random.choice(["Erkek", "Kadın"])
+    b_names = FIRST_NAMES_MALE if b_gender == "Erkek" else FIRST_NAMES_FEMALE
+    b_name = f"{random.choice(b_names)} {random.choice(LAST_NAMES)}"
+    boss_age = max(30, min(65, char.age + random.randint(6, 18)))
+    boss = Person(
+        id=f"boss_{len(char.relationships)+1}",
+        name=b_name,
+        relation="Patron",
+        gender=b_gender,
+        age=boss_age,
+        job=f"{char.current_job.title} Departman Direktörü / Patron",
+        relationship_level=random.randint(55, 75),
+        personality=random.choice(["Hırslı & Kariyerist", "Materyalist", "Entelektüel"]),
+        wealth=random.randint(85, 99),
+        smarts=random.randint(75, 95),
+        looks=random.randint(65, 90),
+        memories=[f"İş yerindeki yöneticin / patronun."]
+    )
+    char.relationships.append(boss)
+
+
+def do_friend_to_lover(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
+    """Arkadaşla yatak arkadaşlığı (Friends with Benefits) veya Friendzone'u kırıp aşka açılma."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    if person.relation != "Arkadaş":
+        return {"success": False, "message": "Bu eylem yalnızca arkadaşlarınız için geçerlidir."}
+
+    if action_id == "friend_hookup":
+        char.hookup_count += 1
+        if char.spouse_id or char.dating_partner_id:
+            char.karma = max(0, char.karma - 20)
+
+        if person.relationship_level >= 60:
+            roll = random.random()
+            if roll < 0.38:
+                person.relation = "Flört"
+                person.relationship_level = min(100, person.relationship_level + 20)
+                char.happiness = min(100, char.happiness + 24)
+                person.memories.append("Gecenin sonunda birbirinize sarılıp kaldınız ve aranızdaki dostluk tutkulu bir aşka dönüştü.")
+                msg = f"🔥💘 DOSTLUK AŞKA EVRİLDİ! Gece {person.name} ile anlık bir tutkuyla yakınlaştınız. Sabah kahve içerken göz göze geldiniz: 'Biz galiba birbirimize aşığız...' dediniz ve FLÖRT etmeye başladınız! (İlişki: Flört, Mutluluk +24)"
+            elif roll < 0.85:
+                person.relationship_level = min(100, person.relationship_level + 15)
+                char.happiness = min(100, char.happiness + 18)
+                person.memories.append("Friends with Benefits: Birlikte kaçamak yaptınız ama dostluğunuz aynı samimiyetle devam ediyor.")
+                msg = f"🔥🤫 YATAK ARKADAŞLIĞI (Friends with Benefits)! {person.name} ile geceyi birlikte geçirdiniz. Sabah gülüşerek kahvaltı yaptınız: 'Aramızda sır olarak kalıyor, dostluğumuz aynen devam!' (İlişki +15, Mutluluk +18)"
+            else:
+                person.relationship_level = max(20, person.relationship_level - 15)
+                person.memories.append("Kaçamağın ardından sabah aranızda soğuk ve tuhaf rüzgarlar esti.")
+                msg = f"😬 SABAH TUHAFLIĞI... {person.name} ile yaşanan yakınlaşmanın ardından sabah ikiniz de göz teması kuramadınız. 'Sanırım bu bir hataydı dostum' diyerek aceleyle ayrıldı. (İlişki -15)"
+        else:
+            person.relationship_level = max(20, person.relationship_level - 12)
+            msg = f"🙅‍♂️ 'BİZ SADECE ARKADAŞIZ!' {person.name} hamleni geri çevirdi: 'Lütfen aramızdaki dostluğu bozacak şeyler yapma!' diyerek mesafe koydu."
+        
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🔥"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "confess_friend":
+        if person.relationship_level >= 72 and person.loyalty >= 55:
+            for p in char.relationships:
+                if p.relation == "Sevgili" and p.id != person.id:
+                    p.relation = "Eski Sevgili"
+            person.relation = "Sevgili"
+            char.dating_partner_id = person.id
+            person.relationship_level = 100
+            person.loyalty = min(100, person.loyalty + 20)
+            char.happiness = min(100, char.happiness + 30)
+            person.memories.append("Yıllardır dostken aşkını itiraf ettin; meğer o da seni seviyormuş!")
+            msg = f"💘😭 FRIENDZONE TARİH OLDU! {person.name}'e yıllardır içinde biriken gerçek hislerini döktün. Gözleri doldu: 'Ben de yıllardır sana aşıktım ama dostluğumuz bozulur diye ödüm kopuyordu!' diyerek boynuna sarıldı! Artık resmen SEVGİLİSİNİZ! (İlişki: %100 Sevgili, Mutluluk +30)"
+        else:
+            person.relationship_level = max(25, person.relationship_level - 22)
+            char.happiness = max(10, char.happiness - 20)
+            char.stress = min(100, char.stress + 20)
+            person.memories.append("Aşkını itiraf ettin ama o seni sadece arkadaş olarak gördüğünü söyledi.")
+            msg = f"💔😬 FRIENDZONE DARBESİ! {person.name} donakaldı: 'Sen benim en iyi dostumsun, sana asla o gözle bakamam...' dedi. Aranıza telafisi güç bir soğukluk girdi! (İlişki -22, Stres +20)"
+            
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💘"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz işlem."}
+
+
+def do_classmate_action(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
+    """Sınıf arkadaşı ve öğretmenle etkileşimler."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    
+    if person.relation == "Sınıf Arkadaşı":
+        if action_id == "school_crush":
+            if person.relationship_level >= 58 and (person.looks <= char.looks + 18 or char.skills.get("charisma", 20) >= 35):
+                person.relation = "Flört"
+                person.relationship_level = min(100, person.relationship_level + 25)
+                char.happiness = min(100, char.happiness + 22)
+                person.memories.append("Teneffüste sıra altından verdiğin aşk mektubunu kabul edip flört etmeye başladınız.")
+                msg = f"💌💘 OKUL AŞKI BAŞLADI! {person.name}'e teneffüste gizlice bir aşk mektubu verdin. Yüzü kızararak gülümsedi: 'Ben de senden hoşlanıyordum!' dedi ve okulda FLÖRT etmeye başladınız! (Flört, Mutluluk +22)"
+            else:
+                char.stress = min(100, char.stress + 15)
+                person.relationship_level = max(20, person.relationship_level - 10)
+                person.memories.append("Aşk mektubunu sınıftakilere gösterip güldü.")
+                msg = f"🙈😅 MEKTUP SINIFTA YAYILDI! {person.name} mektubu ciddiye almadı, sınıftakiler arka sıralardan 'Oooo!' diyerek gün boyu seninle dalga geçti! (Stres +15)"
+        elif action_id == "cheat_homework":
+            if person.relationship_level >= 50 or person.smarts >= 70:
+                char.school_performance = min(100, char.school_performance + 14)
+                char.smarts = min(100, char.smarts + 4)
+                person.memories.append("Sınavda kağıdını gösterip kopya verdi.")
+                msg = f"📝✅ KOPYA BAŞARILI! Sınavda dirseğini çekip {person.name}'in kağıdına baktın. Sınavdan yüksek not aldın! (Okul Performansı +14, Zeka +4)"
+            else:
+                person.relationship_level = max(20, person.relationship_level - 8)
+                msg = f"😤 'KENDİN ÇALIŞSAYDIN!' {person.name} dirseğiyle kağıdı kapattı ve kopya vermeyi reddetti."
+        elif action_id == "hangout_canteen":
+            cost = 80
+            if char.money < cost:
+                return {"success": False, "message": "Kantinde tost & ayran ısmarlamak için 80 TL gerekli."}
+            char.money -= cost
+            person.relationship_level = min(100, person.relationship_level + 18)
+            char.happiness = min(100, char.happiness + 10)
+            person.memories.append("Kantinde tost ve gazoz ısmarlayıp hocaları çekiştirdiniz.")
+            msg = f"🥪 Kantinde {person.name}'e karışık tost ve ayran ısmarladın. Hocaları çekiştirip güldünüz! (İlişki +18)"
+        elif action_id == "prom_invitation":
+            if person.relationship_level >= 65:
+                person.relationship_level = min(100, person.relationship_level + 25)
+                char.happiness = min(100, char.happiness + 25)
+                person.memories.append("Mezuniyet balosuna kavalye olarak gittiniz ve unutulmaz bir gece geçirdiniz.")
+                msg = f"💃✨ BALO EŞİN OLDU! {person.name} mezuniyet balosu teklifini sevinçle kabul etti! Şık kıyafetlerinizle gecenin en gözde çifti oldunuz! (Mutluluk +25)"
+            else:
+                msg = f"😬 'Başkasına söz verdim...' {person.name} balo teklifini kibarca reddetti."
+        else:  # stand_up_bully
+            char.happiness = min(100, char.happiness + 12)
+            person.relationship_level = 50
+            person.memories.append("Sana laf attığında dik durup geri adım attırdın.")
+            msg = f"💥 DİK DURDUN! {person.name} koridorda sana laf atıp üstüne yürümeye kalktı ama gözlerinin içine bakıp sesini yükselttin; geri adım atmak zorunda kaldı! Tüm okulun saygısını kazandın!"
+        
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="🎒"))
+        return {"success": True, "message": msg}
+
+    elif person.relation == "Öğretmen":
+        if action_id == "suck_up_teacher":
+            person.relationship_level = min(100, person.relationship_level + 16)
+            char.school_performance = min(100, char.school_performance + 12)
+            person.memories.append("Derslerine özen gösterip hocanın gözüne girdin.")
+            msg = f"🍎 Hocaya tahtayı silmede yardım edip ekstra sorular çözdün: 'Aferin evladım, böyle devam et' diyerek sözlüne yüksek not verdi! (Performans +12)"
+        else:  # prank_teacher
+            if random.random() < 0.5:
+                char.school_performance = max(10, char.school_performance - 15)
+                person.relationship_level = max(10, person.relationship_level - 25)
+                msg = f"🚨 DİSİPLİNE SEVK EDİLDİN! Hocanın sandalyesine raptiye koyma şakan patladı; hoca seni anında müdür yardımcısına gönderdi! (Performans -15)"
+            else:
+                char.happiness = min(100, char.happiness + 15)
+                msg = f"😂 EŞEK ŞAKASI TUTTU! Tahtaya yazdığın komik karikatüre tüm sınıf ve hatta hoca bile kahkahalarla güldü!"
+        
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="🧑‍🏫"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz işlem."}
+
+
+def do_coworker_action(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
+    """İş arkadaşı etkileşimleri: Ofis aşkı, Cuma kaçamağı, Happy hour ve ayak kaydırma."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    if person.relation != "İş Arkadaşı":
+        return {"success": False, "message": "Bu eylem yalnızca iş arkadaşlarınız için geçerlidir."}
+
+    if action_id == "office_romance":
+        if person.relationship_level >= 58 and (person.looks <= char.looks + 22 or char.skills.get("charisma", 20) >= 35):
+            person.relation = "Flört"
+            person.relationship_level = min(100, person.relationship_level + 22)
+            char.happiness = min(100, char.happiness + 20)
+            person.memories.append("Akşam mesaisinde kahve makinesi başında yakınlaşıp ofis flörtüne başladınız.")
+            msg = f"☕🌹 OFİS AŞKI BAŞLADI! Akşam mesaisinde kahve alıp balkona çıktınız. {person.name} ile konuşurken aranızdaki çekim tavan yaptı! Artık ofiste gizli bir FLÖRTÜNÜZ var! (İlişki: Flört, Mutluluk +20)"
+        else:
+            person.relationship_level = max(20, person.relationship_level - 10)
+            msg = f"😬 'İŞLE AŞKI KARIŞTIRMAYALIM...' {person.name} profesyonel kalmak istediğini söyleyerek kibarca geri adım attı."
+    elif action_id == "office_hookup":
+        char.hookup_count += 1
+        person.relationship_level = min(100, person.relationship_level + 18)
+        char.happiness = min(100, char.happiness + 22)
+        person.memories.append("Cuma mesai bitimi ofiste gizli ve heyecan dolu bir kaçamak yaşadınız.")
+        msg = f"🔥🏢 OFİSTE KAÇAMAK! Cuma akşamı herkes çıktıktan sonra {person.name} ile arşiv odasında unutulmaz bir kaçamak yaşadınız! Pazartesi sabahı toplantılarda birbirinize kaçamak bakışlar atacaksınız! (Mutluluk +22)"
+    elif action_id == "happy_hour":
+        cost = 600
+        if char.money < cost:
+            return {"success": False, "message": "İş çıkışı pub için 600 TL gerekli."}
+        char.money -= cost
+        person.relationship_level = min(100, person.relationship_level + 16)
+        char.stress = max(0, char.stress - 16)
+        char.happiness = min(100, char.happiness + 14)
+        person.memories.append("İş çıkışı bara gidip patronun arkasından dedikodu yaptınız.")
+        msg = f"🍻 Cuma akşamı iş çıkışı {person.name} ile bara gidip birer soğuk bira içtiniz, haftanın tüm yorgunluğunu ve stresini attınız! (Stres -16, Mutluluk +14)"
+    else:  # steal_credit
+        if char.current_job:
+            char.current_job.performance = min(100, char.current_job.performance + 18)
+        person.relationship_level = 5
+        person.memories.append("Büyük projeyi patrona sunarken adını sildin ve tüm övgüyü çaldın.")
+        msg = f"😈 AYAK KAYDIRMA! Büyük sunumda {person.name}'in haftalarca emek verdiği slaytları kendin yapmış gibi anlattın! Patron takdir etti ama {person.name} sana ömürlük düşman kesildi! (Performans +18, Düşman Kazanıldı)"
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="💼"))
+    return {"success": True, "message": msg}
+
+
+def do_boss_action(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
+    """Patron / Müdür etkileşimleri: Yağ çekme, zam isteme ve patronla yasak flört."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    if person.relation != "Patron":
+        return {"success": False, "message": "Bu eylem yalnızca patronunuz için geçerlidir."}
+
+    if action_id == "suck_up_boss":
+        person.relationship_level = min(100, person.relationship_level + 15)
+        if char.current_job:
+            char.current_job.performance = min(100, char.current_job.performance + 12)
+        person.memories.append("Patrona her fırsatta övgüler yağdırıp gözüne girdin.")
+        msg = f"☕ Patronun {person.name}'in odasına özel filtre kahve götürüp stratejilerini övdün: 'Gözümden kaçmıyorsun, çok çalışkansın' diyerek tebessüm etti! (+12 Performans)"
+    elif action_id == "flirt_with_boss":
+        if person.relationship_level >= 62 and (char.looks >= 70 or char.skills.get("charisma", 20) >= 45):
+            person.relation = "Flört"
+            person.relationship_level = min(100, person.relationship_level + 25)
+            if char.current_job:
+                char.current_job.salary = int(char.current_job.salary * 1.35)
+                char.current_job.performance = 100
+            char.happiness = min(100, char.happiness + 25)
+            person.memories.append("Patronunla lüks bir akşam yemeğinde yakınlaştınız; maaşına %35 özel zam yaptı!")
+            msg = f"💼🔥 PATRONLA YASAK AŞK! Patronun {person.name} ile lüks bir akşam yemeğinde yakınlaştınız. 'Sen sıradan bir çalışan değilsin' diyerek sana %35 ÖZEL ZAM ve şirket arabası tahsis etti! Artık patronunla gizli bir aşk yaşıyorsun! (Maaş Zammı: +%35, Mutluluk +25)"
+        else:
+            person.relationship_level = max(10, person.relationship_level - 28)
+            if char.current_job:
+                char.current_job.performance = max(10, char.current_job.performance - 25)
+            char.stress = min(100, char.stress + 25)
+            person.memories.append("Patronuna asılmaya kalktın; seni odasından kovdu.")
+            msg = f"🚪😬 'HADDİNİ BİL!' Patronun kaşlarını çattı: 'Burası ciddi bir kurum, laubaliliğe tahammülüm yok!' diyerek seni odasından kovdu! Performans notun dip yaptı! (Stres +25)"
+    else:  # ask_raise
+        if person.relationship_level >= 65:
+            if char.current_job:
+                char.current_job.salary = int(char.current_job.salary * 1.20)
+            msg = f"📈 ZAM ONAYLANDI! Patronun {person.name} performansından ve sadakatinden memnun olduğunu söyleyip maaşına %20 zam yaptı!"
+        else:
+            msg = f"📉 'ŞİRKET BÜTÇESİ UYGUN DEĞİL...' Patronun {person.name} zam talebini geri çevirdi."
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="👔"))
+    return {"success": True, "message": msg}
+
 
 
 
