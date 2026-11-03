@@ -1,0 +1,19 @@
+{
+  "name": "BitLife Türkiye - Hayat Simülatörü",
+  "short_name": "BitLife TR",
+  "description": "Türkçe Metin Tabanlı Hayat ve İlişki Simülatörü Oyunu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#111827",
+  "orientation": "portrait",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
