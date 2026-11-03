@@ -1092,6 +1092,116 @@ DETAILED_FIGHT_ATTITUDES = [
     }
 ]
 
+# ----------------- AİLE & DOSTLUK DERİNLEŞTİRME SİSTEMLERİ -----------------
+
+PARENT_CARE_OPTIONS = [
+    {
+        "id": "take_home",
+        "name": "🏡 Kendi Evine Yanına Al & Birlikte Yaşa",
+        "desc": "Anne/babanı kendi evine alıp baş tacı edersin. Evin bereketi ve hayır duası artar.",
+        "cost": 0,
+        "status_label": "Seninle Yaşıyor"
+    },
+    {
+        "id": "hire_caregiver",
+        "name": "👩‍⚕️ Eve Özel Yatılı Bakıcı & Hemşire Tut",
+        "desc": "Kendi evinde kalır, profesyonel yatılı sağlık personeli 7/24 ilgilenir.",
+        "cost": 65000,
+        "status_label": "Özel Bakıcılı"
+    },
+    {
+        "id": "nursing_home",
+        "name": "🏥 Seçkin Yaşlı Bakımevi / Huzurevi",
+        "desc": "7/24 doktor gözetiminde nezih ve huzurlu bir bakım evine yerleştirirsin.",
+        "cost": 45000,
+        "status_label": "Huzurevinde"
+    },
+    {
+        "id": "hospital_vigil",
+        "name": "🤲 Hastanede Başucunda Refakatçi Kal",
+        "desc": "Hastalığında gecelerce elini tutup refakatçi kalırsın; gözyaşlarıyla sana dua eder.",
+        "cost": 3500,
+        "status_label": "Refakat Edildi"
+    }
+]
+
+SIBLING_INTERACTIONS = [
+    {
+        "id": "ask_bail_loan",
+        "name": "💸 Kardeşin Acil 50.000 TL Borç / Kefillik İstiyor",
+        "desc": "'İşim zorda, bana acil el uzatmazsan batıyorum!' diyerek kapına geldi.",
+        "cost": 50000
+    },
+    {
+        "id": "wedding_gold_gift",
+        "name": "🥇 Kardeşinin Düğününde Ağır Tam Altın Tak",
+        "desc": "Düğün salonunda göğsünü gere gere kardeşine beşi bir yerde ve tam altın takarsın.",
+        "cost": 28000
+    },
+    {
+        "id": "reconcile_peace",
+        "name": "🕊️ Bayramda Zeytin Dalı Uzat & Barış (Kırgınlığı Bitir)",
+        "desc": "Araya giren eski soğukluğu unutup sarılmak ve helalleşmek.",
+        "cost": 0
+    },
+    {
+        "id": "deep_heart_talk",
+        "name": "☕ Kahve İçip Çocukluk Hatıralarını Yad Et",
+        "desc": "Eski günleri, anne-babanın gençliğini ve sokakta oynadığınız günleri konuşup dertleşin.",
+        "cost": 250
+    }
+]
+
+PARENTING_CRISES = [
+    {
+        "id": "teen_rebellion",
+        "title": "🚨 Ergenlik İsyanı: Okuldan Kaçış & Kötü Arkadaş Çevresi",
+        "desc": "Çocuğun okuldan kaçıp tehlikeli bir arkadaş grubuyla yakalandı! Odasına kapanıp kapıyı kilitledi.",
+        "options": [
+            {"id": "gentle_mentor", "text": "☕ Sakince Karşına Alıp Çay İç & Nedenini Dinle", "style": "Şefkatli Dinleme", "desc": "Güven ve sevgi bağını güçlendirir (+İlişki, +Moral)."},
+            {"id": "strict_discipline", "text": "📵 Telefonuna & Harçlığına 1 Ay El Koy (Sert Disiplin)", "style": "Otorite", "desc": "Disiplini sağlar ama aranızda soğuk rüzgarlar eser."},
+            {"id": "family_therapy", "text": "🛋️ Ergenlik Psikoloğu & Aile Danışmanına Götür (6.000 TL)", "style": "Profesyonel Destek", "desc": "Sorunun köküne inilir, çocuk geleceğe kazanılır."}
+        ]
+    },
+    {
+        "id": "career_choice",
+        "title": "🎓 Gelecek Seçimi: 'Üniversite Okumayıp Kendi Hayalimin Peşinden Gideceğim!'",
+        "desc": "Çocuğun sınav sonrası karşına dikildi: 'Ben memur veya mühendis olmak istemiyorum, sanatçı/girişimci olacağım!'",
+        "options": [
+            {"id": "support_dream", "text": "🌟 'Hayalinin Arkasındayım' Deyip Başlangıç Sermayesi Ver (40.000 TL)", "style": "Vizyoner Destek", "desc": "Çocuğun başarısı ve özgüveni parlar, ömür boyu sana minnet duyar."},
+            {"id": "push_traditional", "text": "🏛️ 'Önce Altın Bileziğin Olsun!' Deyip Zorla Hukuk/Tıp Yazdır", "style": "Geleneksel Baskı", "desc": "Garantici ama mutsuz bir kariyer yoluna girer."},
+            {"id": "compromise_school", "text": "🤝 'Hem Diplomanı Al Hem Hayalini Yanında Büyüt' Uzlaşması Yap", "style": "Denge", "desc": "Orta yolda anlaşarak aranızdaki bağı korursunuz."}
+        ]
+    }
+]
+
+FRIEND_INTERACTIONS = [
+    {
+        "id": "lend_money",
+        "name": "🤝 'Kiramı Ödeyemedim, 15.000 TL Borç Verir Misin?'",
+        "desc": "Zor durumdaki dostuna borç verip el uzat (Sadık dostsa zamanında öder; vefasızsa kaçabilir!).",
+        "cost": 15000
+    },
+    {
+        "id": "share_secret",
+        "name": "🤫 En Karanlık ve Derin Sırrını Paylaş (Güven Testi)",
+        "desc": "Hayatında kimseye anlatmadığın bir sırrı ona emanet et. Sadakati %80 altındaysa ortamda laf yayılabilir!",
+        "cost": 0
+    },
+    {
+        "id": "stand_by_night",
+        "name": "🚨 Gece Yarısı Karakol / Hastane İmdadına Koş",
+        "desc": "Gece 03:00'te gelen imdat telefonuna hiç düşünmeden kalkıp gitmek ('Dost kara günde belli olur').",
+        "cost": 2500
+    },
+    {
+        "id": "fun_road_trip",
+        "name": "🚗 Dostlarla Hafta Sonu Ege Yolculuğu & Kamp",
+        "desc": "Arabaya atlayıp müzik son ses sahil rotası çizmek, dostluğu pekiştirir.",
+        "cost": 6000
+    }
+]
+
 ACHIEVEMENT_DEFINITIONS = [
     {"id": "born", "icon": "🍼", "title": "Hayata Merhaba", "desc": "Dünyaya gözlerini açtın."},
     {"id": "first_love", "icon": "💘", "title": "İlk Kıvılcım", "desc": "İlk kez aşık oldun ve sevgili edindin."},
@@ -1117,5 +1227,105 @@ ACHIEVEMENT_DEFINITIONS = [
     {"id": "rockstar", "icon": "🎸", "title": "Sahne Efsanesi", "desc": "Kendi müzik grubunu kurup stadyum konserine çıktın."},
     {"id": "ballon_dor", "icon": "⚽", "title": "Altın Top (Ballon d'Or)", "desc": "Profesyonel spor kariyerinde zirveye çıkıp şampiyonluk kupası kaldırdın."},
     {"id": "grandparent", "icon": "👵", "title": "Çınar & Torun Sevgisi", "desc": "Çocuğunu evlendirip ilk torununu kucağına aldın."},
+    {"id": "casanova_hookup", "icon": "🔥", "title": "Gecelerin Çapkını", "desc": "Gece hayatında unutulmaz tek gecelik bir kaçamak yaşadın."},
     {"id": "centenarian", "icon": "🌳", "title": "Asırlık Çınar", "desc": "100 yaşına kadar hayatta kaldın."}
+]
+
+# ----------------- GECE HAYATI, TEK GECELİK İLİŞKİ & FLÖRT DİNAMİKLERİ -----------------
+
+HOOKUP_VENUES = [
+    {
+        "id": "nightclub",
+        "name": "🍸 Gece Kulübü & VIP Loca",
+        "desc": "Lüks kokteyller, neon ışıklar, yüksek tempo müzik ve dans pistinde anlık kıvılcım.",
+        "cost": 3000,
+        "min_age": 18,
+        "charm_boost": 15
+    },
+    {
+        "id": "dive_bar",
+        "name": "🍻 Salaş Kokteyl Bar & Pub",
+        "desc": "Barda yan yana taburelerde oturup tekila shotlar ve samimi sohbet eşliğinde yakınlaşma.",
+        "cost": 1200,
+        "min_age": 18,
+        "charm_boost": 10
+    },
+    {
+        "id": "kismet_casual",
+        "name": "📱 KısmetApp 'Sadece Eğlence' Randevusu",
+        "desc": "Uygulamada baştan 'Ciddi düşünmüyorum' diyerek eşleşilen kişiyle doğrudan otele/eve geçme.",
+        "cost": 500,
+        "min_age": 18,
+        "charm_boost": 8
+    },
+    {
+        "id": "beach_resort",
+        "name": "🏖️ Lüks Beach Club & After Party",
+        "desc": "Yaz tatilinde deniz, gün batımı partisi ve 'Burada yaşanan burada kalır' kaçamağı.",
+        "cost": 5500,
+        "min_age": 18,
+        "charm_boost": 20
+    }
+]
+
+HOOKUP_PROTECTION_CHOICES = [
+    {
+        "id": "protected",
+        "name": "🛡️ Korumalı (Kondom & Doğum Kontrolü)",
+        "desc": "Sağlığını ve geleceğini garantiye alırsın. Hastalık ve istenmeyen gebelik riski minimumdur."
+    },
+    {
+        "id": "unprotected",
+        "name": "⚡ Korumasız (Anın Büyüsüne Kapıl - Yüksek Risk!)",
+        "desc": "Heyecan dorukta fakat CYBH (zührevi hastalıklar) ve sürpriz gebelik riski çok yüksektir!"
+    }
+]
+
+DATING_OPENING_LINES = [
+    {
+        "id": "witty_smart",
+        "name": "🧠 Esprili & Zeki Açılış",
+        "text": "'Profilindeki kitap/film zevkine bakılırsa bu akşamın en ilginç sohbetini seninle yapacağım belli.'",
+        "best_for": ["Entelektüel", "Eğlenceli", "Uyumlu"],
+        "penalty_for": ["Materyalist"]
+    },
+    {
+        "id": "confident_direct",
+        "name": "🔥 Özgüvenli & Direkt Açılış",
+        "text": "'Gözlerini benden alamadığını fark ettim, yanına gelip tanışarak sana bir iyilik yapayım dedim.'",
+        "best_for": ["Çapkın & Özgür Ruhlu", "Hırslı & Kariyerist"],
+        "penalty_for": ["Geleneksel & Muhafazakar", "Sadık & Aileci"]
+    },
+    {
+        "id": "romantic_sweet",
+        "name": "🌹 Romantik & Samimi Açılış",
+        "text": "'Gülüşün o kadar içten ve güzeldi ki, selam vermeden geçseydim bütün gün aklımda kalırdın.'",
+        "best_for": ["Romantik", "Sadık & Aileci", "Uyumlu"],
+        "penalty_for": ["Çapkın & Özgür Ruhlu"]
+    },
+    {
+        "id": "cheesy_meme",
+        "name": "😂 Klişe & Mizahi Açılış",
+        "text": "'Baban uzaylı falan mıydı? Çünkü senin gibi biri bu dünyadan olamaz ahahaha!'",
+        "best_for": ["Eğlenceli"],
+        "penalty_for": ["Entelektüel", "Hırslı & Kariyerist"]
+    }
+]
+
+RED_FLAGS_POOL = [
+    "Garsona ve vale çalışanına kaba davranıp bahşişi geri aldı",
+    "Hesap gelince telefonla konuşur gibi yapıp tuvalete saklandı",
+    "Tüm randevu boyunca eski sevgilisini kötüleyip durdu",
+    "Telefonunu sürekli ters çevirip bildirimlerini gizledi",
+    "Daha ilk günden ne giyeceğine ve kiminle görüşeceğine karışmaya kalktı",
+    "Eski sevgilisiyle hâlâ her gün mesajlaştığını ağzından kaçırdı"
+]
+
+GREEN_FLAGS_POOL = [
+    "Hizmet sektöründeki çalışanlara olağanüstü nazik ve cömert davrandı",
+    "Seni dinlerken gözlerini ayırmadı ve anlattığın detayları unutmadı",
+    "Hesabı yarı yarıya ödemekte samimiyetle ısrar etti",
+    "Yolda gördüğü yaralı sokak kedisini veterinere götürdü",
+    "Kendi sınırlarını ve hayattaki hedeflerini açık yüreklilikle paylaştı",
+    "Ailesine ve kardeşlerine çok düşkün ve sevgi dolu"
 ]

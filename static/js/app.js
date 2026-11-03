@@ -986,6 +986,7 @@ function openPersonModal(personId) {
     const isPartner = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
     const isEx = ["Eski Sevgili", "Eski Eş"].includes(person.relation);
     const isParent = ["Anne", "Baba"].includes(person.relation);
+    const isSibling = ["Kardeş", "Abla", "Ağabey"].includes(person.relation);
     const isChild = person.relation === "Çocuk";
     const isFriend = person.relation === "Arkadaş";
 
@@ -995,41 +996,11 @@ function openPersonModal(personId) {
             ? `<div class="person-chip-row">${person.interests.map(i => `<span class="person-chip">${i}</span>`).join("")}</div>`
             : "";
 
-        // Canlı WhatsApp / DM Sohbet Kutusu
-        let dmBoxHtml = "";
-        if (person.is_alive && marketData && marketData.dm_topics) {
-            const chatHistory = person.chat_history && person.chat_history.length > 0
-                ? person.chat_history
-                : [{ sender: "them", text: `Selam ${gameState.first_name}, nasılsın? 😊` }];
-
-            const allowedTopics = marketData.dm_topics.filter(t => !t.partner_only || isPartner || isEx);
-            dmBoxHtml = `
-                <div class="dm-chat-box">
-                    <div class="dm-chat-header">
-                        <span>📱 Canlı WhatsApp / DM Sohbeti</span>
-                        <span>Çevrimiçi ●</span>
-                    </div>
-                    <div class="dm-messages-list">
-                        ${chatHistory.slice(-4).map(m => `
-                            <div class="dm-bubble ${m.sender === 'me' ? 'dm-bubble-me' : 'dm-bubble-them'}">
-                                ${m.text}
-                            </div>
-                        `).join("")}
-                    </div>
-                    <div class="dm-quick-pills">
-                        ${allowedTopics.map(t => `
-                            <button type="button" class="btn-dm-pill" onclick="sendModalDm('${person.id}', '${t.id}')">${t.name}</button>
-                        `).join("")}
-                    </div>
-                </div>
-            `;
-        }
-
         const memoriesHtml = (person.memories && person.memories.length > 0)
             ? `
                 <div class="person-action-group-title">📖 Ortak Anılarınız (${person.memories.length})</div>
                 <div class="memories-timeline">
-                    ${person.memories.slice().reverse().map(m => `<div class="memory-item">• ${m}</div>`).join("")}
+                    ${person.memories.slice().reverse().slice(0, 5).map(m => `<div class="memory-item">• ${m}</div>`).join("")}
                 </div>
             `
             : "";
@@ -1039,11 +1010,18 @@ function openPersonModal(personId) {
                 <span class="person-chip">${getPersonalityLabel(person.personality)}</span>
                 <span class="person-chip">✨ Burç: ${person.zodiac || "Aslan"}</span>
                 ${person.love_language ? `<span class="person-chip">💝 Sevgi Dili: ${person.love_language}</span>` : ""}
+                ${person.care_status ? `<span class="person-chip" style="color:#6ee7b7;">🤲 Bakım: ${person.care_status}</span>` : ""}
+                ${person.is_estranged ? `<span class="person-chip" style="color:#f87171;">⚠️ Küs / İletişim Soğuk</span>` : ""}
+                ${(person.lent_amount && person.lent_amount > 0) ? `<span class="person-chip" style="color:#fcd34d;">💸 Borç: ₺ ${person.lent_amount.toLocaleString('tr-TR')}</span>` : ""}
+                ${person.love_confessed ? `<span class="person-chip" style="color:#f43f5e;">❤️ Aşk İlan Edildi</span>` : ""}
+                ${person.hard_launched ? `<span class="person-chip" style="color:#60a5fa;">📸 Hard Launch Yapıldı</span>` : ""}
                 ${person.met_family && isPartner ? `<span class="person-chip" style="color:#93c5fd;">👨‍👩‍👧 Aile Onayı: %${person.family_approval ?? 65}</span>` : ""}
                 ${person.cohabiting ? `<span class="person-chip" style="color:#6ee7b7;">🏠 Aynı Evdesiniz</span>` : ""}
                 ${person.has_prenup ? `<span class="person-chip" style="color:#fcd34d;">📜 Evlilik Sözleşmeli</span>` : ""}
                 ${person.years_together > 0 ? `<span class="person-chip">⏳ ${person.years_together} Yıllık Birliktelik</span>` : ""}
             </div>
+            ${(person.red_flags && person.red_flags.length > 0) ? `<div class="person-chip-row" style="margin:4px 0;">${person.red_flags.map(rf => `<span class="person-chip" style="color:#f87171; border:1px solid rgba(239,68,68,0.3);">🚩 ${rf}</span>`).join("")}</div>` : ""}
+            ${(person.green_flags && person.green_flags.length > 0) ? `<div class="person-chip-row" style="margin:4px 0;">${person.green_flags.map(gf => `<span class="person-chip" style="color:#4ade80; border:1px solid rgba(74,222,128,0.3);">🌿 ${gf}</span>`).join("")}</div>` : ""}
             ${person.bio ? `<div class="kismet-bio-box" style="margin:6px 0 8px;">"${person.bio}"</div>` : ""}
             <div class="person-stats-grid">
                 <div class="person-stat-pill">
@@ -1064,7 +1042,6 @@ function openPersonModal(personId) {
                 </div>
             </div>
             ${interestsHtml}
-            ${dmBoxHtml}
             ${memoriesHtml}
         `;
     }
@@ -1086,12 +1063,21 @@ function openPersonModal(personId) {
 
             if (person.relation === "Flört") {
                 actions.push({ id: "ask_relationship", text: "💑 'İlişkimizin Adını Koyalım' (Sevgili Ol)", primary: true });
+                actions.push({ id: "situationship_talk", text: "🗣️ 'Biz Şimdi Neyiz?' Resti Çek (Adını Koy ya da Bitir)" });
             }
             if (person.relation === "Sevgili") {
                 actions.push({ id: "modal_propose_ring", text: "💍 Evlenme Teklifi Et (Yüzük Seç)", primary: true });
             }
             if (person.relation === "Nişanlı") {
                 actions.push({ id: "modal_plan_wedding", text: "👰 Düğün Organize Et (Mekan & Sözleşme Seç)", primary: true });
+            }
+            if (["Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
+                if (!person.love_confessed) {
+                    actions.push({ id: "confess_love", text: "❤️ İlk 'Seni Seviyorum' İtirafı Yap" });
+                }
+                if (!person.hard_launched) {
+                    actions.push({ id: "hard_launch", text: "📸 Sosyal Medyada 'Hard Launch' (İlişkiyi İlan Et)" });
+                }
             }
             if (!person.met_family) {
                 actions.push({ id: "introduce_family", text: "👨‍👩‍👧 Ailemle Tanıştır (El Öpmeye Götür)" });
@@ -1113,9 +1099,8 @@ function openPersonModal(personId) {
                 actions.push({ id: "baby_shower", text: "🎈 Baby Shower & Cinsiyet Partisi Düzenle (5.000 TL)" });
                 actions.push({ id: "couples_therapy", text: "🛋️ Çift Terapisine Git (4.000 TL)" });
             }
-            actions.push({ id: "compliment", text: "✨ İltifat Et & Gururunu Okşa" });
-            actions.push({ id: "modal_rel_conflict", text: "🗣️ Çift Tartışması & Kriz Yönetimi (Diyalog Seç)" });
-            actions.push({ id: "deep_talk", text: "🌙 Gece Boyu Derin Sohbet Et" });
+            actions.push({ id: "consolidated_chat", text: "💬 Romantik Dertleş & Hal Hatır Sor" });
+            actions.push({ id: "modal_rel_conflict", text: "🗣️ Çift Tartışması & Kriz Masası (Diyalog Seç)" });
             actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
             actions.push({ id: "check_loyalty", text: "🕵️‍♂️ Sadakatini & Telefonunu Gizlice Kontrol Et" });
             actions.push({ id: "hire_detective", text: "🕵️‍♂️📸 Özel Dedektif Tut & Adım Adım İzlet (15.000 TL)" });
@@ -1128,39 +1113,47 @@ function openPersonModal(personId) {
             actions.push({ id: "breakup", text: breakupLabel });
         } else if (isEx) {
             actions.push({ id: "text_ex", text: "📱 Gece Yarısı 'Seni Özledim' Mesajı At & Barışmayı Dene", primary: true });
+            actions.push({ id: "modal_handle_ex_text", text: "📱 Gece 02:30 'Uyudun mu?' Krizini Yönet" });
             actions.push({ id: "modal_detailed_kiss", text: "💋 Dudaktan Ateşli Öp & Aşkı Alevlendir" });
             actions.push({ id: "modal_detailed_fight", text: "🤬 Eski Defterleri Aç & Hesaplaş (Kavga Et)" });
             actions.push({ id: "fake_stalk", text: "🕵️‍♀️ Fake Hesaptan Profilini Gizlice Stalkla" });
             actions.push({ id: "apologize", text: "🕊️ Geçmiş İçin Özür Dile & Buzları Erit" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Gönlünü Almak İçin Hediye Gönder" });
-            actions.push({ id: "chat", text: "💬 Halini Hatırını Sor" });
+            actions.push({ id: "consolidated_chat", text: "💬 Halini Hatırını Sor & Dertleş" });
             actions.push({ id: "ghost_block", text: "🚫 Her Yerden Engelle (Hayatından Çıkar)" });
         } else if (isParent) {
+            actions.push({ id: "modal_parent_care", text: "🤲 Yaşlı Bakım Masası (Huzurevi / Bakıcı / Eve Alma / Refakat)", primary: true });
             actions.push({ id: "parent_blessing", text: "🙏 Elini Öp & Hayır Duası Al", primary: true });
             actions.push({ id: "family_dinner", text: "🍲 Büyük Aile Yemeği Düzenle (2.000 TL)" });
             actions.push({ id: "ask_money", text: "💸 Harçlık / Maddi Destek İste" });
-            actions.push({ id: "chat", text: "💬 Sohbet Et & Dertleş" });
+            actions.push({ id: "consolidated_chat", text: "💬 Samimi Sohbet & Hal Hatır Sor" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
+        } else if (isSibling) {
+            actions.push({ id: "modal_sibling_action", text: "🤝 Kardeş Masası & Dayanışma (Borç / Altın / Barışma)", primary: true });
+            actions.push({ id: "family_dinner", text: "🍲 Büyük Aile Yemeği Düzenle (2.000 TL)" });
+            actions.push({ id: "consolidated_chat", text: "💬 Dertleş & Çocukluk Hatıralarını Konuş" });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
         } else if (isChild) {
+            actions.push({ id: "modal_parenting_crisis", text: "🎓 Ebeveynlik & Kriz Masası (Ergenlik / Gelecek Seçimi)", primary: true });
             actions.push({ id: "educate_child", text: "📚 Birlikte Ders Çalış & Eğit (+Zeka)", primary: true });
             actions.push({ id: "private_school", text: "🎓🏫 Özel Koleje & Yetenek Akademisine Gönder (45.000 TL)" });
             actions.push({ id: "marry_off_child", text: "👰🤵👶 Çocuğuna Düğün Yap, Evlendir & Torun Sahibi Ol (85.000 TL)" });
-            actions.push({ id: "spend_time", text: "🍿 Parka / Sinemaya Götür" });
-            actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Babalık Testi Yaptır (8.000 TL)" });
+            actions.push({ id: "consolidated_chat", text: "💬 Vakit Geçir & Sohbet Et" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
-            actions.push({ id: "chat", text: "💬 Sohbet Et" });
+            actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Babalık Testi Yaptır (8.000 TL)" });
+        } else if (isFriend) {
+            actions.push({ id: "modal_friend_action", text: "🤝 Dostluk Sınavı & Sadakat (Borç / Sır / Gece İmdadı / Yolculuk)", primary: true });
+            actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)" });
+            actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)" });
+            actions.push({ id: "consolidated_chat", text: "💬 Samimi Sohbet & Dertleş" });
+            actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
+            actions.push({ id: "modal_detailed_kiss", text: "💋 Beklenmedik Bir Şekilde Öp (Aşka Çevirmeyi Dene)" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Yüzleş ve Hesap Sor" });
         } else {
             actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)", primary: true });
-            if (isFriend) {
-                actions.push({ id: "modal_detailed_kiss", text: "💋 Beklenmedik Bir Şekilde Öp (Aşka Çevirmeyi Dene)" });
-                actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
-                actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)" });
-            }
-            actions.push({ id: "deep_talk", text: "🌙 Derin Sohbet Et & Dertleş" });
-            actions.push({ id: "compliment", text: "✨ İltifat Et" });
-            actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
+            actions.push({ id: "consolidated_chat", text: "💬 Samimi Sohbet & Hal Hatır Sor" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
-            actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
         }
 
         actions.forEach(act => {
@@ -1186,6 +1179,31 @@ async function handlePersonAction(actId) {
     if (!activePersonId) return;
     const pid = activePersonId;
 
+    if (actId === "modal_parent_care") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openParentCareModal(pid);
+        return;
+    }
+    if (actId === "modal_sibling_action") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openSiblingActionModal(pid);
+        return;
+    }
+    if (actId === "modal_parenting_crisis") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openParentingCrisisModal(pid);
+        return;
+    }
+    if (actId === "modal_friend_action") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openFriendActionModal(pid);
+        return;
+    }
+    if (actId === "consolidated_chat") {
+        await performActivity("consolidated_chat", { person_id: pid });
+        closeModal("personModal");
+        return;
+    }
     if (actId === "modal_detailed_kiss") {
         await closeTopLayer(document.getElementById("personModal"));
         openDetailedKissModal(pid);
@@ -1241,6 +1259,26 @@ async function handlePersonAction(actId) {
         openDivorceCourtModal(pid);
         return;
     }
+    if (actId === "situationship_talk") {
+        await performActivity("situationship_talk", { person_id: pid });
+        closeModal("personModal");
+        return;
+    }
+    if (actId === "confess_love") {
+        await performActivity("confess_love", { person_id: pid });
+        closeModal("personModal");
+        return;
+    }
+    if (actId === "hard_launch") {
+        await performActivity("hard_launch", { person_id: pid });
+        closeModal("personModal");
+        return;
+    }
+    if (actId === "modal_handle_ex_text") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openExMidnightTextModal(pid);
+        return;
+    }
     if (actId === "try_baby") {
         await performActivity("try_baby");
         closeModal("personModal");
@@ -1252,6 +1290,250 @@ async function handlePersonAction(actId) {
         person_action: actId
     });
     closeModal("personModal");
+}
+
+function openParentCareModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.parent_care_options) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🤲 Yaşlı Bakım Masası: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    const statusNote = person.care_status ? `<div class="card-badge badge-green" style="margin-bottom:10px;">Mevcut Bakım Durumu: ${person.care_status}</div>` : "";
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            ${statusNote}
+            Yaşlanan <b>${person.name}</b> (${person.relation}) için vefa borcunu nasıl ödemek istersin?
+        </p>
+        ${marketData.parent_care_options.map(opt => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${opt.name}</span>
+                    <span class="card-badge ${opt.cost > 0 ? 'badge-purple' : 'badge-green'}">${opt.cost > 0 ? '₺ ' + opt.cost.toLocaleString('tr-TR') : 'Ücretsiz (Vefa)'}</span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${opt.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:6px;" onclick="submitParentCare('${person.id}', '${opt.id}')">Bu Bakımı Seç & Uygula 🤲</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitParentCare(personId, careId) {
+    await performActivity("parent_care", { person_id: personId, care_id: careId });
+    closeModal("genericModal");
+}
+
+function openSiblingActionModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.sibling_interactions) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🤝 Kardeş Dayanışması: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    const estNote = person.is_estranged ? `<div class="card-badge badge-red" style="margin-bottom:10px;">⚠️ Şu an aranız açık/küs!</div>` : "";
+    const debtNote = (person.lent_amount && person.lent_amount > 0) ? `<div class="card-badge badge-purple" style="margin-bottom:10px;">Borç Verdiğin: ₺ ${person.lent_amount.toLocaleString('tr-TR')}</div>` : "";
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            ${estNote}
+            ${debtNote}
+            Kan bağın olan <b>${person.name}</b> (${person.relation}) ile aile bağlarını ve dayanışmayı güçlendir:
+        </p>
+        ${marketData.sibling_interactions.map(item => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${item.name}</span>
+                    <span class="card-badge ${item.cost > 0 ? 'badge-purple' : 'badge-green'}">${item.cost > 0 ? '₺ ' + item.cost.toLocaleString('tr-TR') : 'Ücretsiz'}</span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${item.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:6px;" onclick="submitSiblingAction('${person.id}', '${item.id}')">Eylemi Gerçekleştir 🤝</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitSiblingAction(personId, actionId) {
+    await performActivity("sibling_action", { person_id: personId, action_id: actionId });
+    closeModal("genericModal");
+}
+
+function openParentingCrisisModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.parenting_crises) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🎓 Ebeveynlik & Kriz Masası: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">
+            Çocuğun <b>${person.name}</b> (${person.age} Yaşında) için kritik ebeveynlik kararları. Yaklaşımın çocuğunun kişiliğini ve geleceğini şekillendirecek:
+        </p>
+        ${marketData.parenting_crises.map(crisis => `
+            <div class="panel-card" style="margin-bottom:14px; border-left: 3px solid var(--accent, #6366f1);">
+                <div class="card-title" style="margin-bottom:4px; font-weight:700;">${crisis.title}</div>
+                <p class="card-desc" style="margin-bottom:10px;">${crisis.desc}</p>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    ${crisis.options.map(opt => `
+                        <button type="button" class="btn-choice" style="text-align:left; padding:8px 12px;" onclick="submitParentingCrisis('${person.id}', '${crisis.id}', '${opt.id}')">
+                            <div style="font-weight:600; color:#f8fafc;">${opt.text}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:2px;">[${opt.style}] ${opt.desc}</div>
+                        </button>
+                    `).join("")}
+                </div>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitParentingCrisis(personId, crisisId, choiceId) {
+    await performActivity("parenting_crisis", { person_id: personId, crisis_id: crisisId, choice_id: choiceId });
+    closeModal("genericModal");
+}
+
+function openFriendActionModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.friend_interactions) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🤝 Dostluk Sınavı & Sadakat: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    const loyaltyNote = `<div class="card-badge badge-green" style="margin-bottom:10px;">Sadakat Seviyesi: %${person.loyalty ?? 75}</div>`;
+    const debtNote = (person.lent_amount && person.lent_amount > 0) ? `<div class="card-badge badge-purple" style="margin-bottom:10px;">Borç Verdiğin: ₺ ${person.lent_amount.toLocaleString('tr-TR')}</div>` : "";
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            ${loyaltyNote}
+            ${debtNote}
+            Dostun <b>${person.name}</b> ile gerçek hayatın içinden samimi ve riskli dostluk etkileşimleri:
+        </p>
+        ${marketData.friend_interactions.map(item => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${item.name}</span>
+                    <span class="card-badge ${item.cost > 0 ? 'badge-purple' : 'badge-green'}">${item.cost > 0 ? '₺ ' + item.cost.toLocaleString('tr-TR') : 'Ücretsiz'}</span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${item.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:6px;" onclick="submitFriendAction('${person.id}', '${item.id}')">Dostluk Adımını At 🤝</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitFriendAction(personId, actionId) {
+    await performActivity("friend_action", { person_id: personId, action_id: actionId });
+    closeModal("genericModal");
+}
+
+let selectedHookupVenue = "nightclub";
+let selectedHookupProtection = "protected";
+
+function openHookupModal() {
+    sound.playClick();
+    if (!marketData || !marketData.hookup_venues) return;
+    
+    document.getElementById("genericModalTitle").textContent = "🍸 Gece Hayatı & Tek Gecelik Kaçamak";
+    const body = document.getElementById("genericModalBody");
+
+    selectedHookupVenue = marketData.hookup_venues[0].id;
+    selectedHookupProtection = "protected";
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">
+            Şehrin ışıkları altında hızlı, tutkulu ve anı yaşayacağın bir gece! Mekanını ve korunma tercihini seç:
+        </p>
+        <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-bottom:6px;">1. Kaçamak Mekanını Seç:</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+            ${marketData.hookup_venues.map((v, idx) => `
+                <label class="panel-card" style="cursor:pointer; display:flex; align-items:flex-start; gap:10px; margin:0;">
+                    <input type="radio" name="hookupVenueRadio" value="${v.id}" ${idx === 0 ? 'checked' : ''} onchange="selectedHookupVenue='${v.id}'" style="margin-top:4px;">
+                    <div style="flex:1;">
+                        <div class="card-title-row" style="margin-bottom:2px;">
+                            <span class="card-title" style="font-size:13.5px;">${v.name}</span>
+                            <span class="card-badge badge-purple">₺ ${v.cost.toLocaleString('tr-TR')}</span>
+                        </div>
+                        <p class="card-desc" style="margin:0; font-size:11.5px;">${v.desc}</p>
+                    </div>
+                </label>
+            `).join("")}
+        </div>
+
+        <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-bottom:6px;">2. Korunma Tercihin:</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+            ${(marketData.hookup_protection_choices || []).map((p, idx) => `
+                <label class="panel-card" style="cursor:pointer; display:flex; align-items:flex-start; gap:10px; margin:0; border-left: 3px solid ${p.id === 'protected' ? '#10b981' : '#ef4444'};">
+                    <input type="radio" name="hookupProtRadio" value="${p.id}" ${idx === 0 ? 'checked' : ''} onchange="selectedHookupProtection='${p.id}'" style="margin-top:4px;">
+                    <div style="flex:1;">
+                        <div class="card-title" style="font-size:13px; color:#f8fafc;">${p.name}</div>
+                        <p class="card-desc" style="margin:2px 0 0; font-size:11px;">${p.desc}</p>
+                    </div>
+                </label>
+            `).join("")}
+        </div>
+
+        <button type="button" class="btn-primary" style="width:100%; padding:10px;" onclick="submitHookup()">Geceye Ak & Kaçamağı Yaşa 🔥</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitHookup() {
+    const isProtected = (selectedHookupProtection === "protected");
+    await performActivity("hookup", {
+        venue_id: selectedHookupVenue,
+        use_protection: isProtected
+    });
+    closeModal("genericModal");
+}
+
+function openExMidnightTextModal(personId) {
+    sound.playClick();
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `📱 Gece 02:30 'Uyudun mu?' Krizi`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:12px; text-align:center; padding:15px; border-left:3px solid #ec4899;">
+            <div style="font-size:13px; color:#cbd5e1; font-style:italic;">
+                "Uyudun mu? Kaç saattir eski fotoğraflarımıza bakıyorum... Seni hâlâ unutamadım 💔"
+            </div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:6px;">— Gönderen: <b>${person.name}</b> (Eski Sevgili)</div>
+        </div>
+        <p class="card-desc" style="margin-bottom:12px;">Bu beklenmedik gece yarısı mesajı karşısında tavrın ne olacak?</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <button type="button" class="btn-primary" style="text-align:left;" onclick="submitExMidnightText('${person.id}', 'show_partner')">
+                <b>🤝 Mevcut Sevgilime / Güvendiğim Arkadaşıma Göster (Dürüstlük)</b>
+                <div style="font-size:11px; opacity:0.8;">Güven tazeler, ilişkiniz çelikleşir.</div>
+            </button>
+            <button type="button" class="btn-choice" style="text-align:left;" onclick="submitExMidnightText('${person.id}', 'reply_secretly')">
+                <b>🤫 Gizlice Cevap Yaz: 'Uyumadım, ben de seni düşünüyordum...'</b>
+                <div style="font-size:11px; color:#f87171;">Ateşle oynamak! Yakalanma riski %45!</div>
+            </button>
+            <button type="button" class="btn-choice" style="text-align:left;" onclick="submitExMidnightText('${person.id}', 'block_ex')">
+                <b>🚫 Tek Kelime Etmeden Her Yerden Engeli Bas</b>
+                <div style="font-size:11px; opacity:0.8;">Geçmişi tek hamlede arkanda bırak.</div>
+            </button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitExMidnightText(personId, choiceId) {
+    await performActivity("handle_ex_midnight_text", { person_id: personId, choice_id: choiceId });
+    closeModal("genericModal");
 }
 
 function openCoupleVacationModal(personId) {
@@ -1410,6 +1692,17 @@ function renderKismetCandidateView() {
                 </div>
             </div>
 
+            <div style="margin: 10px 0 6px;">
+                <div style="font-size:11.5px; font-weight:700; color:#cbd5e1; margin-bottom:4px;">💬 Özel Açılış Cümlesiyle Başla:</div>
+                <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                    ${(marketData.dating_opening_lines || []).map(line => `
+                        <button type="button" class="btn-dm-pill" style="font-size:11px;" onclick="sendFlirtOpening('${c.id}', '${line.id}')">
+                            ${line.name}
+                        </button>
+                    `).join("")}
+                </div>
+            </div>
+
             <div class="kismet-swipe-bar">
                 <button type="button" class="btn-swipe-pass" onclick="nextKismetCandidate()">❌ Pas Geç (${kismetIndex + 1}/${candidates.length})</button>
                 <button type="button" class="btn-swipe-like" onclick="matchKismetCandidate('${c.id}', 'Flört')">🔥 Flört Et</button>
@@ -1417,6 +1710,18 @@ function renderKismetCandidateView() {
             </div>
         </div>
     `;
+}
+
+async function sendFlirtOpening(candidateId, lineId) {
+    const res = await performActivity("flirt_opening", {
+        candidate_id: candidateId,
+        line_id: lineId
+    });
+    if (res && res.success && res.candidate) {
+        const cand = (gameState.dating_candidates || []).find(x => x.id === candidateId);
+        if (cand) cand.compatibility = res.candidate.compatibility;
+        renderKismetCandidateView();
+    }
 }
 
 function nextKismetCandidate() {

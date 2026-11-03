@@ -34,6 +34,14 @@ class Person(BaseModel):
     nisan_bohca_done: bool = False
     joint_venture_name: Optional[str] = None
     joint_venture_profit: int = 0
+    care_status: Optional[str] = None  # Yaşlı Anne/Baba Bakım Durumu
+    is_estranged: bool = False         # Küs / İletişim kesik mi?
+    lent_amount: int = 0               # Borç verilen miktar
+    love_confessed: bool = False       # İlk "Seni Seviyorum" itirafı yapıldı mı?
+    hard_launched: bool = False        # Sosyal medyada resmi çift olarak ilan edildi mi?
+    situationship_turns: int = 0       # Flörtte arafta geçen tur
+    red_flags: List[str] = Field(default_factory=list)
+    green_flags: List[str] = Field(default_factory=list)
     memories: List[str] = Field(default_factory=list)
     chat_history: List[Dict[str, str]] = Field(default_factory=list)
 
@@ -272,6 +280,7 @@ class Character(BaseModel):
     sports_career: Optional[ProSportsCareer] = None
     alimony_annual: int = 0
     last_tax_paid: int = 0
+    hookup_count: int = 0
     difficulty_mode: str = "Gerçek Hayat (Zor)"
     last_annual_summary: Dict[str, Any] = Field(default_factory=dict)
     

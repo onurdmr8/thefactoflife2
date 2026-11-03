@@ -36,7 +36,9 @@ from game.data import (
     BAND_GENRES, COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS,
     RELATIONSHIP_CONFLICTS, COMPANY_EXPANSION_ACTIONS, CAR_CARE_ACTIONS,
     TENANT_MANAGEMENT_ACTIONS, WELLNESS_SERVICES,
-    KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES
+    KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES,
+    PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
+    HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -58,6 +60,8 @@ from game.activities import (
     do_relationship_conflict, do_company_management_action,
     do_tenant_action, do_car_care_action, do_wellness_action,
     do_detailed_kiss, do_detailed_date, do_detailed_fight,
+    do_parent_care_action, do_sibling_action, do_parenting_action, do_friend_action, do_consolidated_chat,
+    do_hookup, do_flirt_opening, do_situationship_talk, do_confess_love, do_hard_launch, do_handle_ex_midnight_text,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -315,6 +319,28 @@ def handle_activity(req: ActivityRequest):
         res = do_detailed_date(current_character, p.get("person_id", ""), p.get("venue_id", "tea_simit"), p.get("mid_choice", ""), p.get("end_choice", ""))
     elif act == "detailed_fight":
         res = do_detailed_fight(current_character, p.get("person_id", ""), p.get("topic_id", "jealousy_dm"), p.get("attitude_id", "calm_ultimatum"))
+    elif act == "parent_care":
+        res = do_parent_care_action(current_character, p.get("person_id", ""), p.get("care_id", "take_home"))
+    elif act == "sibling_action":
+        res = do_sibling_action(current_character, p.get("person_id", ""), p.get("action_id", "deep_heart_talk"))
+    elif act == "parenting_crisis":
+        res = do_parenting_action(current_character, p.get("person_id", ""), p.get("crisis_id", "teen_rebellion"), p.get("choice_id", "gentle_mentor"))
+    elif act == "friend_action":
+        res = do_friend_action(current_character, p.get("person_id", ""), p.get("action_id", "fun_road_trip"))
+    elif act == "consolidated_chat":
+        res = do_consolidated_chat(current_character, p.get("person_id", ""))
+    elif act == "hookup":
+        res = do_hookup(current_character, p.get("venue_id", "nightclub"), bool(p.get("use_protection", True)))
+    elif act == "flirt_opening":
+        res = do_flirt_opening(current_character, p.get("candidate_id", ""), p.get("line_id", "witty_smart"))
+    elif act == "situationship_talk":
+        res = do_situationship_talk(current_character, p.get("person_id", ""))
+    elif act == "confess_love":
+        res = do_confess_love(current_character, p.get("person_id", ""))
+    elif act == "hard_launch":
+        res = do_hard_launch(current_character, p.get("person_id", ""))
+    elif act == "handle_ex_midnight_text":
+        res = do_handle_ex_midnight_text(current_character, p.get("person_id", ""), p.get("choice_id", "show_partner"))
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -397,7 +423,16 @@ def get_market_data():
         "kiss_styles": KISS_STYLES,
         "detailed_date_scenarios": DETAILED_DATE_SCENARIOS,
         "detailed_fight_topics": DETAILED_FIGHT_TOPICS,
-        "detailed_fight_attitudes": DETAILED_FIGHT_ATTITUDES
+        "detailed_fight_attitudes": DETAILED_FIGHT_ATTITUDES,
+        "parent_care_options": PARENT_CARE_OPTIONS,
+        "sibling_interactions": SIBLING_INTERACTIONS,
+        "parenting_crises": PARENTING_CRISES,
+        "friend_interactions": FRIEND_INTERACTIONS,
+        "hookup_venues": HOOKUP_VENUES,
+        "hookup_protection_choices": HOOKUP_PROTECTION_CHOICES,
+        "dating_opening_lines": DATING_OPENING_LINES,
+        "red_flags_pool": RED_FLAGS_POOL,
+        "green_flags_pool": GREEN_FLAGS_POOL
     }
 
 @app.get("/api/graveyard")
