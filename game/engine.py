@@ -13,7 +13,7 @@ from .models import Character, Person, Pet, Asset, Stock, SocialMediaAccount, Li
 from .data import (
     FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES, CITIES,
     ZODIAC_SIGNS, PARENT_JOBS, ILLNESSES, INITIAL_STOCKS,
-    PERSONALITIES, INTERESTS_POOL
+    PERSONALITIES, INTERESTS_POOL, LOVE_LANGUAGES
 )
 from .events import check_for_annual_event
 
@@ -124,6 +124,7 @@ class GameEngine:
             craziness=random.randint(15, 60),
             wealth=random.randint(40, 88),
             interests=random.sample(INTERESTS_POOL, 3),
+            love_language=random.choice(LOVE_LANGUAGES),
             memories=[f"{birth_year}: Seni dünyaya getirdi."]
         ))
         
@@ -144,6 +145,7 @@ class GameEngine:
             craziness=random.randint(15, 65),
             wealth=random.randint(45, 90),
             interests=random.sample(INTERESTS_POOL, 3),
+            love_language=random.choice(LOVE_LANGUAGES),
             memories=[f"{birth_year}: Doğumunda hastane koridorunda heyecanla bekledi."]
         ))
         
@@ -258,6 +260,22 @@ class GameEngine:
                 char.current_job.salary = int(char.current_job.salary * 1.06)
                 annual_income += salary
                 annual_summary_lines.append(f"💼 {char.current_job.title} maaşı: +{salary:,} TL.")
+                if char.current_job.category in ["Sanat", "Spor"]:
+                    char.fame = min(100, char.fame + 8)
+                    if char.fame >= 50 and "famous" not in char.achievements:
+                        char.achievements.append("famous")
+
+            if char.political_office:
+                pol_sal = char.political_salary
+                annual_income += pol_sal
+                char.approval_rating = max(5, min(100, char.approval_rating + random.randint(-6, 5)))
+                if char.approval_rating < 22:
+                    lost_off = char.political_office
+                    char.political_office = None
+                    char.political_salary = 0
+                    annual_summary_lines.append(f"🗳️ Halk desteğin çok düştüğü için '{lost_off}' makamını kaybettin.")
+                else:
+                    annual_summary_lines.append(f"🏛️ {char.political_office} makam ödeneği: +{pol_sal:,} TL (Halk Desteği: %{char.approval_rating}).")
                 
             if char.part_time_job:
                 pt_sal = char.part_time_job.salary
@@ -266,11 +284,31 @@ class GameEngine:
 
             if char.business:
                 char.business.years_active += 1
-                fluct = random.uniform(0.90, 1.22)
+                # Gerçek Hayat Zorluğu: Ekonomik dalgalanma veya durgunluk riski
+                fluct = random.uniform(-0.15, 1.15)
                 profit = int(char.business.annual_profit * fluct)
-                char.business.valuation = int(char.business.valuation * random.uniform(1.05, 1.18))
-                annual_income += profit
-                annual_summary_lines.append(f"🏢 '{char.business.name}' yıllık şirket kârı: +{profit:,} TL.")
+                char.business.valuation = max(50000, int(char.business.valuation * random.uniform(0.95, 1.16)))
+                if profit >= 0:
+                    annual_income += profit
+                    annual_summary_lines.append(f"🏢 '{char.business.name}' yıllık şirket kârı: +{profit:,} TL.")
+                else:
+                    annual_expense += abs(profit)
+                    annual_summary_lines.append(f"📉 '{char.business.name}' ekonomik durgunluk nedeniyle {abs(profit):,} TL zarar etti!")
+
+            if char.band and char.band.annual_royalties > 0:
+                roy = char.band.annual_royalties
+                annual_income += roy
+                annual_summary_lines.append(f"🎸 '{char.band.name}' telif ve konser geliri: +{roy:,} TL.")
+
+            if char.sports_career and char.sports_career.salary > 0:
+                sp_sal = char.sports_career.salary
+                annual_income += sp_sal
+                annual_summary_lines.append(f"⚽ '{char.sports_career.team_name}' spor kariyeri geliri: +{sp_sal:,} TL.")
+
+            for p in char.relationships:
+                if p.is_alive and p.joint_venture_profit > 0 and p.relation in ["Sevgili", "Nişanlı", "Eş"]:
+                    annual_income += p.joint_venture_profit
+                    annual_summary_lines.append(f"🏪 {p.name} ile ortak girişim ('{p.joint_venture_name}') geliri: +{p.joint_venture_profit:,} TL.")
 
         # 3. Mülk Kira Gelirleri ve Bakım Masrafları
         total_asset_income = sum(a.annual_income for a in char.assets)
@@ -289,43 +327,118 @@ class GameEngine:
                 annual_income += ad_money
                 annual_summary_lines.append(f"📱 {sm.platform} sponsorluk geliri: +{ad_money:,} TL.")
 
-        # 5. Temel Yaşam Gideri (18+ Yaş)
+        # 5. Burs Gelirleri, Gerçekçi Vergi Dilimi, Kira, Çocuk Masrafı, Nafaka ve Yaşam Gideri
+        if char.scholarship_annual > 0 and (char.current_school or char.age <= 24):
+            annual_income += char.scholarship_annual
+            annual_summary_lines.append(f"🎓 YKS Başarı / KYK Bursu: +{char.scholarship_annual:,} TL.")
+
         if char.age >= 18 and not char.is_in_prison and not char.current_school:
-            is_cohabiting = any(p.cohabiting and p.is_alive for p in char.relationships)
-            living_cost = 65000 if is_cohabiting else 120000
+            cohab_partner = next((p for p in char.relationships if (p.cohabiting or p.relation == "Eş") and p.is_alive), None)
+            owns_home = any(a.asset_type == "Ev" for a in char.assets)
+            if "KYK" in char.housing_type:
+                living_cost = 42000
+            elif owns_home:
+                living_cost = 95000
+            elif cohab_partner:
+                living_cost = 135000
+            else:
+                living_cost = 185000  # Büyükşehir ev kirası + faturalar + mutfak enflasyonu
             annual_expense += living_cost
+            annual_summary_lines.append(f"🛒 Yıllık yaşam, fatura ve mutfak giderleri: -{living_cost:,} TL.")
+
+            # Çocuk Büyütme & Okul Masrafları (Gerçek Hayat Zorluğu)
+            young_children = [p for p in char.relationships if p.is_alive and p.relation == "Çocuk" and p.age < 22]
+            if young_children:
+                child_cost = len(young_children) * 55000
+                annual_expense += child_cost
+                annual_summary_lines.append(f"👶 {len(young_children)} çocuğun okul ve bakım masrafı: -{child_cost:,} TL.")
+
+            if cohab_partner and cohab_partner.wealth >= 40:
+                partner_contrib = int(cohab_partner.wealth * 1100)
+                annual_income += partner_contrib
+                annual_summary_lines.append(f"💑 {cohab_partner.name} ortak ev bütçesine +{partner_contrib:,} TL katkıda bulundu.")
+
+        # 5a. Boşanma Nafakası Gideri
+        if char.alimony_annual > 0 and not char.is_in_prison:
+            annual_expense += char.alimony_annual
+            annual_summary_lines.append(f"⚖️ Eski eşe ödenen yıllık mahkeme nafakası: -{char.alimony_annual:,} TL.")
+
+        # 5b. Artan Oranlı Gelir Vergisi, SGK & Servet Vergisi (Gerçek Hayat Zorluğu)
+        tax_paid = 0
+        if annual_income > 180000:
+            if annual_income <= 650000:
+                tax_paid = int((annual_income - 180000) * 0.18)
+            elif annual_income <= 2500000:
+                tax_paid = int(84600 + (annual_income - 650000) * 0.27)
+            else:
+                tax_paid = int(584100 + (annual_income - 2500000) * 0.35)
+        assets_total_for_tax = sum(a.current_value for a in char.assets)
+        if assets_total_for_tax > 5000000:
+            tax_paid += int((assets_total_for_tax - 5000000) * 0.015)
+        char.last_tax_paid = tax_paid
+        if tax_paid > 0:
+            annual_expense += tax_paid
+            annual_summary_lines.append(f"🏛️ Gelir Vergisi, SGK & Emlak/MTV kesintisi: -{tax_paid:,} TL.")
+
+        # 5c. Banka Kredisi Taksidi & Offshore Faiz Getirisi
+        if char.offshore_balance > 0:
+            off_gain = int(char.offshore_balance * 0.08)
+            char.offshore_balance += off_gain
+            annual_summary_lines.append(f"🇨🇭 Offshore döviz getirisi: +{off_gain:,} TL.")
+
+        if char.debt > 0:
+            installment = min(char.debt, max(35000, int(char.debt * 0.18)))
+            if char.money >= installment:
+                char.money -= installment
+                char.debt -= installment
+                annual_expense += installment
+                annual_summary_lines.append(f"🏦 Banka kredi taksidi ödendi: -{installment:,} TL (Kalan Borç: {char.debt:,} TL).")
+            else:
+                char.debt = int(char.debt * 1.18)
+                char.happiness = max(5, char.happiness - 12)
+                annual_summary_lines.append("⚠️ Banka kredi taksidini ödeyemedin, %18 gecikme faizi işledi!")
 
         char.annual_income_last = annual_income
         char.annual_expense_last = annual_expense
         char.money += (annual_income - annual_expense)
 
         if char.money < 0:
-            char.happiness = max(5, char.happiness - 10)
+            char.happiness = max(5, char.happiness - 12)
             annual_summary_lines.append("⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!")
 
-        # 6. Mülk Değerleme & Araç Amortismanı
+        # 6. Mülk Değerleme, Koleksiyon & Araç Amortismanı
         for a in char.assets:
             if a.asset_type == "Ev":
-                appreciation = random.uniform(0.05, 0.14)
+                appreciation = random.uniform(0.04, 0.12)
+                a.current_value = int(a.current_value * (1 + appreciation))
+            elif a.asset_type == "Koleksiyon":
+                appreciation = random.uniform(0.08, 0.18)
                 a.current_value = int(a.current_value * (1 + appreciation))
             elif a.asset_type == "Araba":
-                depreciation = random.uniform(0.05, 0.10)
+                depreciation = random.uniform(0.07, 0.13)
                 a.current_value = max(15000, int(a.current_value * (1 - depreciation)))
 
-        # 7. Borsa & Kripto Fiyat Dalgalanmaları
+        # 7. Borsa & Kripto Fiyat Dalgalanmaları (Simetrik & Gerçekçi Risk)
         for s in char.stocks.values():
             vol = next((item["volatility"] for item in INITIAL_STOCKS if item["symbol"] == s.symbol), 0.15)
-            change = random.uniform(-vol * 0.85, vol * 1.15)
+            change = random.uniform(-vol * 1.02, vol * 1.04)
             s.current_price = max(1.0, round(s.current_price * (1 + change), 2))
             s.history.append(s.current_price)
             if len(s.history) > 15:
                 s.history.pop(0)
 
-        # Net Servet Hesaplama
+        # Net Servet Hesaplama & Zaman Serisi Kaydı
         assets_val = sum(a.current_value for a in char.assets)
         stocks_val = sum(int(s.shares * s.current_price) for s in char.stocks.values())
         biz_val = char.business.valuation if char.business else 0
-        char.net_worth = char.money + assets_val + stocks_val + biz_val
+        club_val = char.sports_career.club_valuation if (char.sports_career and char.sports_career.owns_club) else 0
+        char.net_worth = char.money + char.offshore_balance - char.debt + assets_val + stocks_val + biz_val + club_val
+        char.wealth_history.append(char.net_worth)
+        char.happiness_history.append(char.happiness)
+        if len(char.wealth_history) > 40:
+            char.wealth_history = char.wealth_history[-40:]
+        if len(char.happiness_history) > 40:
+            char.happiness_history = char.happiness_history[-40:]
 
         # Başarım Kontrolleri
         if char.net_worth >= 1000000 and "millionaire" not in char.achievements:
@@ -341,16 +454,23 @@ class GameEngine:
             char.achievements.append("centenarian")
             annual_summary_lines.append("🏆 BAŞARIM: Asırlık Çınar! 100 Yaşına ulaştın!")
 
-        # 8. İlişkiler Yaşlandırma ve Vefat Kontrolü
+        # 8. İlişkiler Yaşlandırma, İlişki Soğuması (Gerçek Hayat Zorluğu) ve Vefat Kontrolü
         for person in char.relationships:
             if person.is_alive:
                 person.age += 1
                 if person.relation in ["Flört", "Sevgili", "Nişanlı", "Eş"]:
                     person.years_together += 1
+                    # İlişkiler emek ister: Yıllık doğal ilişki soğuması
+                    person.relationship_level = max(5, person.relationship_level - 5)
+                    if char.money < 0 and person.personality == "Materyalist":
+                        person.relationship_level = max(5, person.relationship_level - 12)
+                        annual_summary_lines.append(f"💔 {person.name} maddi sıkıntılardan şikayet ederek soğuk davranmaya başladı! (İlişki -12)")
                     if person.years_together in [5, 10, 25, 50]:
                         person.memories.append(f"{char.current_year}: Birlikte {person.years_together}. yılınızı kutladınız!")
                         char.happiness = min(100, char.happiness + 8)
                         annual_summary_lines.append(f"💖 {person.name} ile birlikteliğinizin {person.years_together}. yıl dönümü!")
+                else:
+                    person.relationship_level = max(10, person.relationship_level - 2)
                 if person.relation == "Çocuk" and person.age == 6 and not person.interests:
                     person.interests = random.sample(INTERESTS_POOL, 2)
                 if person.age > 72:
@@ -366,6 +486,15 @@ class GameEngine:
                             msg = f"🕊️ {person.relation} {person.name} ({person.age} yaşında) hayata veda etti."
                         annual_summary_lines.append(msg)
                         char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🕊️"))
+
+        # 8b. İş Stresi & Tükenmişlik Sendromu (Gerçek Hayat Zorluğu)
+        if char.current_job and not char.is_in_prison:
+            char.stress = min(100, char.stress + 6)
+            char.current_job.performance = max(20, char.current_job.performance - 4)
+            if char.stress >= 88:
+                char.health = max(5, char.health - 10)
+                char.happiness = max(5, char.happiness - 14)
+                annual_summary_lines.append("🥵 Yoğun iş stresinden 'Tükenmişlik Sendromu' yaşıyorsun! Tatil veya terapi şart! (Sağlık -10, Mutluluk -14)")
 
         # 9. Evcil Hayvan Yaşlanması
         for pet in char.pets:

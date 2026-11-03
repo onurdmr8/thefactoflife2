@@ -26,6 +26,12 @@
                 <span>🧬 BITLIFE TÜRKİYE</span>
             </div>
             <div class="utility-actions">
+                <button type="button" id="btnThemeToggle" class="btn-icon-pill" onclick="cycleTheme()" title="Arayüz Temasını Değiştir">
+                    🎨 Tema
+                </button>
+                <button type="button" class="btn-icon-pill" onclick="openStatsChartModal()" title="Yaşam & Servet Grafikleri">
+                    📊 Grafik
+                </button>
                 <button type="button" id="btnSoundToggle" class="btn-icon-pill" onclick="toggleSound()" title="Sesi Aç/Kapat">
                     🔊
                 </button>
@@ -120,6 +126,7 @@
 
         <!-- Sekme 2: İlişkiler, Flört & Evcil Hayvanlar -->
         <section id="tabRelationships" class="tab-content">
+            <div id="relationshipsSummary" class="rel-summary-bar"></div>
             <div class="romance-hub-banner">
                 <div class="romance-hub-header">
                     <span class="romance-hub-title">💘 Aşk, Tanışma & Sosyal Merkez</span>
@@ -129,8 +136,26 @@
                     <button type="button" class="btn-romance-action" onclick="openKismetAppModal()">
                         <span>📱</span> <span>KısmetApp (Flört)</span>
                     </button>
+                    <button type="button" class="btn-romance-action" onclick="openDramaIntrigueModal()">
+                        <span>📺</span> <span>Kısmet Evi TV & Ofis Aşkı</span>
+                    </button>
+                    <button type="button" class="btn-romance-action" onclick="openInstaStoryModal()">
+                        <span>🔥</span> <span>InstaStory Paylaş</span>
+                    </button>
+                    <button type="button" class="btn-romance-action" onclick="openFamilyTreeModal()">
+                        <span>🌳</span> <span>Aile Soyağacı</span>
+                    </button>
+                    <button type="button" class="btn-romance-action" onclick="openWardrobeModal()">
+                        <span>👔</span> <span>Gardırop & Tarz</span>
+                    </button>
                     <button type="button" class="btn-romance-action" onclick="openMeetPlacesModal()">
                         <span>🥂</span> <span>Sosyal & Görücü Usulü</span>
+                    </button>
+                    <button type="button" class="btn-romance-action" onclick="performActivity('group_party')">
+                        <span>🍻</span> <span>Ev Partisi & Mangal</span>
+                    </button>
+                    <button type="button" class="btn-romance-action" onclick="openFameModal()">
+                        <span>🌟</span> <span>VIP Ünlüler & Magazin</span>
                     </button>
                     <button type="button" class="btn-romance-action" onclick="performActivity('make_friend')">
                         <span>🤝</span> <span>Yeni Arkadaş Edin</span>
@@ -140,9 +165,6 @@
                     </button>
                     <button type="button" class="btn-romance-action" onclick="performActivity('adopt_child')">
                         <span>👶</span> <span>Çocuk Evlat Edin</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openPetsModal()">
-                        <span>🐾</span> <span>Hayvan Sahiplen</span>
                     </button>
                 </div>
             </div>
@@ -163,9 +185,65 @@
                     <span>💘</span>
                     <div>KısmetApp</div>
                 </button>
+                <button type="button" class="activity-btn" onclick="openDramaIntrigueModal()">
+                    <span>📺</span>
+                    <div>Kısmet Evi TV</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openBandModal()">
+                    <span>🎸</span>
+                    <div>Müzik Grubu</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openProSportsModal()">
+                    <span>⚽</span>
+                    <div>Spor Kariyeri</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openBankOffshoreModal()">
+                    <span>🏦</span>
+                    <div>Banka & Offshore</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openStatsChartModal()">
+                    <span>📊</span>
+                    <div>Yaşam Grafiği</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openInstaStoryModal()">
+                    <span>🔥</span>
+                    <div>Story Paylaş</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openFamilyTreeModal()">
+                    <span>🌳</span>
+                    <div>Soyağacı</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openWardrobeModal()">
+                    <span>👔</span>
+                    <div>Gardırop & Tarz</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openExamsModal()">
+                    <span>📝</span>
+                    <div>YKS & KPSS</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openMilitaryModal()">
+                    <span>🪖</span>
+                    <div>Askerlik Şubesi</div>
+                </button>
                 <button type="button" class="activity-btn" onclick="openMeetPlacesModal()">
                     <span>🥂</span>
                     <div>Tanışma Mekanı</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openFameModal()">
+                    <span>🌟</span>
+                    <div>Şöhret & Magazin</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openPoliticsModal()">
+                    <span>🏛️</span>
+                    <div>Siyaset & Seçim</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openAuctionModal()">
+                    <span>🖼️</span>
+                    <div>Sanat Müzayedesi</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="performActivity('group_party')">
+                    <span>🍻</span>
+                    <div>Ev Partisi Ver</div>
                 </button>
                 <button type="button" class="activity-btn" onclick="performActivity('doctor_checkup')">
                     <span>🩺</span>
@@ -248,11 +326,14 @@
         </section>
     </main>
 
-    <!-- Yaş İlerle Butonu (Age Up) -->
-    <div class="age-up-dock">
+    <!-- Yaş İlerle Butonu (Age Up & Fast Forward) -->
+    <div class="age-up-dock" style="gap: 10px;">
         <button type="button" id="btnAgeUp" class="btn-age-up">
             <span class="icon-plus">+</span>
             <span>1 Yaş İlerle</span>
+        </button>
+        <button type="button" class="btn-age-up" style="padding: 10px 16px; font-size: 13px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);" onclick="handleFastAgeUp(3)" title="Olay çıkana kadar 3 yıl hızlı ilerle">
+            <span>⏩ +3 Yaş</span>
         </button>
     </div>
 

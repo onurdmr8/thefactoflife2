@@ -74,6 +74,113 @@ INTERESTS_POOL = [
     "💻 Teknoloji & Oyun", "📈 Borsa & Yatırım", "🐾 Hayvansever", "🪩 Gece Hayatı"
 ]
 
+LOVE_LANGUAGES = [
+    "Tatlı Sözler & İltifat",
+    "Kaliteli Zaman",
+    "Hediye & Sürprizler",
+    "Romantik Temas & Tutku",
+    "Güven & Sadakat"
+]
+
+COUPLE_VACATIONS = [
+    {
+        "id": "sapanca_bungalow",
+        "name": "🌲 Sapanca Isıtmalı Havuzlu Bungalov",
+        "desc": "Orman içinde şömine başında baş başa romantik hafta sonu.",
+        "cost": 4500,
+        "rel_boost": 18,
+        "hap_boost": 16
+    },
+    {
+        "id": "uludag_chalet",
+        "name": "❄️ Uludağ Şömineli Dağ Evi Kaçamağı",
+        "desc": "Karlar altında kayak ve sıcak çikolata keyfi.",
+        "cost": 12000,
+        "rel_boost": 25,
+        "hap_boost": 22
+    },
+    {
+        "id": "kas_yacht",
+        "name": "⛵ Kaş & Göcek Özel Yat Turu",
+        "desc": "Turkuaz koylarda sadece ikinize özel tekne tatili.",
+        "cost": 28000,
+        "rel_boost": 35,
+        "hap_boost": 30
+    },
+    {
+        "id": "paris_venice",
+        "name": "🗼 Paris & Venedik Rüya Balayı Turu",
+        "desc": "Eyfel Kulesi ve Venedik gondollarında unutulmaz aşk tatili.",
+        "cost": 85000,
+        "rel_boost": 50,
+        "hap_boost": 42
+    }
+]
+
+SOCIAL_HANGOUTS = [
+    {
+        "id": "coffee_gossip",
+        "name": "☕ Kahve & Derin Dedikodu Seansı",
+        "desc": "Saatlerce süren samimi sohbet ve dertleşme.",
+        "cost": 400,
+        "rel_boost": 15
+    },
+    {
+        "id": "halisaha_match",
+        "name": "⚽ Halı Saha / Derbi Maçı Gecesi",
+        "desc": "Omuz omuza maç heyecanı ve sonrasında baklava ısmarlama.",
+        "cost": 600,
+        "rel_boost": 18
+    },
+    {
+        "id": "boardgame_night",
+        "name": "🎲 Kutu Oyunu & Ev Partisi",
+        "desc": "Sabaha kadar kahkaha dolu oyun ve eğlence gecesi.",
+        "cost": 800,
+        "rel_boost": 20
+    },
+    {
+        "id": "concert_buddy",
+        "name": "🎸 Beraber Konsere & Festivale Git",
+        "desc": "Favori sanatçınızı en önden birlikte dinleyin.",
+        "cost": 2500,
+        "rel_boost": 26
+    }
+]
+
+DM_TOPICS = [
+    {
+        "id": "flirt_msg",
+        "name": "😘 Romantik & Flörtöz Mesaj At",
+        "my_text": "Bugün bütün gün aklımdan hiç çıkmadın, seni çok özledim ❤️✨",
+        "partner_only": True
+    },
+    {
+        "id": "funny_meme",
+        "name": "😂 Komik Video / Esprili Caps Gönder",
+        "my_text": "Şu videoya bak, tıpkı ikimiz! Gülmekten gözümden yaş geldi 😂🔥",
+        "partner_only": False
+    },
+    {
+        "id": "future_dream",
+        "name": "🏡 Gelecek & Ortak Hayallerden Bahset",
+        "my_text": "İleride seninle çok güzel günler göreceğimize tüm kalbimle inanıyorum 🌟",
+        "partner_only": False
+    },
+    {
+        "id": "jealous_check",
+        "name": "🧐 'Neredesin, Kimlesin?' Diye Yokla",
+        "my_text": "Son attığın hikayede yanındaki kimdi? Neredesin şu an? 🤨",
+        "partner_only": True
+    },
+    {
+        "id": "apology_msg",
+        "name": "🕊️ Özür Dile & Gönlünü Al",
+        "my_text": "Son zamanlarda seni kırdıysam özür dilerim, benim için çok değerlisin 🤍",
+        "partner_only": False
+    }
+]
+
 DATING_BIOS_BY_PERSONALITY = {
     "Romantik": [
         "Sahilde gün batımını izleyip şiir konuşabileceğim gerçek aşkı arıyorum 🌅",
@@ -485,6 +592,28 @@ JOBS_DATABASE = [
         "correct_opt": 0
     },
     {
+        "id": "pop_singer",
+        "title": "Pop & Rap Müzik Yıldızı",
+        "category": "Sanat",
+        "salary": 2400000,
+        "required_education": "Yok",
+        "required_smarts": 35,
+        "interview_q": "Stüdyoda prodüktör şarkının nakaratını daha enerjik okumanı isterse ne yaparsın?",
+        "options": ["Mikrofona geçip tüm ruhumla en iyi vokali kaydederim", "Mikrofonu yere atarım", "Stüdyoyu terk ederim"],
+        "correct_opt": 0
+    },
+    {
+        "id": "pro_footballer",
+        "title": "Süper Lig Profesyonel Futbolcusu",
+        "category": "Spor",
+        "salary": 4200000,
+        "required_education": "Yok",
+        "required_smarts": 30,
+        "interview_q": "Derbi maçının 90. dakikasında takımın penaltı kazandı, topun başına geçerken ne düşünürsün?",
+        "options": ["Soğukkanlılığımı korur, köşeye sert ve net bir vuruş yaparım", "Heyecandan topu tribüne dikerim", "Hakemle tartışırım"],
+        "correct_opt": 0
+    },
+    {
         "id": "pilot",
         "title": "Kaptan Havayolu Pilotu",
         "category": "Havacılık",
@@ -545,6 +674,191 @@ PET_NAMES = [
     "Pamuk", "Duman", "Boncuk", "Zeytin", "Tarçın", "Gofret", "Mişa", "Karamel", "Çakıl", "Badi", "Pati", "Limon"
 ]
 
+POLITICAL_OFFICES = [
+    {
+        "id": "muhtar",
+        "title": "🏘️ Mahalle Muhtarı",
+        "min_age": 18,
+        "campaign_cost": 15000,
+        "salary": 320000,
+        "req_edu": "Yok",
+        "desc": "Mahallenin sorunlarını çöz, sosyal yardımları organize et ve siyasete ilk adımını at."
+    },
+    {
+        "id": "district_mayor",
+        "title": "🏛️ İlçe Belediye Başkanı",
+        "min_age": 25,
+        "campaign_cost": 150000,
+        "salary": 950000,
+        "req_edu": "Lise",
+        "desc": "İlçenin imar, kültür, park ve altyapı bütçesini yönet."
+    },
+    {
+        "id": "metro_mayor",
+        "title": "🌆 Büyükşehir Belediye Başkanı",
+        "min_age": 28,
+        "campaign_cost": 850000,
+        "salary": 2200000,
+        "req_edu": "Üniversite",
+        "desc": "Milyonluk metropolün ulaşım, metro ve dev yatırımlarını yönet."
+    },
+    {
+        "id": "mp",
+        "title": "⚖️ Milletvekili & Parti Sözcüsü",
+        "min_age": 25,
+        "campaign_cost": 1500000,
+        "salary": 3200000,
+        "req_edu": "Üniversite",
+        "desc": "Meclis kürsüsünde yasaları oyla, ülke gündemini belirle."
+    },
+    {
+        "id": "president",
+        "title": "👑 Cumhurbaşkanı",
+        "min_age": 35,
+        "campaign_cost": 8000000,
+        "salary": 7500000,
+        "req_edu": "Üniversite",
+        "desc": "Devletin en üst makamı! Ülke ekonomisini ve zirveyi yönet."
+    }
+]
+
+AUCTION_ITEMS = [
+    {
+        "id": "patek_watch",
+        "name": "⌚ Klasik İsviçre Patek Saat Koleksiyonu",
+        "price": 650000,
+        "desc": "Her yıl değer kazanan nadir üretim mekanik saat."
+    },
+    {
+        "id": "shelby_classic",
+        "name": "🏎️ 1967 Klasik Ford Mustang Shelby",
+        "price": 3200000,
+        "desc": "Müzayede kondisyonunda koleksiyonluk klasik spor otomobil."
+    },
+    {
+        "id": "ottoman_painting",
+        "name": "🖼️ Osman Hamdi Bey Dönemi Nadir Tablo",
+        "price": 7500000,
+        "desc": "Sanat tarihinin en değerli orijinal tuval eserlerinden biri."
+    },
+    {
+        "id": "royal_dagger",
+        "name": "💎 Topkapı İşi Zümrüt Hançer (Antika)",
+        "price": 15000000,
+        "desc": "Paha biçilemez zümrüt ve elmas işlemeli tarihi eser."
+    },
+    {
+        "id": "mars_meteorite",
+        "name": "☄️ Nadir Mars Meteoriti & Elmas Küre",
+        "price": 35000000,
+        "desc": "Dünyada sadece sayılı milyarderlerin kasasında bulunan uzay hazinesi."
+    }
+]
+
+OUTFIT_STYLES = [
+    {
+        "id": "casual",
+        "name": "👕 Günlük & Rahat",
+        "cost": 0,
+        "looks_boost": 2,
+        "charisma_boost": 2,
+        "desc": "Rahat, sade ve samimi bir günlük stil."
+    },
+    {
+        "id": "streetwear",
+        "name": "🧥 Sokak Stili & Sneaker (Streetwear)",
+        "cost": 6500,
+        "looks_boost": 7,
+        "charisma_boost": 6,
+        "desc": "Genç, enerjik ve sosyal medyada dikkat çeken modern kombin."
+    },
+    {
+        "id": "bohemian",
+        "name": "🎸 Bohem & Sanatçı Ruhu",
+        "cost": 12000,
+        "looks_boost": 9,
+        "charisma_boost": 10,
+        "desc": "Entelektüel ve romantik karakterlerin hayran kaldığı özgün tarz."
+    },
+    {
+        "id": "classic_suit",
+        "name": "🤵 Klasik & Kurumsal Şıklık",
+        "cost": 35000,
+        "looks_boost": 14,
+        "charisma_boost": 15,
+        "desc": "İş dünyasında, siyasette ve aile tanışmalarında tam puan kazandıran takım/abiye."
+    },
+    {
+        "id": "luxury_designer",
+        "name": "💎 Ultra Lüks İtalyan Tasarım & Saat",
+        "cost": 180000,
+        "looks_boost": 22,
+        "charisma_boost": 22,
+        "desc": "Cemiyet hayatında, KısmetApp VIP'te ve galalarda tüm gözleri üzerine çevirir!"
+    }
+]
+
+EXAM_QUESTIONS = {
+    "yks": [
+        {
+            "q": "YKS Türkçe & Paragraf Sorusu: 'Bir eserin kalıcılığı, yazıldığı çağın ruhunu aşabilmesine bağlıdır.' cümlesinde vurgulanan temel düşünce nedir?",
+            "options": [
+                "Gelecek kuşaklara da hitap edebilen evrensel nitelik taşıması",
+                "Sadece kendi döneminin sorunlarını anlatması",
+                "Çok uzun ve ağır bir dille yazılması"
+            ],
+            "correct": 0
+        },
+        {
+            "q": "YKS Matematik Sorusu: Bir araç 240 km'lik yolun yarısını saatte 60 km, diğer yarısını saatte 40 km hızla giderse toplam yolculuk kaç saat sürer?",
+            "options": ["4 Saat", "5 Saat", "6 Saat"],
+            "correct": 1
+        }
+    ],
+    "kpss": [
+        {
+            "q": "KPSS Genel Kültür & Vatandaşlık Sorusu: Türkiye Cumhuriyeti Anayasası'na göre yasama yetkisi Türk Milleti adına hangi kuruma aittir?",
+            "options": [
+                "Türkiye Büyük Millet Meclisi (TBMM)",
+                "Merkez Bankası",
+                "Belediye Meclisleri"
+            ],
+            "correct": 0
+        },
+        {
+            "q": "KPSS Tarih Sorusu: Cumhuriyetin ilanından hemen önce imzalanarak Türkiye'nin bağımsızlığını tüm dünyaya kabul ettiren barış antlaşması hangisidir?",
+            "options": ["Mondros Mütarekesi", "Lozan Barış Antlaşması", "Sevr Antlaşması"],
+            "correct": 1
+        }
+    ]
+}
+
+BAND_GENRES = [
+    {"id": "anadolu_rock", "name": "🎸 Anadolu Rock Grubu", "cost": 15000, "desc": "Elektro bağlama ve güçlü gitar riffleriyle stadyumları coştur."},
+    {"id": "trap_rap", "name": "🎤 Trap & Rap Kolektifi", "cost": 12000, "desc": "Dijital listelerde milyonlarca dinlenen sokak ritimleri."},
+    {"id": "indie_alt", "name": "🎹 Alternatif & Indie Sahnesi", "cost": 10000, "desc": "Festivallerin ve üniversite şenliklerinin vazgeçilmez grubu."},
+    {"id": "pop_orchestra", "name": "🎻 Akustik Pop & Caz Orkestrası", "cost": 20000, "desc": "Seçkin kulüplerde ve dev açıkhava sahnelerinde zarif müzik."}
+]
+
+COUPLE_BUSINESS_TYPES = [
+    {"id": "boutique_cafe", "name": "☕ Üçüncü Nesil Ortak Butik Kafe", "cost": 180000, "annual_profit": 95000},
+    {"id": "fashion_atelier", "name": "👗 Moda & Gelinlik Tasarım Atölyesi", "cost": 350000, "annual_profit": 185000},
+    {"id": "jewelry_brand", "name": "💎 E-Ticaret Takı & Kozmetik Markası", "cost": 600000, "annual_profit": 310000}
+]
+
+DIVORCE_LAWYERS = [
+    {"id": "baro", "name": "⚖️ Nöbetçi Baro Avukatı", "cost": 5000, "win_bonus": 0.0, "desc": "Standart savunma yapar, hakimin takdirine kalırsın."},
+    {"id": "specialist", "name": "💼 Uzman Aile & Boşanma Avukatı", "cost": 65000, "win_bonus": 0.25, "desc": "Mal paylaşımı ve nafaka pazarlığında elini güçlendirir."},
+    {"id": "shark", "name": "🦈 Cemiyetin Ünlü 'Köpekbalığı' Avukatı", "cost": 250000, "win_bonus": 0.55, "desc": "En zorlu davalarda bile karşı taraftan tazminat koparır!"}
+]
+
+SPORTS_CLUBS = [
+    {"id": "anadolu_fk", "name": "⚽ Anadolu Yıldızspor", "sport": "Futbol", "tier": "Süper Lig", "salary": 1850000, "req_ath": 50},
+    {"id": "istanbul_dev", "name": "🦁 İstanbul Devleri SK", "sport": "Futbol", "tier": "Süper Lig Şampiyonluk Adayı", "salary": 4500000, "req_ath": 72},
+    {"id": "avrupa_real", "name": "👑 Real Madrid / Avrupa Devi", "sport": "Futbol", "tier": "Şampiyonlar Ligi Devi", "salary": 14500000, "req_ath": 88},
+    {"id": "euroleague_bask", "name": "🏀 İstanbul EuroLeague Basketbol", "sport": "Basketbol", "tier": "EuroLeague", "salary": 3800000, "req_ath": 70}
+]
+
 ACHIEVEMENT_DEFINITIONS = [
     {"id": "born", "icon": "🍼", "title": "Hayata Merhaba", "desc": "Dünyaya gözlerini açtın."},
     {"id": "first_love", "icon": "💘", "title": "İlk Kıvılcım", "desc": "İlk kez aşık oldun ve sevgili edindin."},
@@ -560,6 +874,15 @@ ACHIEVEMENT_DEFINITIONS = [
     {"id": "billionaire", "icon": "👑", "title": "İmparator", "desc": "Net servetin 100.000.000 TL'yi aştı."},
     {"id": "criminal", "icon": "🦹", "title": "Karanlık Yol", "desc": "Yasa dışı bir suça bulaştın."},
     {"id": "escaped", "icon": "🏃", "title": "Büyük Firar", "desc": "Cezaevinden kaçmayı başardın!"},
-    {"id": "famous", "icon": "🌟", "title": "Şöhret Basamakları", "desc": "Sosyal medyada 100.000 takipçiyi geçtin."},
+    {"id": "famous", "icon": "🌟", "title": "Şöhret Basamakları", "desc": "Sosyal medyada 100.000 takipçiyi geçtin veya ünlü oldun."},
+    {"id": "politician", "icon": "🏛️", "title": "Devlet Adamı", "desc": "Seçim kazanarak siyasi bir makama seçildin."},
+    {"id": "collector", "icon": "🖼️", "title": "Sanat & Antika Koleksiyoneri", "desc": "Müzayededen nadir bir koleksiyon eseri satın aldın."},
+    {"id": "military_vet", "icon": "🪖", "title": "Vatan Borcu", "desc": "Askerlik görevini başarıyla tamamlayıp terhis oldun."},
+    {"id": "civil_servant", "icon": "📋", "title": "Kadrolu Atama", "desc": "KPSS sınavında derece yapıp üst düzey devlet kadrosuna atandın."},
+    {"id": "fashion_icon", "icon": "👔", "title": "Stil İkonu", "desc": "Gardırobunu yenileyip lüks tarzınla göz kamaştırdın."},
+    {"id": "tv_star_love", "icon": "📺", "title": "Kısmet Evi Şampiyonu", "desc": "Evlilik TV programında büyük ödülü ve aşkı kazandın."},
+    {"id": "rockstar", "icon": "🎸", "title": "Sahne Efsanesi", "desc": "Kendi müzik grubunu kurup stadyum konserine çıktın."},
+    {"id": "ballon_dor", "icon": "⚽", "title": "Altın Top (Ballon d'Or)", "desc": "Profesyonel spor kariyerinde zirveye çıkıp şampiyonluk kupası kaldırdın."},
+    {"id": "grandparent", "icon": "👵", "title": "Çınar & Torun Sevgisi", "desc": "Çocuğunu evlendirip ilk torununu kucağına aldın."},
     {"id": "centenarian", "icon": "🌳", "title": "Asırlık Çınar", "desc": "100 yaşına kadar hayatta kaldın."}
 ]

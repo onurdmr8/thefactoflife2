@@ -127,6 +127,23 @@ async function fetchGameState() {
     }
 }
 
+const THEMES = ["midnight", "emerald", "royal", "rose"];
+let currentThemeIndex = 0;
+
+function cycleTheme() {
+    sound.playClick();
+    currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+    const theme = THEMES[currentThemeIndex];
+    if (theme === "midnight") {
+        document.body.removeAttribute("data-theme");
+    } else {
+        document.body.setAttribute("data-theme", theme);
+    }
+    try {
+        localStorage.setItem("bitlife_tr_theme", theme);
+    } catch (e) {}
+}
+
 function toggleSound() {
     sound.muted = !sound.muted;
     const btn = document.getElementById("btnSoundToggle");
@@ -209,10 +226,24 @@ function renderHeader() {
 
     // Status Chips
     if (chipsRow) {
-        let html = `<span class="status-chip">👑 ${gameState.generation || 1}. Kuşak</span>`;
+        let html = `<span class="status-chip" style="cursor:pointer;" onclick="openFamilyTreeModal()">🌳 ${gameState.generation || 1}. Kuşak</span>`;
         html += `<span class="status-chip">☯️ Karma: %${gameState.karma}</span>`;
+        if (gameState.outfit_style) {
+            html += `<span class="status-chip" style="cursor:pointer;" onclick="openWardrobeModal()" title="Tarzını Değiştir">${gameState.outfit_style}</span>`;
+        }
+
+        const mainPartner = (gameState.relationships || []).find(p => p.is_alive && ["Eş", "Nişanlı", "Sevgili", "Flört"].includes(p.relation));
+        if (mainPartner) {
+            html += `<span class="status-chip" style="background:rgba(236,72,153,0.18); color:#fbcfe8; cursor:pointer;" onclick="openPersonModal('${mainPartner.id}')">${getRelationEmoji(mainPartner.relation)} ${mainPartner.relation}: ${mainPartner.name.split(" ")[0]}</span>`;
+        } else if (gameState.age >= 16) {
+            html += `<span class="status-chip">💔 Bekar</span>`;
+        }
+
         if (gameState.fame > 0) {
-            html += `<span class="status-chip chip-gold">🌟 Şöhret: %${gameState.fame}</span>`;
+            html += `<span class="status-chip chip-gold" style="cursor:pointer;" onclick="openFameModal()">🌟 Şöhret: %${gameState.fame}</span>`;
+        }
+        if (gameState.political_office) {
+            html += `<span class="status-chip" style="background:rgba(59,130,246,0.22); color:#93c5fd; cursor:pointer;" onclick="openPoliticsModal()">${gameState.political_office} (%${gameState.approval_rating})</span>`;
         }
         if (gameState.is_in_prison) {
             html += `<span class="status-chip chip-danger">🚨 Cezaevinde (${gameState.prison_years_left} Yıl)</span>`;
@@ -321,63 +352,150 @@ function getPersonalityLabel(personalityId) {
     return found ? `${found.emoji} ${found.name}` : (personalityId || "Uyumlu");
 }
 
+function getMoodBadge(person) {
+    if (!person.is_alive) return `<span class="person-mood-pill badge-red">🕊️ Vefat Etti</span>`;
+    const lvl = person.relationship_level;
+    const isRom = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
+    if (lvl >= 85) return `<span class="person-mood-pill badge-green">${isRom ? "❤️‍🔥 Sırılsıklam Aşık" : "🥰 Çok Yakın"} (%${lvl})</span>`;
+    if (lvl >= 60) return `<span class="person-mood-pill badge-blue">${isRom ? "💕 Mutlu & Uyumlu" : "😊 Samimi"} (%${lvl})</span>`;
+    if (lvl >= 35) return `<span class="person-mood-pill badge-yellow">😐 Mesafeli (%${lvl})</span>`;
+    return `<span class="person-mood-pill badge-red">😡 Kırgın / Soğuk (%${lvl})</span>`;
+}
+
 function renderPersonCard(person) {
-    const card = document.createElement("div");
-    card.className = "panel-card clickable-card";
-    card.onclick = () => openPersonModal(person.id);
-
-    let badgeClass = "badge-green";
-    if (!person.is_alive) badgeClass = "badge-red";
-    else if (person.relationship_level < 35) badgeClass = "badge-red";
-    else if (person.relationship_level < 65) badgeClass = "badge-yellow";
-
-    const statusBadge = person.is_alive
-        ? `<span class="card-badge ${badgeClass}">İlişki: %${person.relationship_level}</span>`
-        : `<span class="card-badge badge-red">Vefat Etti</span>`;
+    const card = document.createElement("article");
+    card.className = "panel-card person-card";
 
     const extraBadges = [];
     if (person.cohabiting && person.is_alive) extraBadges.push(`<span class="person-chip" style="background:rgba(16,185,129,0.18); color:#6ee7b7;">🏠 Aynı Evde</span>`);
     if (person.has_prenup && person.relation === "Eş") extraBadges.push(`<span class="person-chip" style="background:rgba(245,158,11,0.18); color:#fcd34d;">📜 Sözleşmeli</span>`);
     if (person.personality) extraBadges.push(`<span class="person-chip">${getPersonalityLabel(person.personality)}</span>`);
-    if (person.zodiac) extraBadges.push(`<span class="person-chip">✨ ${person.zodiac}</span>`);
+    if (person.love_language) extraBadges.push(`<span class="person-chip">💝 ${person.love_language}</span>`);
+    if (person.met_family && ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
+        extraBadges.push(`<span class="person-chip">👨‍👩‍👧 Aile Onayı: %${person.family_approval ?? 65}</span>`);
+    }
     if (person.years_together && person.years_together > 0 && ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
         extraBadges.push(`<span class="person-chip">⏳ ${person.years_together} Yıl</span>`);
     }
 
     const relBarColor = person.relationship_level >= 65 ? "var(--accent-green)" : (person.relationship_level >= 35 ? "var(--accent-yellow)" : "var(--accent-red)");
+    const isPartner = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
+    const lastChat = (person.chat_history && person.chat_history.length > 0)
+        ? person.chat_history[person.chat_history.length - 1].text
+        : null;
+
+    let quickActionsHtml = "";
+    if (person.is_alive) {
+        if (isPartner) {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="quickSendDmFromCard('${person.id}', 'flirt_msg')">📱 Flört Mesajı</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDateVenueModal('${person.id}')">🌹 Randevu</button>
+                    <button type="button" class="btn-quick-rel" onclick="openCustomGiftModal('${person.id}')">🎁 Hediye</button>
+                </footer>
+            `;
+        } else if (["Anne", "Baba"].includes(person.relation)) {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'parent_blessing'})">🙏 El Öp</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'chat'})">💬 Sohbet</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'ask_money'})">💸 Harçlık</button>
+                </footer>
+            `;
+        } else if (person.relation === "Çocuk") {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'educate_child'})">📚 Eğit (+Zeka)</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'spend_time'})">🍿 Vakit Geçir</button>
+                </footer>
+            `;
+        } else if (["Eski Sevgili", "Eski Eş"].includes(person.relation)) {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'text_ex'})">📱 Barışma Mesajı At</button>
+                    <button type="button" class="btn-quick-rel" onclick="openCustomGiftModal('${person.id}')">🎁 Hediye Gönder</button>
+                </footer>
+            `;
+        } else {
+            quickActionsHtml = `
+                <footer class="person-card-footer">
+                    <button type="button" class="btn-quick-rel" onclick="quickSendDmFromCard('${person.id}', 'funny_meme')">📱 Caps At</button>
+                    <button type="button" class="btn-quick-rel" onclick="openSocialHangoutModal('${person.id}')">🎉 Dışarı Çıkar</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'ask_matchmake'})">💘 Çöpçatanlık</button>
+                </footer>
+            `;
+        }
+    }
 
     card.innerHTML = `
-        <div class="card-title-row">
-            <span class="card-title">
-                ${getRelationEmoji(person.relation)} ${person.name}
-            </span>
-            ${statusBadge}
+        <header class="card-title-row">
+            <h4 class="card-title">
+                <button type="button" class="card-primary-btn" onclick="openPersonModal('${person.id}')">
+                    <span class="person-avatar-badge">${getRelationEmoji(person.relation)}</span>
+                    <span>
+                        <div>${person.name}</div>
+                        <div style="font-size:11.5px; font-weight:500; color:var(--text-secondary);">
+                            <b>${person.relation}</b> • ${person.age} Yaş ${person.job ? `• ${person.job}` : ""}
+                        </div>
+                    </span>
+                </button>
+            </h4>
+            ${getMoodBadge(person)}
+        </header>
+        <div>
+            ${extraBadges.length > 0 ? `<div class="person-chip-row" style="margin:6px 0 4px;">${extraBadges.join("")}</div>` : ""}
+            ${lastChat && person.is_alive ? `<div style="font-size:11.5px; color:#cbd5e1; font-style:italic; margin:4px 0;">💬 "${lastChat}"</div>` : ""}
+            ${person.is_alive ? `
+                <div class="stat-progress-bg" style="height:5px; margin-top:6px;">
+                    <div class="stat-progress-bar" style="width:${person.relationship_level}%; background:${relBarColor};"></div>
+                </div>
+            ` : ""}
         </div>
-        <div class="card-desc">
-            <b>${person.relation}</b> • ${person.age} Yaşında ${person.job ? `• ${person.job}` : ""}
-        </div>
-        ${extraBadges.length > 0 ? `<div class="person-chip-row" style="margin:6px 0 4px;">${extraBadges.join("")}</div>` : ""}
-        ${person.is_alive ? `
-            <div class="stat-progress-bg" style="height:5px; margin-top:6px;">
-                <div class="stat-progress-bar" style="width:${person.relationship_level}%; background:${relBarColor};"></div>
-            </div>
-        ` : ""}
+        ${quickActionsHtml}
     `;
     return card;
 }
 
+async function quickSendDmFromCard(personId, topicId) {
+    await performActivity("send_dm", { person_id: personId, topic_id: topicId });
+}
+
 function renderRelationships() {
     const listEl = document.getElementById("relationshipsList");
+    const summaryEl = document.getElementById("relationshipsSummary");
     if (!listEl) return;
     listEl.innerHTML = "";
 
-    const rels = gameState.relationships || [];
+    const rels = (gameState.relationships || []).filter(p => !p.is_blocked);
+    const aliveRels = rels.filter(p => p.is_alive);
+
+    if (summaryEl) {
+        const partner = aliveRels.find(p => ["Eş", "Nişanlı", "Sevgili", "Flört"].includes(p.relation));
+        const partnerText = partner ? `${getRelationEmoji(partner.relation)} ${partner.name.split(" ")[0]}` : "💔 Bekar";
+        const avgRel = aliveRels.length > 0
+            ? Math.round(aliveRels.reduce((acc, p) => acc + p.relationship_level, 0) / aliveRels.length)
+            : 0;
+        summaryEl.innerHTML = `
+            <div class="rel-summary-stat">
+                <div class="rel-summary-label">Aşk Durumu</div>
+                <div class="rel-summary-val">${partnerText}</div>
+            </div>
+            <div class="rel-summary-stat">
+                <div class="rel-summary-label">Sosyal Çevre</div>
+                <div class="rel-summary-val">👥 ${aliveRels.length} Kişi</div>
+            </div>
+            <div class="rel-summary-stat">
+                <div class="rel-summary-label">Sosyal Uyum</div>
+                <div class="rel-summary-val" style="color:var(--accent-green);">%${avgRel}</div>
+            </div>
+        `;
+    }
     if (rels.length === 0) {
         listEl.innerHTML = `<div class="panel-card"><p class="card-desc">Henüz kayıtlı bir ilişkin yok.</p></div>`;
     } else {
         const romanticRels = rels.filter(p => ["Eş", "Nişanlı", "Sevgili", "Flört"].includes(p.relation));
-        const familyRels = rels.filter(p => ["Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk"].includes(p.relation));
-        const socialRels = rels.filter(p => !["Eş", "Nişanlı", "Sevgili", "Flört", "Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk"].includes(p.relation));
+        const familyRels = rels.filter(p => ["Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk", "Torun"].includes(p.relation));
+        const socialRels = rels.filter(p => !["Eş", "Nişanlı", "Sevgili", "Flört", "Anne", "Baba", "Ağabey", "Abla", "Kardeş", "Çocuk", "Torun"].includes(p.relation));
 
         if (romanticRels.length > 0) {
             const h = document.createElement("div");
@@ -467,25 +585,30 @@ function renderCareerTab() {
     if (!careerEl) return;
     careerEl.innerHTML = "";
 
-    // 1. Eğitim ve Okul Kulüpleri
+    // 1. Eğitim, YKS/KPSS Sınavları, Yurt/Öğrenci Evi ve Askerlik
     const eduCard = document.createElement("div");
     eduCard.className = "panel-card";
     eduCard.innerHTML = `
         <div class="card-title-row">
-            <span class="card-title">🎓 Eğitim & Akademi</span>
+            <span class="card-title">🎓 Eğitim, Sınavlar & Askerlik</span>
             <span class="card-badge badge-blue">${gameState.education_level}</span>
         </div>
         <p class="card-desc">
             ${gameState.current_school ? `Okul: <b>${gameState.current_school}</b>` : "Aktif öğrenci değilsin."}
             ${gameState.school_club ? ` • Kulüp: <b>${gameState.school_club}</b>` : ""}
+            ${gameState.scholarship_annual > 0 ? ` • 🎓 Burs: <b>+₺ ${gameState.scholarship_annual.toLocaleString("tr-TR")}/yıl</b>` : ""}
             <br>
-            ${gameState.has_drivers_license ? "🚗 B Sınıfı Ehliyet: Var" : "🚗 Ehliyet: Yok"}
-            ${gameState.gender === "Erkek" ? ` • 🪖 Askerlik: ${gameState.military_status}` : ""}
+            🏠 Barınma: <b>${gameState.housing_type || "Aile Evi"}</b>
+            • ${gameState.has_drivers_license ? "🚗 Ehliyet: Var" : "🚗 Ehliyet: Yok"}
+            • 🪖 Askerlik: <b>${gameState.military_status}</b>
         </p>
-        <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;">
-            <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('study_hard')">📚 Ders Çalış</button>
-            <button type="button" class="btn-action-outline" style="flex:1" onclick="openClubsModal()">🏅 Okul Kulüpleri</button>
-            <button type="button" class="btn-action-outline" style="flex:1" onclick="openUniversityModal()">🏛️ Üniversite</button>
+        <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button type="button" class="btn-action-outline" onclick="performActivity('study_hard')">📚 Ders Çalış</button>
+            <button type="button" class="btn-action-outline" onclick="openExamsModal()">📝 YKS & KPSS Sınavı</button>
+            <button type="button" class="btn-action-outline" onclick="openUniversityModal()">🏛️ Üniversite</button>
+            <button type="button" class="btn-action-outline" onclick="openStudentHousingModal()">🍜 Yurt & Öğrenci Evi</button>
+            <button type="button" class="btn-action-outline" onclick="openClubsModal()">🏅 Okul Kulüpleri</button>
+            <button type="button" class="btn-action-outline" onclick="openMilitaryModal()">🪖 Askerlik Şubesi</button>
         </div>
     `;
     careerEl.appendChild(eduCard);
@@ -581,6 +704,51 @@ function renderCareerTab() {
         </div>
     `;
     careerEl.appendChild(skillsCard);
+
+    // 5. Siyaset & Devlet Yönetimi Kartı
+    const polCard = document.createElement("div");
+    polCard.className = "panel-card";
+    if (gameState.political_office) {
+        polCard.innerHTML = `
+            <div class="card-title-row">
+                <span class="card-title">${gameState.political_office}</span>
+                <span class="card-badge badge-blue">Halk Desteği: %${gameState.approval_rating}</span>
+            </div>
+            <p class="card-desc">Yıllık Makam Ödeneği: <b>+₺ ${(gameState.political_salary || 0).toLocaleString("tr-TR")}/yıl</b></p>
+            <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('politics_action', {sub_action: 'hold_rally'})">📢 Miting Yap</button>
+                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('politics_action', {sub_action: 'public_project'})">🏗️ Hizmet Aç</button>
+                <button type="button" class="btn-primary" style="flex:1" onclick="openPoliticsModal()">🏛️ Meclis & Seçim</button>
+            </div>
+        `;
+    } else {
+        polCard.innerHTML = `
+            <div class="card-title-row">
+                <span class="card-title">🏛️ Siyaset & Devlet Yönetimi</span>
+                <span class="card-badge badge-blue">Seçimler</span>
+            </div>
+            <p class="card-desc">Mahalle Muhtarlığından Belediye Başkanlığına, Milletvekilliğinden Cumhurbaşkanlığına kadar aday ol!</p>
+            <button type="button" class="btn-action-outline" style="width:100%; margin-top:8px;" onclick="openPoliticsModal()">🗳️ Seçim & Siyaset Merkezini Aç</button>
+        `;
+    }
+    careerEl.appendChild(polCard);
+
+    // 6. Şöhret, Sanat & Magazin Merkezi Kartı
+    const fameCard = document.createElement("div");
+    fameCard.className = "panel-card";
+    fameCard.innerHTML = `
+        <div class="card-title-row">
+            <span class="card-title">🌟 Şöhret, Sahne & Magazin</span>
+            <span class="card-badge badge-yellow">Şöhret: %${gameState.fame || 0}</span>
+        </div>
+        <p class="card-desc">Yetenek seçmelerine katıl, Hit Albüm/Film çıkar, Talk Show'a konuk ol, reklam anlaşması imzala veya VIP ünlülerle flört et!</p>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+            <button type="button" class="btn-action-outline" style="flex:1;" onclick="openFameModal()">🌟 Şöhret Merkezi</button>
+            <button type="button" class="btn-action-outline" style="flex:1;" onclick="openBandModal()">🎸 Müzik Grubu (${gameState.band ? gameState.band.name : 'Kur'})</button>
+            <button type="button" class="btn-action-outline" style="flex:1;" onclick="openProSportsModal()">⚽ Spor Kariyeri</button>
+        </div>
+    `;
+    careerEl.appendChild(fameCard);
 }
 
 // ----------------- VARLIKLAR VE PORTFÖY -----------------
@@ -599,11 +767,14 @@ function renderAssetsTab() {
         </div>
         <div class="card-desc">
             Toplam Net Servet: <b>₺ ${gameState.net_worth.toLocaleString("tr-TR")}</b><br>
+            🇨🇭 İsviçre Offshore: <b>₺ ${(gameState.offshore_balance || 0).toLocaleString("tr-TR")}</b> • 🏦 Kredi Borcu: <b style="color:var(--accent-red);">₺ ${(gameState.debt || 0).toLocaleString("tr-TR")}</b><br>
             Son Yıl Gelir: +₺ ${(gameState.annual_income_last || 0).toLocaleString("tr-TR")} • Son Yıl Gider: -₺ ${(gameState.annual_expense_last || 0).toLocaleString("tr-TR")}
         </div>
-        <div style="display: flex; gap: 6px; margin-top: 10px;">
-            <button type="button" class="btn-action-outline" style="flex:1" onclick="openRealEstateModal()">🏠 Emlak Al</button>
-            <button type="button" class="btn-action-outline" style="flex:1" onclick="openVehiclesModal()">🚗 Araç Al</button>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;">
+            <button type="button" class="btn-action-outline" style="flex:1" onclick="openRealEstateModal()">🏠 Emlak</button>
+            <button type="button" class="btn-action-outline" style="flex:1" onclick="openVehiclesModal()">🚗 Araç</button>
+            <button type="button" class="btn-action-outline" style="flex:1" onclick="openAuctionModal()">🖼️ Müzayede</button>
+            <button type="button" class="btn-action-outline" style="flex:1" onclick="openBankOffshoreModal()">🏦 Banka & Offshore</button>
             <button type="button" class="btn-action-outline" style="flex:1" onclick="openStocksModal()">📈 Borsa</button>
         </div>
     `;
@@ -612,15 +783,48 @@ function renderAssetsTab() {
     if (!gameState.assets || gameState.assets.length === 0) {
         const noAsset = document.createElement("div");
         noAsset.className = "panel-card";
-        noAsset.innerHTML = `<p class="card-desc">Henüz tapulu bir gayrimenkulün veya aracın bulunmuyor.</p>`;
+        noAsset.innerHTML = `<p class="card-desc">Henüz tapulu bir gayrimenkulün, aracın veya koleksiyon eserin bulunmuyor.</p>`;
         assetsEl.appendChild(noAsset);
     } else {
         gameState.assets.forEach(asset => {
             const card = document.createElement("div");
             card.className = "panel-card";
-            const icon = asset.asset_type === "Ev" ? "🏠" : "🏎️";
+            const icon = asset.asset_type === "Ev" ? "🏠" : (asset.asset_type === "Koleksiyon" ? "🖼️" : "🏎️");
             const diff = asset.current_value - asset.purchase_price;
             const diffStr = diff >= 0 ? `+₺ ${diff.toLocaleString("tr-TR")}` : `-₺ ${Math.abs(diff).toLocaleString("tr-TR")}`;
+
+            let extraControlsHtml = "";
+            if (asset.asset_type === "Ev") {
+                const renCost = Math.round(asset.current_value * 0.15);
+                extraControlsHtml = `
+                    <div class="person-chip-row" style="margin:6px 0;">
+                        <span class="person-chip">🔑 Kiracı: ${asset.tenant_name || "Atanmadı"}</span>
+                        <span class="person-chip">🛠️ Dekorasyon: Lvl ${asset.upgrade_level || 0}/3</span>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'renovate_house')">🛠️ Tadilat (₺${renCost.toLocaleString("tr-TR")})</button>
+                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'raise_rent')">📈 Kira Zammı (%25)</button>
+                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'find_tenant')">🔑 Yeni Kiracı</button>
+                    </div>
+                `;
+            } else if (asset.asset_type === "Araba") {
+                const tuneCost = Math.round(asset.current_value * 0.15);
+                extraControlsHtml = `
+                    <div class="person-chip-row" style="margin:6px 0;">
+                        <span class="person-chip">🔧 Modifiye: Stage-${asset.upgrade_level || 0}/3</span>
+                    </div>
+                    <div style="display:flex; gap:6px; margin-top:8px;">
+                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'tune_car')">🔧 Stage Modifiye Et (₺${tuneCost.toLocaleString("tr-TR")})</button>
+                    </div>
+                `;
+            } else if (asset.asset_type === "Koleksiyon") {
+                extraControlsHtml = `
+                    <div class="person-chip-row" style="margin:6px 0;">
+                        <span class="person-chip" style="color:#fde68a;">💎 Nadir Müzayede Koleksiyonu (Her yıl değerlenir)</span>
+                    </div>
+                `;
+            }
+
             card.innerHTML = `
                 <div class="card-title-row">
                     <span class="card-title">${icon} ${asset.name}</span>
@@ -628,8 +832,9 @@ function renderAssetsTab() {
                 </div>
                 <div class="card-desc">
                     Değer Değişimi: <b>${diffStr}</b> • Yıllık Masraf: ₺ ${asset.annual_cost.toLocaleString("tr-TR")}
-                    ${asset.annual_income > 0 ? ` • Kira Geliri: +₺ ${asset.annual_income.toLocaleString("tr-TR")}/yıl` : ""}
+                    ${asset.annual_income > 0 ? ` • Kira Geliri: <b>+₺ ${asset.annual_income.toLocaleString("tr-TR")}/yıl</b>` : ""}
                 </div>
+                ${extraControlsHtml}
                 <div style="margin-top: 8px;">
                     <button type="button" class="btn-action-outline" style="border-color: var(--accent-yellow); color: var(--accent-yellow); width:100%;" onclick="sellAsset('${asset.id}')">🏷️ Sat ve Nakte Çevir</button>
                 </div>
@@ -766,11 +971,47 @@ function openPersonModal(personId) {
     document.getElementById("personModalLevel").textContent = `%${person.relationship_level}`;
     document.getElementById("personModalBar").style.width = `${person.relationship_level}%`;
 
+    const isPartner = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
+    const isEx = ["Eski Sevgili", "Eski Eş"].includes(person.relation);
+    const isParent = ["Anne", "Baba"].includes(person.relation);
+    const isChild = person.relation === "Çocuk";
+    const isFriend = person.relation === "Arkadaş";
+
     const extraContainer = document.getElementById("personModalProfileExtra");
     if (extraContainer) {
         const interestsHtml = (person.interests && person.interests.length > 0)
             ? `<div class="person-chip-row">${person.interests.map(i => `<span class="person-chip">${i}</span>`).join("")}</div>`
             : "";
+
+        // Canlı WhatsApp / DM Sohbet Kutusu
+        let dmBoxHtml = "";
+        if (person.is_alive && marketData && marketData.dm_topics) {
+            const chatHistory = person.chat_history && person.chat_history.length > 0
+                ? person.chat_history
+                : [{ sender: "them", text: `Selam ${gameState.first_name}, nasılsın? 😊` }];
+
+            const allowedTopics = marketData.dm_topics.filter(t => !t.partner_only || isPartner || isEx);
+            dmBoxHtml = `
+                <div class="dm-chat-box">
+                    <div class="dm-chat-header">
+                        <span>📱 Canlı WhatsApp / DM Sohbeti</span>
+                        <span>Çevrimiçi ●</span>
+                    </div>
+                    <div class="dm-messages-list">
+                        ${chatHistory.slice(-4).map(m => `
+                            <div class="dm-bubble ${m.sender === 'me' ? 'dm-bubble-me' : 'dm-bubble-them'}">
+                                ${m.text}
+                            </div>
+                        `).join("")}
+                    </div>
+                    <div class="dm-quick-pills">
+                        ${allowedTopics.map(t => `
+                            <button type="button" class="btn-dm-pill" onclick="sendModalDm('${person.id}', '${t.id}')">${t.name}</button>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        }
 
         const memoriesHtml = (person.memories && person.memories.length > 0)
             ? `
@@ -785,6 +1026,8 @@ function openPersonModal(personId) {
             <div class="person-chip-row">
                 <span class="person-chip">${getPersonalityLabel(person.personality)}</span>
                 <span class="person-chip">✨ Burç: ${person.zodiac || "Aslan"}</span>
+                ${person.love_language ? `<span class="person-chip">💝 Sevgi Dili: ${person.love_language}</span>` : ""}
+                ${person.met_family && isPartner ? `<span class="person-chip" style="color:#93c5fd;">👨‍👩‍👧 Aile Onayı: %${person.family_approval ?? 65}</span>` : ""}
                 ${person.cohabiting ? `<span class="person-chip" style="color:#6ee7b7;">🏠 Aynı Evdesiniz</span>` : ""}
                 ${person.has_prenup ? `<span class="person-chip" style="color:#fcd34d;">📜 Evlilik Sözleşmeli</span>` : ""}
                 ${person.years_together > 0 ? `<span class="person-chip">⏳ ${person.years_together} Yıllık Birliktelik</span>` : ""}
@@ -804,11 +1047,12 @@ function openPersonModal(personId) {
                     <div class="stat-progress-bg"><div class="stat-progress-bar bar-health" style="width:${person.loyalty ?? 75}%"></div></div>
                 </div>
                 <div class="person-stat-pill">
-                    <div class="person-stat-pill-header"><span>🤪 Çılgınlık</span><span>%${person.craziness ?? 35}</span></div>
-                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-happiness" style="width:${person.craziness ?? 35}%"></div></div>
+                    <div class="person-stat-pill-header"><span>💰 Varlık</span><span>%${person.wealth ?? 50}</span></div>
+                    <div class="stat-progress-bg"><div class="stat-progress-bar bar-happiness" style="width:${person.wealth ?? 50}%"></div></div>
                 </div>
             </div>
             ${interestsHtml}
+            ${dmBoxHtml}
             ${memoriesHtml}
         `;
     }
@@ -820,42 +1064,61 @@ function openPersonModal(personId) {
         actionsContainer.innerHTML = `<p class="card-desc">Bu kişi vefat etti. Huzur içinde yatsın.</p>`;
     } else {
         const actions = [];
-        const isPartner = ["Flört", "Sevgili", "Nişanlı", "Eş"].includes(person.relation);
-        const isEx = ["Eski Sevgili", "Eski Eş"].includes(person.relation);
-        const isParent = ["Anne", "Baba"].includes(person.relation);
-        const isChild = person.relation === "Çocuk";
-        const isFriend = person.relation === "Arkadaş";
 
         if (isPartner) {
             actions.push({ id: "modal_date_venue", text: "🌹 Özel Randevuya Çıkar (Mekan Seç)", primary: true });
+            actions.push({ id: "modal_couple_vacation", text: "✈️ Baş Başa Romantik Tatile / Balayına Çık" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Romantik Hediye Al (Çiçek, Mücevher, Araba...)" });
 
             if (person.relation === "Flört") {
-                actions.push({ id: "ask_relationship", text: "💑 'İlişkimizin Adını Koyalım' (Sevgili Ol)" });
+                actions.push({ id: "ask_relationship", text: "💑 'İlişkimizin Adını Koyalım' (Sevgili Ol)", primary: true });
             }
             if (person.relation === "Sevgili") {
-                actions.push({ id: "modal_propose_ring", text: "💍 Evlenme Teklifi Et (Yüzük Seç)" });
+                actions.push({ id: "modal_propose_ring", text: "💍 Evlenme Teklifi Et (Yüzük Seç)", primary: true });
             }
             if (person.relation === "Nişanlı") {
                 actions.push({ id: "modal_plan_wedding", text: "👰 Düğün Organize Et (Mekan & Sözleşme Seç)", primary: true });
             }
+            if (!person.met_family) {
+                actions.push({ id: "introduce_family", text: "👨‍👩‍👧 Ailemle Tanıştır (El Öpmeye Götür)" });
+            }
+            if (["Sevgili", "Nişanlı"].includes(person.relation) && !person.kiz_isteme_done) {
+                actions.push({ id: "kiz_isteme", text: "☕💍 Geleneksel Kız İsteme & Tuzlu Kahve Merasimi (12.000 TL)", primary: true });
+            }
+            if (["Sevgili", "Nişanlı", "Eş"].includes(person.relation) && !person.nisan_bohca_done) {
+                actions.push({ id: "nisan_kina", text: "🎁💃 Nişan Bohçası & Kına Gecesi / Bekarlığa Veda (35.000 TL)" });
+            }
             if (["Sevgili", "Nişanlı"].includes(person.relation) && !person.cohabiting) {
-                actions.push({ id: "move_in", text: "🏠 Aynı Eve Çıkma Teklifi Et (Ortak Kira)" });
+                actions.push({ id: "move_in", text: "🏠 Aynı Eve Çıkma Teklifi Et (Ortak Ev Bütçesi)" });
             }
             if (["Sevgili", "Nişanlı", "Eş"].includes(person.relation)) {
+                actions.push({ id: "modal_couple_business", text: `🤝🏪 Çiftler Arası Ortak Girişim Aç (${person.joint_venture_name || 'Kafe/Moda/Marka'})` });
+                actions.push({ id: "celebrate_anniversary", text: "🥂 Yıldönümü Sürprizi Hazırla (3.000 TL)" });
+                actions.push({ id: "visit_inlaws", text: "👵 Kayınvalide & Eşin Ailesini Ziyaret Et (1.500 TL)" });
                 actions.push({ id: "try_baby", text: "🍼 Çocuk Yapmayı Dene" });
-                actions.push({ id: "couples_therapy", text: "🛋️ Çift Terapisine Git (6.500 TL)" });
+                actions.push({ id: "baby_shower", text: "🎈 Baby Shower & Cinsiyet Partisi Düzenle (5.000 TL)" });
+                actions.push({ id: "couples_therapy", text: "🛋️ Çift Terapisine Git (4.000 TL)" });
             }
             actions.push({ id: "compliment", text: "✨ İltifat Et & Gururunu Okşa" });
             actions.push({ id: "deep_talk", text: "🌙 Gece Boyu Derin Sohbet Et" });
+            actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
+            actions.push({ id: "check_loyalty", text: "🕵️‍♂️ Sadakatini & Telefonunu Gizlice Kontrol Et" });
+            actions.push({ id: "hire_detective", text: "🕵️‍♂️📸 Özel Dedektif Tut & Adım Adım İzlet (15.000 TL)" });
+            actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Soybağı Testi Yaptır (8.000 TL)" });
+            actions.push({ id: "fake_stalk", text: "🕵️‍♀️ Fake Hesaptan Gizlice Stalkla (Takip & Beğeni Kontrolü)" });
             actions.push({ id: "cheat", text: "🔥 Gizli Kaçamak Yap (Aldat - Riskli!)" });
-            const breakupLabel = person.relation === "Eş" ? "💔 Boşanma Davası Aç" : (person.relation === "Nişanlı" ? "💔 Nişanı At" : "💔 Ayrıl");
+            actions.push({ id: "ghost_block", text: "🚫 Her Yerden Engelle & Ghostla" });
+            actions.push({ id: "modal_divorce_court", text: "⚖️ İnteraktif Boşanma & Nafaka Mahkemesi (Avukat Tut)" });
+            const breakupLabel = person.relation === "Eş" ? "💔 Hızlı Boşanma" : (person.relation === "Nişanlı" ? "💔 Nişanı At" : "💔 Ayrıl");
             actions.push({ id: "breakup", text: breakupLabel });
         } else if (isEx) {
             actions.push({ id: "text_ex", text: "📱 Gece Yarısı 'Seni Özledim' Mesajı At & Barışmayı Dene", primary: true });
+            actions.push({ id: "fake_stalk", text: "🕵️‍♀️ Fake Hesaptan Profilini Gizlice Stalkla" });
+            actions.push({ id: "apologize", text: "🕊️ Geçmiş İçin Özür Dile & Buzları Erit" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Gönlünü Almak İçin Hediye Gönder" });
             actions.push({ id: "chat", text: "💬 Halini Hatırını Sor" });
             actions.push({ id: "argue", text: "🤬 Eski Defterleri Açıp Tartış" });
+            actions.push({ id: "ghost_block", text: "🚫 Her Yerden Engelle (Hayatından Çıkar)" });
         } else if (isParent) {
             actions.push({ id: "parent_blessing", text: "🙏 Elini Öp & Hayır Duası Al", primary: true });
             actions.push({ id: "family_dinner", text: "🍲 Büyük Aile Yemeği Düzenle (2.000 TL)" });
@@ -864,16 +1127,20 @@ function openPersonModal(personId) {
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
         } else if (isChild) {
             actions.push({ id: "educate_child", text: "📚 Birlikte Ders Çalış & Eğit (+Zeka)", primary: true });
+            actions.push({ id: "private_school", text: "🎓🏫 Özel Koleje & Yetenek Akademisine Gönder (45.000 TL)" });
+            actions.push({ id: "marry_off_child", text: "👰🤵👶 Çocuğuna Düğün Yap, Evlendir & Torun Sahibi Ol (85.000 TL)" });
             actions.push({ id: "spend_time", text: "🍿 Parka / Sinemaya Götür" });
+            actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Babalık Testi Yaptır (8.000 TL)" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
             actions.push({ id: "chat", text: "💬 Sohbet Et" });
         } else {
+            actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)", primary: true });
             if (isFriend) {
-                actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)", primary: true });
+                actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)" });
             }
             actions.push({ id: "deep_talk", text: "🌙 Derin Sohbet Et & Dertleş" });
-            actions.push({ id: "spend_time", text: "🍿 Birlikte Vakit Geçir" });
             actions.push({ id: "compliment", text: "✨ İltifat Et" });
+            actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
             actions.push({ id: "argue", text: "🤬 Tartış ve Hesap Sor" });
         }
@@ -892,6 +1159,11 @@ function openPersonModal(personId) {
     openDialogModal("personModal");
 }
 
+async function sendModalDm(personId, topicId) {
+    await performActivity("send_dm", { person_id: personId, topic_id: topicId });
+    openPersonModal(personId);
+}
+
 async function handlePersonAction(actId) {
     if (!activePersonId) return;
     const pid = activePersonId;
@@ -899,6 +1171,16 @@ async function handlePersonAction(actId) {
     if (actId === "modal_date_venue") {
         await closeTopLayer(document.getElementById("personModal"));
         openDateVenueModal(pid);
+        return;
+    }
+    if (actId === "modal_couple_vacation") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCoupleVacationModal(pid);
+        return;
+    }
+    if (actId === "modal_social_hangout") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openSocialHangoutModal(pid);
         return;
     }
     if (actId === "modal_custom_gift") {
@@ -916,6 +1198,16 @@ async function handlePersonAction(actId) {
         openWeddingModal(pid);
         return;
     }
+    if (actId === "modal_couple_business") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCoupleBusinessModal(pid);
+        return;
+    }
+    if (actId === "modal_divorce_court") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openDivorceCourtModal(pid);
+        return;
+    }
     if (actId === "try_baby") {
         await performActivity("try_baby");
         closeModal("personModal");
@@ -927,6 +1219,65 @@ async function handlePersonAction(actId) {
         person_action: actId
     });
     closeModal("personModal");
+}
+
+function openCoupleVacationModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.couple_vacations) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `✈️ Romantik Tatil & Balayı: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            <b>${person.name}</b> (Sevgi Dili: <b>${person.love_language || "Kaliteli Zaman"}</b>) ile baş başa romantik bir kaçamak seç:
+        </p>
+        ${marketData.couple_vacations.map(v => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${v.name}</span>
+                    <span class="card-badge badge-purple">₺ ${v.cost.toLocaleString('tr-TR')}</span>
+                </div>
+                <p class="card-desc">${v.desc}<br>İlişki: <b>+%${v.rel_boost}</b> • Mutluluk: <b>+%${v.hap_boost}</b></p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectCoupleVacation('${person.id}', '${v.id}')">Biletleri Al & Tatile Çık ✈️</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectCoupleVacation(personId, vacationId) {
+    await performActivity("couple_vacation", { person_id: personId, vacation_id: vacationId });
+    closeModal("genericModal");
+}
+
+function openSocialHangoutModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.social_hangouts) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🎉 Sosyal Etkinlik: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = marketData.social_hangouts.map(h => `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">${h.name}</span>
+                <span class="card-badge badge-green">₺ ${h.cost.toLocaleString('tr-TR')}</span>
+            </div>
+            <p class="card-desc">${h.desc} (İlişki: <b>+%${h.rel_boost}</b>)</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectSocialHangout('${person.id}', '${h.id}')">Birlikte Git 🙌</button>
+        </div>
+    `).join("");
+    openDialogModal("genericModal");
+}
+
+async function selectSocialHangout(personId, hangoutId) {
+    await performActivity("social_hangout", { person_id: personId, hangout_id: hangoutId });
+    closeModal("genericModal");
 }
 
 // ----------------- KISMETAPP (FLÖRT UYGULAMASI) & SOSYAL TANIŞMA MODALLARI -----------------
@@ -1189,14 +1540,22 @@ function openWeddingModal(personId) {
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
-        <div class="panel-card" style="border-color:var(--accent-yellow); margin-bottom:12px;">
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; font-weight:700; color:#fde68a;">
-                <input type="checkbox" id="chkPrenup" style="width:18px; height:18px;">
-                <span>📜 Evlilik Sözleşmesi (Mal Ayrılığı) İmzalat</span>
-            </label>
-            <p class="card-desc" style="margin-top:6px;">
-                Boşanma durumunda servetinin yarı yarıya bölünmesini engeller; ancak nişanlının kişiliğine göre biraz kırgınlık yaratabilir.
-            </p>
+        <label class="panel-card choice-card" style="margin-bottom:10px;">
+            <input type="checkbox" id="chkPrenup" style="width:18px; height:18px; margin-top:2px; flex-shrink:0;">
+            <div>
+                <div style="font-size:13px; font-weight:700; color:#fde68a;">📜 Evlilik Sözleşmesi (Mal Ayrılığı) İmzalat</div>
+                <p class="card-desc" style="margin-top:4px;">
+                    Boşanma durumunda servetinin yarı yarıya bölünmesini engeller; ancak nişanlının kişiliğine göre biraz kırgınlık yaratabilir.
+                </p>
+            </div>
+        </label>
+        <div class="panel-card" style="margin-bottom:12px;">
+            <label for="selGuestTier" style="font-size:12.5px; font-weight:800; color:#f9a8d4; display:block; margin-bottom:6px;">💌 Düğün Davetli Listesi Seçimi:</label>
+            <select id="selGuestTier" class="form-select">
+                <option value="family_friends">💃 Tüm Akrabalar, Komşular & Dostlar (Standart Takı)</option>
+                <option value="vip_press">📸 VIP Cemiyet, Ünlüler & Magazin Basını (+%35 Takı & +15 Şöhret)</option>
+                <option value="core_family">🤍 Sadece Çekirdek Aile & Yakın Şahitler (+18 Aile Onayı)</option>
+            </select>
         </div>
         ${marketData.wedding_venues.map(w => `
             <div class="panel-card">
@@ -1218,10 +1577,13 @@ function openWeddingModal(personId) {
 async function submitWeddingPlan(personId, venueId) {
     const chk = document.getElementById("chkPrenup");
     const signPrenup = chk ? chk.checked : false;
+    const guestSel = document.getElementById("selGuestTier");
+    const guestTier = guestSel ? guestSel.value : "family_friends";
     await performActivity("plan_wedding", {
         person_id: personId,
         venue_id: venueId,
-        sign_prenup: signPrenup
+        sign_prenup: signPrenup,
+        guest_tier: guestTier
     });
     closeModal("genericModal");
 }
@@ -1420,6 +1782,137 @@ async function buyCar(index) {
 
 async function sellAsset(assetId) {
     await performActivity("sell_asset", { asset_id: assetId });
+}
+
+async function manageAssetExtra(assetId, subAction) {
+    await performActivity("asset_manage", { asset_id: assetId, sub_action: subAction });
+}
+
+function openAuctionModal() {
+    sound.playClick();
+    if (!marketData || !marketData.auction_items) return;
+    document.getElementById("genericModalTitle").textContent = "🖼️ VIP Sanat, Antika & Koleksiyon Müzayedesi";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">Müzayededen alınan nadir eserler her yıl <b>%10 ile %22</b> arasında değer kazanır ve cemiyette şöhretini artırır:</p>
+        ${marketData.auction_items.map(item => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${item.name}</span>
+                    <span class="card-badge badge-yellow">₺ ${item.price.toLocaleString("tr-TR")}</span>
+                </div>
+                <p class="card-desc">${item.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="buyAuctionItem('${item.id}')">🔨 Teklif Ver & Satın Al</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function buyAuctionItem(itemId) {
+    await performActivity("buy_auction", { item_id: itemId });
+    closeModal("genericModal");
+}
+
+function openFameModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `🌟 Şöhret, Sahne & Magazin Merkezi (%${gameState.fame || 0})`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">🎭 Türkiye Yetenek & Ekran Seçmeleri</span><span class="card-badge badge-green">₺ 2.000</span></div>
+            <p class="card-desc">Kamera karşısına çıkıp yeteneğini sergile, şöhret basamaklarını hızla tırman!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('audition_fame')">Seçmelere Katıl 🌟</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">🏆 Hit Albüm / Başrol Film / Şampiyonluk Maçı</span><span class="card-badge badge-yellow">+Telif & Şöhret</span></div>
+            <p class="card-desc">En az %20 Şöhret veya Sanat/Spor kariyeri gerekir. Milyonluk telif ve prim kazandırır!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('release_work')">Yeni Eser / Performans Çıkar 🔥</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">📺 Prime-Time Talk Show Konuğu Ol</span><span class="card-badge badge-blue">+45B Takipçi</span></div>
+            <p class="card-desc">Cuma gecesi canlı yayına konuk ol, hem şöhretini hem sosyal medya takipçilerini katla!</p>
+            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('tv_show')">Talk Show'a Çık 📺</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">💎 Dev Marka Reklam Anlaşması</span><span class="card-badge badge-green">Yüksek Gelir</span></div>
+            <p class="card-desc">En az %30 Şöhret gerekir. Şöhret oranına göre yüz binlerce TL reklam ücreti al.</p>
+            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('brand_deal')">Reklam Sözleşmesi İmzala ✍️</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">📸 Magazin & Paparazzi Gündemi Yarat</span><span class="card-badge badge-purple">+18 Şöhret</span></div>
+            <p class="card-desc">Bebek sahilinde paparazzilere sansasyonel röportaj vererek tüm manşetlere çık!</p>
+            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('paparazzi_stunt')">Manşetlere Çık 📸</button>
+        </div>
+        <div class="panel-card" style="border-color:#f472b6;">
+            <div class="card-title-row"><span class="card-title">💘 VIP Ünlüler Kulübünde Yıldızla Tanış</span><span class="card-badge badge-purple">VIP Aşk</span></div>
+            <p class="card-desc">Ünlü bir Dizi Yıldızı, Pop İkonu, Süpermodel veya Milli Futbolcu ile yılın aşkına başla!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('celebrity_date')">VIP Galaya Git & Tanış 🥂</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function triggerFameAction(subAction) {
+    await performActivity("fame_action", { sub_action: subAction });
+    closeModal("genericModal");
+}
+
+function openPoliticsModal() {
+    sound.playClick();
+    if (!marketData || !marketData.political_offices) return;
+    document.getElementById("genericModalTitle").textContent = "🏛️ Siyaset, Seçim & Devlet Yönetimi";
+    const body = document.getElementById("genericModalBody");
+
+    let activeOfficeHtml = "";
+    if (gameState.political_office) {
+        activeOfficeHtml = `
+            <div class="panel-card" style="border-color:var(--accent-blue); margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">🇹🇷 Aktif Makam: ${gameState.political_office}</span>
+                    <span class="card-badge badge-green">Halk Desteği: %${gameState.approval_rating}</span>
+                </div>
+                <p class="card-desc">Yıllık Makam Maaşı: <b>₺ ${(gameState.political_salary || 0).toLocaleString("tr-TR")}</b></p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                    <button type="button" class="btn-choice" onclick="triggerPoliticalAction('hold_rally')">📢 Meydan Mitingi (25B₺)</button>
+                    <button type="button" class="btn-choice" onclick="triggerPoliticalAction('public_project')">🏗️ Altyapı & Hizmet Aç</button>
+                    <button type="button" class="btn-choice" onclick="triggerPoliticalAction('tv_debate')">📺 Canlı Yayın Tartışması</button>
+                    <button type="button" class="btn-choice" onclick="triggerPoliticalAction('corrupt_lobby')">💼 Gizli Lobi İhalesi (Riskli)</button>
+                </div>
+            </div>
+        `;
+    }
+
+    body.innerHTML = `
+        ${activeOfficeHtml}
+        <div class="person-action-group-title" style="margin-bottom:8px;">🗳️ Seçim Adaylığı & Makamlar</div>
+        ${marketData.political_offices.map(off => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${off.title}</span>
+                    <span class="card-badge badge-yellow">Kampanya: ₺ ${off.campaign_cost.toLocaleString("tr-TR")}</span>
+                </div>
+                <p class="card-desc">
+                    ${off.desc}<br>
+                    Min. Yaş: <b>${off.min_age}</b> • Eğitim: <b>${off.req_edu}</b> • Maaş: <b>+₺ ${off.salary.toLocaleString("tr-TR")}/yıl</b>
+                </p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="runForOffice('${off.id}')">🗳️ Aday Ol & Seçime Gir</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function runForOffice(officeId) {
+    await performActivity("politics_run", { office_id: officeId });
+    openPoliticsModal();
+}
+
+async function triggerPoliticalAction(subAction) {
+    await performActivity("politics_action", { sub_action: subAction });
+    openPoliticsModal();
 }
 
 function openBusinessModal() {
@@ -1942,3 +2435,615 @@ function showToast(text, type = "info") {
         setTimeout(() => toast.remove(), 300);
     }, 3200);
 }
+
+// ----------------- PAKET 2, 3, 4, 10: INSTASTORY, SOYAĞACI, GARDIROP, YKS/KPSS & ASKERLİK -----------------
+
+function openInstaStoryModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "📸 InstaStory & Alev (🔥) Merkezi";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            Attığın hikayelere göre gizli hayranlar DM kutuna <b>🔥</b> atabilir, eski sevgilin gece yarısı yazabilir veya partnerinle aşkını herkese ilan edebilirsin:
+        </p>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">💪 Spor & Ayna Selfiesi Paylaş</span>
+                <span class="card-badge badge-purple">🔥 Yeni Flört & Görünüş</span>
+            </div>
+            <p class="card-desc">Gizli bir hayranın story'ne '🔥🔥' yanıtı gönderip DM'den tanışmak ister! (Kıskanç sevgilin varsa biraz kızabilir!)</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerInstaStory('gym_mirror')">Hikayeyi Paylaş 📸</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🍸 Gece Gezmesi & Mekan Story'si</span>
+                <span class="card-badge badge-yellow">🌙 Eski Sevgili Radarı</span>
+            </div>
+            <p class="card-desc">Eski sevgilin hikayeni görüp 'Seni hâlâ unutamadım' diye mesaj atabilir veya gece kulübünden yeni biriyle eşleşirsin!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerInstaStory('night_out')">Mekandan Story At 🍸</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">💑🧿 Partnerinle Romantik Çift Story'si</span>
+                <span class="card-badge badge-green">+18 İlişki & +10 Sadakat</span>
+            </div>
+            <p class="card-desc">Sevgilin/eşinle el ele fotoğrafınızı nazar boncuğuyla (🧿) paylaşıp güven tazeleyin!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerInstaStory('couple_story')">Çift Story'si Paylaş 💖</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function triggerInstaStory(storyType) {
+    await performActivity("insta_story", { story_type: storyType });
+    closeModal("genericModal");
+}
+
+function openFamilyTreeModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `🌳 ${gameState.last_name} Ailesi Soyağacı (${gameState.generation || 1}. Kuşak)`;
+    const body = document.getElementById("genericModalBody");
+
+    const rels = gameState.relationships || [];
+    const parents = rels.filter(p => ["Anne", "Baba"].includes(p.relation));
+    const partner = rels.find(p => p.is_alive && ["Eş", "Nişanlı", "Sevgili"].includes(p.relation));
+    const siblings = rels.filter(p => ["Ağabey", "Abla", "Kardeş"].includes(p.relation));
+    const children = rels.filter(p => p.relation === "Çocuk");
+
+    const renderNode = (p, extraClass = "") => `
+        <button type="button" class="tree-node ${extraClass} ${!p.is_alive ? 'tree-node-dead' : ''}" onclick="closeModal('genericModal'); openPersonModal('${p.id}')">
+            <div class="tree-node-emoji">${getRelationEmoji(p.relation)}</div>
+            <div class="tree-node-name">${p.name}</div>
+            <div class="tree-node-role">${p.relation} • ${p.age} Yaş ${!p.is_alive ? '(Vefat)' : ''}</div>
+        </button>
+    `;
+
+    const parentsHtml = parents.length > 0
+        ? parents.map(p => renderNode(p)).join("")
+        : `<div class="card-desc">Kayıtlı ebeveyn yok</div>`;
+
+    const myNodeHtml = `
+        <div class="tree-node tree-node-me">
+            <div class="tree-node-emoji">${getCharacterAvatarEmoji(gameState)}</div>
+            <div class="tree-node-name">${gameState.first_name} ${gameState.last_name}</div>
+            <div class="tree-node-role">SEN (${gameState.age} Yaş)</div>
+        </div>
+    `;
+
+    const partnerHtml = partner ? renderNode(partner, "tree-node-partner") : "";
+    const siblingsHtml = siblings.map(s => renderNode(s)).join("");
+
+    const childrenHtml = children.length > 0
+        ? children.map(c => renderNode(c)).join("")
+        : `<div class="card-desc" style="font-size:11.5px;">Henüz çocuk sahibi olmadın.</div>`;
+
+    body.innerHTML = `
+        <div class="family-tree-wrap">
+            <div class="tree-tier-label">1. Kuşak — Anne & Baba</div>
+            <div class="tree-tier">${parentsHtml}</div>
+            <div class="tree-connector"></div>
+            <div class="tree-tier-label">2. Kuşak — Sen, Partnerin & Kardeşlerin</div>
+            <div class="tree-tier">
+                ${myNodeHtml}
+                ${partnerHtml}
+                ${siblingsHtml}
+            </div>
+            <div class="tree-connector"></div>
+            <div class="tree-tier-label">3. Kuşak — Çocukların (${children.length})</div>
+            <div class="tree-tier">${childrenHtml}</div>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+function openWardrobeModal() {
+    sound.playClick();
+    if (!marketData || !marketData.outfit_styles) return;
+    document.getElementById("genericModalTitle").textContent = "👔 Gardırop, Stil & Kombin Seçimi";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            Şu anki tarzın: <b>${gameState.outfit_style || "👕 Günlük & Rahat"}</b>. Seçtiğin kombin görünüşünü, karizmanı ve flört çekiciliğini doğrudan artırır:
+        </p>
+        ${marketData.outfit_styles.map(st => `
+            <div class="panel-card" style="${gameState.outfit_style === st.name ? 'border-color:var(--accent-green);' : ''}">
+                <div class="card-title-row">
+                    <span class="card-title">${st.name}</span>
+                    <span class="card-badge ${st.cost === 0 ? 'badge-blue' : 'badge-yellow'}">${st.cost === 0 ? 'Ücretsiz' : '₺ ' + st.cost.toLocaleString("tr-TR")}</span>
+                </div>
+                <p class="card-desc">
+                    ${st.desc}<br>
+                    ✨ Görünüş: <b>+%${st.looks_boost}</b> • 🗣️ Hitabet: <b>+%${st.charisma_boost}</b>
+                </p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectOutfitStyle('${st.id}')">Kombini Giy ✨</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectOutfitStyle(styleId) {
+    await performActivity("outfit_style", { style_id: styleId });
+    closeModal("genericModal");
+}
+
+function openMilitaryModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `🪖 Askerlik Şubesi & Kışla (${gameState.military_status})`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            Vatan borcunu ödemek için tercihini yap: Bedelli askerlik, 6 ay kışla görevi (ömürlük koğuş dostu kazandırır!) veya Üniversite mezunlarına özel maaşlı Yedek Subaylık!
+        </p>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">💳 Bedelli Askerlik (28 Gün Kışla)</span><span class="card-badge badge-yellow">₺ 180.000</span></div>
+            <p class="card-desc">180.000 TL bedelli ücretini yatırıp 28 günlük temel eğitimi tamamla ve hemen terhis ol.</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectMilitaryService('bedelli')">Bedelli Başvurusu Yap 💳</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">🪖 6 Ay Kışla Hizmeti (Erbaş / Çavuş)</span><span class="card-badge badge-green">Ücretsiz + Tertip Dostu</span></div>
+            <p class="card-desc">Sağlık +12, Atletizm +15, Savunma +12 kazandırır ve aynı koğuştan ömürlük bir Asker Arkadaşı (Tertip) edinirsin!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectMilitaryService('erbas')">6 Ay Kışlaya Teslim Ol 🪖</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row"><span class="card-title">⭐ 12 Ay Yedek Subay (Asteğmen)</span><span class="card-badge badge-blue">+₺ 380.000 Maaş</span></div>
+            <p class="card-desc">Üniversite mezunlarına özel! Hem subay olarak komuta et hem de toplam 380.000 TL asteğmen maaşı kazan!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectMilitaryService('yedek_subay')">Yedek Subay Olarak Katıl ⭐</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectMilitaryService(serviceType) {
+    await performActivity("military_service", { service_type: serviceType });
+    closeModal("genericModal");
+}
+
+function openExamsModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "📝 ÖSYM Sınav Merkezi: YKS & KPSS";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🎓 YKS (Yükseköğretim Kurumları Sınavı)</span>
+                <span class="card-badge badge-blue">Son Puan: ${gameState.yks_score || "Girmedi"}</span>
+            </div>
+            <p class="card-desc">2 soruluk YKS sınavında 410+ puan alırsan <b>Yıllık 45.000 TL Başarı & KYK Bursu</b> kazanırsın ve zekan +10 artar!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="startExamQuiz('yks')">📝 YKS Sınavına Gir</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🏛️ KPSS (Kamu Personel Seçme Sınavı)</span>
+                <span class="card-badge badge-green">Son Puan: ${gameState.kpss_score || "Girmedi"}</span>
+            </div>
+            <p class="card-desc">KPSS'den 80+ puan alarak mülakatsız doğrudan <b>Devlet Başmüfettişi / Kaymakam (980.000 TL/yıl)</b> veya <b>Kadrolu Memur</b> olarak atan!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="startExamQuiz('kpss')">🏛️ KPSS Sınavına Gir</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+function startExamQuiz(examType) {
+    sound.playClick();
+    const questions = (marketData && marketData.exam_questions && marketData.exam_questions[examType]) || [];
+    if (questions.length < 2) return;
+
+    document.getElementById("genericModalTitle").textContent = examType === "yks" ? "📝 YKS Sınav Kitapçığı" : "🏛️ KPSS Sınav Kitapçığı";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div style="font-size:13px; font-weight:800; color:#fff; margin-bottom:8px;">1) ${questions[0].q}</div>
+            <select id="examAns1" class="form-select">
+                ${questions[0].options.map((opt, idx) => `<option value="${idx}">${opt}</option>`).join("")}
+            </select>
+        </div>
+        <div class="panel-card">
+            <div style="font-size:13px; font-weight:800; color:#fff; margin-bottom:8px;">2) ${questions[1].q}</div>
+            <select id="examAns2" class="form-select">
+                ${questions[1].options.map((opt, idx) => `<option value="${idx}">${opt}</option>`).join("")}
+            </select>
+        </div>
+        <button type="button" class="btn-primary" style="width:100%; margin-top:6px;" onclick="submitNationalExam('${examType}')">Optik Formu Teslim Et & Sonucu Gör 🎯</button>
+    `;
+}
+
+async function submitNationalExam(examType) {
+    const a1 = document.getElementById("examAns1")?.value || 0;
+    const a2 = document.getElementById("examAns2")?.value || 0;
+    await performActivity("national_exam", { exam_type: examType, ans1: Number(a1), ans2: Number(a2) });
+    closeModal("genericModal");
+}
+
+function openStudentHousingModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `🍜 Yurt & Öğrenci Evi Hayatı (${gameState.housing_type || "Aile Evi"})`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🛏️ KYK Öğrenci Yurduna Yerleş</span>
+                <span class="card-badge badge-green">Ücretsiz + Oda Arkadaşı</span>
+            </div>
+            <p class="card-desc">Yıllık yaşam giderini 35.000 TL'ye düşürür ve ranzada beraber sınavlara çalışacağın sıkı bir <b>Yurt Oda Arkadaşı</b> kazandırır!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectStudentHousing('kyk_dorm')">KYK Yurduna Kayıt Ol 🛏️</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🍜 Arkadaşlarla Öğrenci Evine Çık</span>
+                <span class="card-badge badge-purple">₺ 15.000 Depozito</span>
+            </div>
+            <p class="card-desc">Özgür öğrenci evi hayatı! Mutluluk +20, Hitabet +8 ve yeni bir <b>Ev Arkadaşı</b> kazandırır!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="selectStudentHousing('student_house')">Öğrenci Evine Taşın 🍜</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function selectStudentHousing(housingMode) {
+    await performActivity("student_housing", { housing_mode: housingMode });
+    closeModal("genericModal");
+}
+
+// ----------------- PAKET 11, 14, 15, 16: TV İZDİVAÇ ŞOVU, MÜZİK GRUBU, BANKA/OFFSHORE & YAŞAM GRAFİĞİ -----------------
+
+async function handleFastAgeUp(years = 3) {
+    if (!gameState || !gameState.is_alive) return;
+    sound.playAgeUp();
+    for (let i = 0; i < years; i++) {
+        try {
+            const res = await fetch("/api/age_up", { method: "POST" });
+            const data = await res.json();
+            if (!data.success) break;
+            gameState = data.character;
+            renderAll();
+            if (data.character_died) {
+                sound.playDeath();
+                openDeathModal();
+                break;
+            }
+            if (data.has_event) {
+                openEventModal(data.event);
+                break;
+            }
+        } catch (e) {
+            break;
+        }
+    }
+}
+
+function openDramaIntrigueModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "📺 Kısmet Evi TV Şovu, Ofis Aşkı & Entrika";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6;">
+            <div class="card-title-row">
+                <span class="card-title">📺 'Kısmet Evi' TV Evlilik Programına Katıl</span>
+                <span class="card-badge badge-purple">+Ödül & TV Aşkı</span>
+            </div>
+            <p class="card-desc">Kameralar önünde 8 gelin ve damat adayıyla aynı evde yarış, halk oylamasıyla <b>180.000 - 450.000 TL</b> ödül kazan ve hayalindeki partnerle çık!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerDramaIntrigue('tv_dating_show')">Kısmet Evi'ne Katıl 📺</button>
+        </div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">💼❤️‍🔥 Plazada & İş Yerinde Gizli Ofis Aşkı</span>
+                <span class="card-badge badge-yellow">+%28 Zam & Sevgili</span>
+            </div>
+            <p class="card-desc">Çalıştığın şirketteki üst düzey bir yöneticiyle tutkulu bir ofis aşkına başla! Başarılı olursa hem sevgili edinirsin hem de maaşına <b>%28 özel zam ve terfi</b> alırsın!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerDramaIntrigue('office_romance')">Ofiste Kıvılcım Başlat 💼</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function triggerDramaIntrigue(subAction) {
+    await performActivity("drama_intrigue", { sub_action: subAction });
+    closeModal("genericModal");
+}
+
+function openBandModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🎸 Müzik Grubu, Rap Kolektifi & Stadyum Turnesi";
+    const body = document.getElementById("genericModalBody");
+
+    let activeBandHtml = "";
+    if (gameState.band) {
+        const b = gameState.band;
+        activeBandHtml = `
+            <div class="panel-card" style="border-color:var(--accent-purple); margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">🎸 ${b.name} (${b.genre})</span>
+                    <span class="card-badge badge-green">Uyum: %${b.chemistry}</span>
+                </div>
+                <p class="card-desc">
+                    Albüm Sayısı: <b>${b.albums_count}</b> • Hayran Kitlesi: <b>${b.fans.toLocaleString("tr-TR")}</b> • Yıllık Telif: <b>+₺ ${b.annual_royalties.toLocaleString("tr-TR")}/yıl</b>
+                </p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                    <button type="button" class="btn-choice" onclick="triggerBandAction('rehearse')">🎶 Stüdyo Provası Yap</button>
+                    <button type="button" class="btn-choice" onclick="triggerBandAction('record_album')">💿 Hit Albüm Çıkar</button>
+                    <button type="button" class="btn-choice" onclick="triggerBandAction('stadium_tour')">🏟️ Stadyum Turnesi</button>
+                    <button type="button" class="btn-choice" onclick="triggerBandAction('resolve_drama')">🤝 Grup Egosunu Çöz</button>
+                </div>
+            </div>
+        `;
+    }
+
+    const genres = (marketData && marketData.band_genres) || [];
+    body.innerHTML = `
+        ${activeBandHtml}
+        <div class="panel-card">
+            <div class="form-group">
+                <label for="inputBandName">Yeni Müzik Grubu / Kolektif Adı</label>
+                <input type="text" id="inputBandName" class="form-input" placeholder="Örn: Dumanlı Geceler, Kadıköy Tayfa...">
+            </div>
+            <div class="form-group">
+                <label for="selectBandGenre">Müzik Türü Seç</label>
+                <select id="selectBandGenre" class="form-select">
+                    ${genres.map(g => `<option value="${g.id}">${g.name} (Kurulum: ₺ ${g.cost.toLocaleString("tr-TR")})</option>`).join("")}
+                </select>
+            </div>
+            <button type="button" class="btn-primary" onclick="submitCreateBand()">🎤 Grubu Kur & Sahneye Çık</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCreateBand() {
+    const name = document.getElementById("inputBandName")?.value || "";
+    const genreId = document.getElementById("selectBandGenre")?.value || "anadolu_rock";
+    await performActivity("create_band", { band_name: name, genre_id: genreId });
+    openBandModal();
+}
+
+async function triggerBandAction(subAction) {
+    await performActivity("band_action", { sub_action: subAction });
+    openBandModal();
+}
+
+function openBankOffshoreModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🏦 Banka Kredisi & 🇨🇭 İsviçre Offshore Hesabı";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:var(--accent-blue);">
+            <div class="card-title-row">
+                <span class="card-title">🏦 Merkez & Konut Kredisi</span>
+                <span class="card-badge badge-red">Mevcut Borç: ₺ ${(gameState.debt || 0).toLocaleString("tr-TR")}</span>
+            </div>
+            <p class="card-desc">Emlak, araç veya şirket kurmak için anında nakit kredi çekebilir ya da mevcut kredi borcunu kapatabilirsin:</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                <button type="button" class="btn-choice" onclick="triggerBankAction('take_loan', 250000)">💳 +250.000 TL Kredi Çek</button>
+                <button type="button" class="btn-choice" onclick="triggerBankAction('take_loan', 1000000)">💳 +1.000.000 TL Kredi Çek</button>
+                <button type="button" class="btn-choice" onclick="triggerBankAction('take_loan', 5000000)">💳 +5.000.000 TL Kredi Çek</button>
+                <button type="button" class="btn-choice" style="border-color:var(--accent-green); color:#a7f3d0;" onclick="triggerBankAction('pay_debt', 0)">✅ Borcu Kapat</button>
+            </div>
+        </div>
+
+        <div class="panel-card" style="border-color:var(--accent-yellow);">
+            <div class="card-title-row">
+                <span class="card-title">🇨🇭🔒 İsviçre Gizli Offshore Hesabı</span>
+                <span class="card-badge badge-yellow">Bakiye: ₺ ${(gameState.offshore_balance || 0).toLocaleString("tr-TR")}</span>
+            </div>
+            <p class="card-desc">
+                Offshore hesabındaki servetin <b>boşanma mal paylaşımından (nafaka) ve hacizden %100 muaftır</b>, ayrıca her yıl <b>%8 döviz getirisi</b> kazandırır!
+            </p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                <button type="button" class="btn-choice" onclick="triggerBankAction('deposit_offshore', 100000)">🇨🇭 100.000 TL Aktar</button>
+                <button type="button" class="btn-choice" onclick="triggerBankAction('deposit_offshore', 1000000)">🇨🇭 1.000.000 TL Aktar</button>
+                <button type="button" class="btn-choice" style="grid-column:span 2; border-color:var(--accent-green);" onclick="triggerBankAction('withdraw_offshore', 0)">💸 Tüm Offshore Bakiyesini Türkiye'ye Çek</button>
+            </div>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function triggerBankAction(subAction, amount) {
+    await performActivity("bank_action", { sub_action: subAction, amount });
+    openBankOffshoreModal();
+}
+
+function createWideChartSvg(dataArr, strokeColor = "#10b981") {
+    const arr = dataArr && dataArr.length >= 2 ? dataArr : [0, dataArr?.[0] || 0];
+    const w = 360, h = 95;
+    const min = Math.min(...arr);
+    const max = Math.max(...arr);
+    const range = max - min || 1;
+    const pts = arr.map((val, idx) => {
+        const x = (idx / (arr.length - 1)) * (w - 16) + 8;
+        const y = h - 10 - ((val - min) / range) * (h - 20);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+    return `
+        <svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" style="background:rgba(15,23,42,0.75); border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+            <polyline fill="none" stroke="${strokeColor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/>
+        </svg>
+    `;
+}
+
+function openStatsChartModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `📊 Yaşam & Servet Grafiği (${gameState.first_name} ${gameState.last_name})`;
+    const body = document.getElementById("genericModalBody");
+
+    const wHist = gameState.wealth_history || [gameState.net_worth];
+    const hHist = gameState.happiness_history || [gameState.happiness];
+    const peakWealth = Math.max(...wHist, gameState.net_worth);
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">📈 Net Servet Zaman Grafiği</span>
+                <span class="card-badge badge-green">Zirve: ₺ ${peakWealth.toLocaleString("tr-TR")}</span>
+            </div>
+            <div style="margin:8px 0;">
+                ${createWideChartSvg(wHist, "#10b981")}
+            </div>
+            <p class="card-desc">Güncel Net Servet: <b>₺ ${gameState.net_worth.toLocaleString("tr-TR")}</b> • Offshore: <b>₺ ${(gameState.offshore_balance || 0).toLocaleString("tr-TR")}</b></p>
+        </div>
+
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">😊 Yaşam Mutluluk Grafiği</span>
+                <span class="card-badge badge-yellow">Güncel: %${gameState.happiness}</span>
+            </div>
+            <div style="margin:8px 0;">
+                ${createWideChartSvg(hHist, "#f59e0b")}
+            </div>
+            <p class="card-desc">Yaş: <b>${gameState.age}</b> • Son Ödenen Vergi: <b>₺ ${(gameState.last_tax_paid || 0).toLocaleString("tr-TR")}</b> • Yıllık Nafaka: <b>₺ ${(gameState.alimony_annual || 0).toLocaleString("tr-TR")}</b></p>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+// ----------------- PAKET 17, 18, 19: ÇİFT ORTAKLIĞI, BOŞANMA MAHKEMESİ & PROFESYONEL SPOR KARİYERİ -----------------
+
+function openCoupleBusinessModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🤝🏪 ${person.name} ile Ortak Girişim Kur`;
+    const body = document.getElementById("genericModalBody");
+    const list = (marketData && marketData.couple_businesses) || [];
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:10px;">
+            Sevgilin/eşin <b>${person.name}</b> sermayenin <b>%30'unu</b> karşılamaya hazır! Ortak iş yeriniz hem aşkınızı güçlendirir hem de her yıl ortak kâr getirir:
+        </p>
+        ${list.map(b => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${b.name}</span>
+                    <span class="card-badge badge-yellow">Toplam: ₺ ${b.cost.toLocaleString("tr-TR")}</span>
+                </div>
+                <p class="card-desc">Yıllık Ortak Gelir: <b>+₺ ${b.annual_profit.toLocaleString("tr-TR")}/yıl</b></p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitCoupleBusiness('${person.id}', '${b.id}')">Ortaklığı Başlat 🤝</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCoupleBusiness(personId, bizId) {
+    await performActivity("couple_business", { person_id: personId, biz_id: bizId });
+    closeModal("genericModal");
+}
+
+function openDivorceCourtModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `⚖️ Aile & Boşanma Mahkemesi (${person.name})`;
+    const body = document.getElementById("genericModalBody");
+    const lawyers = (marketData && marketData.divorce_lawyers) || [];
+    const hasEvidence = person.has_prenup || person.loyalty < 55;
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:${hasEvidence ? 'var(--accent-green)' : 'var(--accent-red)'}; margin-bottom:10px;">
+            <div class="card-title-row">
+                <span class="card-title">📂 Dava Dosyası & Delil Durumu</span>
+                <span class="card-badge ${hasEvidence ? 'badge-green' : 'badge-red'}">${hasEvidence ? 'Güçlü Kanıt / Sözleşme Var' : 'Kanıt Yok (Riskli!)'}</span>
+            </div>
+            <p class="card-desc">
+                ${hasEvidence
+                    ? "Elinde Evlilik Sözleşmesi veya Dedektif/Stalk sadakatsizlik kanıtı var! Mahkemede çok avantajlısın."
+                    : "Elinde sözleşme veya sadakatsizlik kanıtı yok! İyi bir avukat tutmazsan servetinin %42'sini ve yıllık nafaka kaybedebilirsin!"}
+            </p>
+        </div>
+        ${lawyers.map(lw => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${lw.name}</span>
+                    <span class="card-badge badge-yellow">Vekalet: ₺ ${lw.cost.toLocaleString("tr-TR")}</span>
+                </div>
+                <p class="card-desc">${lw.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitDivorceCourt('${person.id}', '${lw.id}')">Bu Avukatla Duruşmaya Çık ⚖️</button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitDivorceCourt(personId, lawyerId) {
+    await performActivity("divorce_court", { person_id: personId, lawyer_id: lawyerId });
+    closeModal("genericModal");
+}
+
+function openProSportsModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "⚽ Profesyonel Spor Kariyeri & Kulüp Başkanlığı";
+    const body = document.getElementById("genericModalBody");
+    const clubs = (marketData && marketData.sports_clubs) || [];
+    const sc = gameState.sports_career;
+
+    let activeCareerHtml = "";
+    if (sc) {
+        activeCareerHtml = `
+            <div class="panel-card" style="border-color:var(--accent-green); margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">🏟️ ${sc.team_name} (${sc.league_tier})</span>
+                    <span class="card-badge badge-green">+₺ ${sc.salary.toLocaleString("tr-TR")}/yıl</span>
+                </div>
+                <p class="card-desc">
+                    Gol/Sayı Katkısı: <b>${sc.goals_or_points}</b> • Kupalar: <b>🏆 ${sc.trophies}</b> • Milli Maç: <b>🇹🇷 ${sc.national_caps}</b>
+                </p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                    <button type="button" class="btn-primary" onclick="triggerProSports('play_season_match')">⚽ Şampiyonluk Maçına Çık</button>
+                    <button type="button" class="btn-choice" onclick="performActivity('gym_workout')">🏋️ Kondisyon Antrenmanı</button>
+                </div>
+            </div>
+        `;
+    }
+
+    body.innerHTML = `
+        ${activeCareerHtml}
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🏃 Kulüp Altyapı Seçmeleri</span>
+                <span class="card-badge badge-blue">Başlangıç</span>
+            </div>
+            <p class="card-desc">Gençlik akademisi seçmelerine katılarak atletizmini geliştir ve profesyonel lisansa adım at! (Mevcut Atletizm: <b>%${(gameState.skills && gameState.skills.athletics) || 15}</b>)</p>
+            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerProSports('join_academy')">Altyapı Seçmelerine Gir 🏃</button>
+        </div>
+
+        <div class="person-action-group-title" style="margin:8px 0;">✍️ Süper Lig & Avrupa Transfer Teklifleri</div>
+        ${clubs.map(c => `
+            <div class="panel-card">
+                <div class="card-title-row">
+                    <span class="card-title">${c.name}</span>
+                    <span class="card-badge badge-green">₺ ${c.salary.toLocaleString("tr-TR")}/yıl</span>
+                </div>
+                <p class="card-desc">Lig: <b>${c.tier}</b> • Gereken Atletizm: <b>%${c.req_ath}</b> (+%25 İmza Parası)</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerProSports('sign_club', '${c.id}')">Transfer Sözleşmesi İmzala ✍️</button>
+            </div>
+        `).join("")}
+
+        <div class="panel-card" style="border-color:var(--accent-yellow);">
+            <div class="card-title-row">
+                <span class="card-title">👑 Süper Lig Kulübü Satın Al (Başkan Ol)</span>
+                <span class="card-badge badge-yellow">₺ 20.000.000</span>
+            </div>
+            <p class="card-desc">Şehrinin takımını satın alarak Kulüp Başkanı ol! Protokol tribününde otur ve yıllık <b>+3.200.000 TL</b> yayın/gişe geliri kazan!</p>
+            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerProSports('buy_sports_club')">Kulübü Satın Al & Başkan Ol 👑</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function triggerProSports(subAction, clubId = "anadolu_fk") {
+    await performActivity("pro_sports", { sub_action: subAction, club_id: clubId });
+    openProSportsModal();
+}
+
+
+

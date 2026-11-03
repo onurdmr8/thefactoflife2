@@ -23,10 +23,19 @@ class Person(BaseModel):
     wealth: int = 50     # 0 - 100 (Maddi Durum)
     interests: List[str] = Field(default_factory=list)
     bio: str = ""
+    love_language: str = "Kaliteli Zaman"  # Hediye Alma, Kaliteli Zaman, Tatlı Sözler, Sürprizler & Jestler, Güven & Sadakat
+    family_approval: int = 65  # 0 - 100 (Ailenin bu partnere onayı)
+    met_family: bool = False
     cohabiting: bool = False
     has_prenup: bool = False
     years_together: int = 0
+    is_blocked: bool = False
+    kiz_isteme_done: bool = False
+    nisan_bohca_done: bool = False
+    joint_venture_name: Optional[str] = None
+    joint_venture_profit: int = 0
     memories: List[str] = Field(default_factory=list)
+    chat_history: List[Dict[str, str]] = Field(default_factory=list)
 
 class DatingCandidate(BaseModel):
     id: str
@@ -45,6 +54,7 @@ class DatingCandidate(BaseModel):
     money_generosity: int
     interests: List[str]
     bio: str
+    love_language: str = "Kaliteli Zaman"
     compatibility: int = 75
 
 class Pet(BaseModel):
@@ -80,16 +90,37 @@ class Business(BaseModel):
     reputation: int = 70
     years_active: int = 0
 
+class MusicBand(BaseModel):
+    name: str
+    genre: str
+    albums_count: int = 0
+    chemistry: int = 80
+    fans: int = 1000
+    annual_royalties: int = 0
+
+class ProSportsCareer(BaseModel):
+    sport: str = "Futbol"
+    team_name: str
+    league_tier: str = "Altyapı Akademisi"
+    salary: int = 0
+    goals_or_points: int = 0
+    trophies: int = 0
+    national_caps: int = 0
+    owns_club: bool = False
+    club_valuation: int = 0
+
 class Asset(BaseModel):
     id: str
     name: str
-    asset_type: str  # Ev, Araba, Yatırım
+    asset_type: str  # Ev, Araba, Koleksiyon
     purchase_price: int
     current_value: int
     condition: int = 100
     annual_cost: int = 0
     annual_income: int = 0
     is_rented_out: bool = True
+    tenant_name: Optional[str] = None
+    upgrade_level: int = 0
 
 class Stock(BaseModel):
     symbol: str
@@ -210,9 +241,35 @@ class Character(BaseModel):
     active_event: Optional[ActiveEvent] = None
     blackjack: BlackjackHand = Field(default_factory=BlackjackHand)
     
-    # Marriage & Dating
+    # Marriage, Dating & Pregnancy
     spouse_id: Optional[str] = None
     dating_partner_id: Optional[str] = None
+    pregnancy_partner_id: Optional[str] = None
+    pregnancy_baby_gender: Optional[str] = None
+    
+    # Politics & State Governance
+    political_office: Optional[str] = None
+    political_salary: int = 0
+    approval_rating: int = 55
+
+    # Style, Exams & Housing (Packs 2, 3, 4, 10)
+    outfit_style: str = "👕 Günlük & Rahat"
+    housing_type: str = "Aile Evi"
+    scholarship_annual: int = 0
+    yks_score: int = 0
+    kpss_score: int = 0
+
+    # Music Band, Offshore Banking & Life Analytics (Packs 11, 14, 15, 16)
+    band: Optional[MusicBand] = None
+    offshore_balance: int = 0
+    wealth_history: List[int] = Field(default_factory=lambda: [0])
+    happiness_history: List[int] = Field(default_factory=lambda: [80])
+
+    # Packs 17, 18, 19 & Real-Life Realism Overhaul
+    sports_career: Optional[ProSportsCareer] = None
+    alimony_annual: int = 0
+    last_tax_paid: int = 0
+    difficulty_mode: str = "Gerçek Hayat (Zor)"
     
     # Achievements
     achievements: List[str] = Field(default_factory=list)

@@ -30,7 +30,10 @@ from game.data import (
     SCHOOL_CLUBS, REAL_ESTATE_MARKET, VEHICLE_MARKET,
     UNIVERSITIES, PET_BREEDS, ACHIEVEMENT_DEFINITIONS,
     PERSONALITIES, MEET_PLACES, DATE_VENUES, ROMANTIC_GIFTS,
-    ENGAGEMENT_RINGS, WEDDING_VENUES
+    ENGAGEMENT_RINGS, WEDDING_VENUES,
+    LOVE_LANGUAGES, COUPLE_VACATIONS, SOCIAL_HANGOUTS, DM_TOPICS,
+    POLITICAL_OFFICES, AUCTION_ITEMS, OUTFIT_STYLES, EXAM_QUESTIONS,
+    BAND_GENRES, COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -42,6 +45,13 @@ from game.activities import (
     propose_marriage, try_for_baby, interact_with_person, set_will_beneficiary,
     generate_dating_candidates, swipe_dating_candidate, meet_someone_at_place,
     go_on_venue_date, give_custom_gift, plan_wedding_ceremony, adopt_child_from_agency,
+    send_dm_message, take_couple_vacation, do_social_hangout, do_group_party,
+    do_fame_activity, run_for_political_office, do_political_action,
+    manage_asset_extra, buy_auction_item,
+    do_insta_story, do_military_service, take_national_exam,
+    change_student_housing, change_outfit_style,
+    do_drama_intrigue_action, create_music_band, do_band_action, do_bank_offshore_action,
+    do_couple_business, do_divorce_court, do_pro_sports_action,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -81,7 +91,8 @@ def _sync_net_worth(char: Character):
     assets_val = sum(a.current_value for a in char.assets)
     stocks_val = sum(int(s.shares * s.current_price) for s in char.stocks.values())
     biz_val = char.business.valuation if char.business else 0
-    char.net_worth = char.money + assets_val + stocks_val + biz_val
+    club_val = char.sports_career.club_valuation if (char.sports_career and char.sports_career.owns_club) else 0
+    char.net_worth = char.money + char.offshore_balance - char.debt + assets_val + stocks_val + biz_val + club_val
 
 @app.get("/", response_class=HTMLResponse)
 async def get_index(request: Request):
@@ -228,12 +239,60 @@ def handle_activity(req: ActivityRequest):
             current_character,
             p.get("person_id", ""),
             p.get("venue_id", "salon"),
-            bool(p.get("sign_prenup", False))
+            bool(p.get("sign_prenup", False)),
+            p.get("guest_tier", "family_friends")
         )
     elif act == "try_baby":
         res = try_for_baby(current_character)
     elif act == "adopt_child":
         res = adopt_child_from_agency(current_character)
+    elif act == "send_dm":
+        res = send_dm_message(current_character, p.get("person_id", ""), p.get("topic_id", "flirt_msg"))
+    elif act == "couple_vacation":
+        res = take_couple_vacation(current_character, p.get("person_id", ""), p.get("vacation_id", "sapanca_bungalow"))
+    elif act == "social_hangout":
+        res = do_social_hangout(current_character, p.get("person_id", ""), p.get("hangout_id", "coffee_gossip"))
+    elif act == "group_party":
+        res = do_group_party(current_character)
+    elif act == "fame_action":
+        res = do_fame_activity(current_character, p.get("sub_action", "audition_fame"))
+    elif act == "politics_run":
+        res = run_for_political_office(current_character, p.get("office_id", "muhtar"))
+    elif act == "politics_action":
+        res = do_political_action(current_character, p.get("sub_action", "hold_rally"))
+    elif act == "asset_manage":
+        res = manage_asset_extra(current_character, p.get("asset_id", ""), p.get("sub_action", "renovate_house"))
+    elif act == "buy_auction":
+        res = buy_auction_item(current_character, p.get("item_id", "patek_watch"))
+    elif act == "insta_story":
+        res = do_insta_story(current_character, p.get("story_type", "gym_mirror"))
+    elif act == "military_service":
+        res = do_military_service(current_character, p.get("service_type", "bedelli"))
+    elif act == "national_exam":
+        res = take_national_exam(
+            current_character,
+            p.get("exam_type", "yks"),
+            int(p.get("ans1", 0)),
+            int(p.get("ans2", 1))
+        )
+    elif act == "student_housing":
+        res = change_student_housing(current_character, p.get("housing_mode", "kyk_dorm"))
+    elif act == "outfit_style":
+        res = change_outfit_style(current_character, p.get("style_id", "casual"))
+    elif act == "drama_intrigue":
+        res = do_drama_intrigue_action(current_character, p.get("sub_action", "tv_dating_show"))
+    elif act == "create_band":
+        res = create_music_band(current_character, p.get("band_name", ""), p.get("genre_id", "anadolu_rock"))
+    elif act == "band_action":
+        res = do_band_action(current_character, p.get("sub_action", "rehearse"))
+    elif act == "bank_action":
+        res = do_bank_offshore_action(current_character, p.get("sub_action", "take_loan"), int(p.get("amount", 250000)))
+    elif act == "couple_business":
+        res = do_couple_business(current_character, p.get("person_id", ""), p.get("biz_id", "boutique_cafe"))
+    elif act == "divorce_court":
+        res = do_divorce_court(current_character, p.get("person_id", ""), p.get("lawyer_id", "baro"))
+    elif act == "pro_sports":
+        res = do_pro_sports_action(current_character, p.get("sub_action", "join_academy"), p.get("club_id", "anadolu_fk"))
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -295,7 +354,19 @@ def get_market_data():
         "date_venues": DATE_VENUES,
         "romantic_gifts": ROMANTIC_GIFTS,
         "engagement_rings": ENGAGEMENT_RINGS,
-        "wedding_venues": WEDDING_VENUES
+        "wedding_venues": WEDDING_VENUES,
+        "love_languages": LOVE_LANGUAGES,
+        "couple_vacations": COUPLE_VACATIONS,
+        "social_hangouts": SOCIAL_HANGOUTS,
+        "dm_topics": DM_TOPICS,
+        "political_offices": POLITICAL_OFFICES,
+        "auction_items": AUCTION_ITEMS,
+        "outfit_styles": OUTFIT_STYLES,
+        "exam_questions": EXAM_QUESTIONS,
+        "band_genres": BAND_GENRES,
+        "couple_businesses": COUPLE_BUSINESS_TYPES,
+        "divorce_lawyers": DIVORCE_LAWYERS,
+        "sports_clubs": SPORTS_CLUBS
     }
 
 @app.get("/api/graveyard")

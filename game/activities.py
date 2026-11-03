@@ -8,7 +8,7 @@ import uuid
 from typing import Dict, Any, List
 from .models import (
     Character, Person, DatingCandidate, Pet, Asset, Job, Business, LifeLog,
-    SocialMediaAccount
+    SocialMediaAccount, MusicBand, ProSportsCareer
 )
 from .data import (
     JOBS_DATABASE, PART_TIME_JOBS, BUSINESS_TYPES, SCHOOL_CLUBS,
@@ -16,7 +16,10 @@ from .data import (
     FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES,
     ZODIAC_SIGNS, PERSONALITIES, INTERESTS_POOL, DATING_BIOS_BY_PERSONALITY,
     MEET_PLACES, DATE_VENUES, ROMANTIC_GIFTS, ENGAGEMENT_RINGS, WEDDING_VENUES,
-    PET_BREEDS, PET_NAMES
+    LOVE_LANGUAGES, COUPLE_VACATIONS, SOCIAL_HANGOUTS, DM_TOPICS,
+    PET_BREEDS, PET_NAMES, POLITICAL_OFFICES, AUCTION_ITEMS,
+    OUTFIT_STYLES, EXAM_QUESTIONS, BAND_GENRES,
+    COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -388,6 +391,7 @@ def _build_candidate(char: Character, filter_type: str = "standard", preferred_p
         money_generosity=random.randint(40, 95),
         interests=interests,
         bio=bio,
+        love_language=random.choice(LOVE_LANGUAGES),
         compatibility=compatibility
     )
 
@@ -448,7 +452,9 @@ def swipe_dating_candidate(char: Character, candidate_id: str, relation_mode: st
             wealth=cand.wealth,
             interests=cand.interests,
             bio=cand.bio,
-            memories=[f"KısmetApp üzerinden %{cand.compatibility} uyumla eşleşip tanıştınız."]
+            love_language=cand.love_language,
+            memories=[f"KısmetApp üzerinden %{cand.compatibility} uyumla eşleşip tanıştınız."],
+            chat_history=[{"sender": "them", "text": f"Selam {char.first_name}! Eşleştiğimize çok sevindim 😊✨"}]
         )
         char.relationships.append(new_person)
         if target_rel == "Sevgili":
@@ -505,7 +511,9 @@ def meet_someone_at_place(char: Character, place_id: str) -> Dict[str, Any]:
         wealth=cand.wealth,
         interests=cand.interests,
         bio=cand.bio,
-        memories=[f"{place['name']} vasıtasıyla tanıştınız."]
+        love_language=cand.love_language,
+        memories=[f"{place['name']} vasıtasıyla tanıştınız."],
+        chat_history=[{"sender": "them", "text": f"Bugün {place['name']} ortamında tanışmamız harika bir tesadüftü 🌟"}]
     )
     char.relationships.append(new_person)
     if rel_label == "Sevgili":
@@ -641,8 +649,14 @@ def propose_marriage(char: Character, ring_cost: int = 35000, person_id: str = N
         char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💔"))
         return {"success": False, "message": msg}
 
-def plan_wedding_ceremony(char: Character, person_id: str, venue_id: str = "wedding_hall", sign_prenup: bool = False) -> Dict[str, Any]:
-    """Nişanlı/Sevgili ile düğün töreni ve Evlilik Sözleşmesi (Prenup)."""
+def plan_wedding_ceremony(
+    char: Character,
+    person_id: str,
+    venue_id: str = "wedding_hall",
+    sign_prenup: bool = False,
+    guest_tier: str = "family_friends"
+) -> Dict[str, Any]:
+    """Nişanlı/Sevgili ile düğün töreni, Davetli Listesi ve Evlilik Sözleşmesi (Prenup)."""
     partner = next((p for p in char.relationships if (p.id == person_id or p.relation in ["Nişanlı", "Sevgili"]) and p.is_alive), None)
     if not partner:
         return {"success": False, "message": "Evlenecek bir nişanlın veya sevgilin yok."}
@@ -659,7 +673,20 @@ def plan_wedding_ceremony(char: Character, person_id: str, venue_id: str = "wedd
         return {"success": False, "message": f"😤 {partner.name} evlilik sözleşmesini görünce öfkelendi: 'Bana güvenmiyorsan evlenmeyelim!' (Önce gönlünü alıp ilişkiyi %85 üstüne çıkar!)"}
 
     char.money -= venue["cost"]
-    wedding_gifts = random.randint(venue["min_gifts"], venue["max_gifts"])
+    base_gifts = random.randint(venue["min_gifts"], venue["max_gifts"])
+    guest_note = ""
+    if guest_tier == "vip_press":
+        wedding_gifts = int(base_gifts * 1.35)
+        char.fame = min(100, char.fame + 15)
+        guest_note = " (VIP Cemiyet & Magazin Basını katıldı, Şöhret +15!)"
+    elif guest_tier == "core_family":
+        wedding_gifts = int(base_gifts * 0.85)
+        partner.family_approval = min(100, partner.family_approval + 18)
+        guest_note = " (Samimi Çekirdek Aile töreni, Aile Onayı +18!)"
+    else:
+        wedding_gifts = base_gifts
+        guest_note = " (Tüm Akrabalar & Dostlar katıldı!)"
+
     char.money += wedding_gifts
 
     partner.relation = "Eş"
@@ -673,7 +700,7 @@ def plan_wedding_ceremony(char: Character, person_id: str, venue_id: str = "wedd
 
     prenup_note = " (Mal ayrılığı sözleşmesi imzalandı)" if sign_prenup else ""
     partner.memories.append(f"{venue['name']} ile evlendiniz. Takıdan {wedding_gifts:,} TL toplandı.")
-    msg = f"👰🤵 DÜĞÜN! {partner.name} ile '{venue['name']}' töreninde dünyaevine girdiniz!{prenup_note} Takı merasiminde {wedding_gifts:,} TL altın ve nakit toplandı!"
+    msg = f"👰🤵 DÜĞÜN! {partner.name} ile '{venue['name']}' töreninde dünyaevine girdiniz!{prenup_note}{guest_note} Takı merasiminde {wedding_gifts:,} TL altın ve nakit toplandı!"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="👰"))
     return {"success": True, "message": msg}
 
@@ -690,6 +717,9 @@ def try_for_baby(char: Character) -> Dict[str, Any]:
         baby_name = f"{random.choice(b_names)} {char.last_name}"
         p_spec = random.choice(PERSONALITIES)
         
+        char.pregnancy_partner_id = partner.id
+        char.pregnancy_baby_gender = b_gender
+
         baby = Person(
             id=f"person_child_{len(char.relationships)+1}_{random.randint(10,99)}",
             name=baby_name,
@@ -708,7 +738,7 @@ def try_for_baby(char: Character) -> Dict[str, Any]:
         char.happiness = min(100, char.happiness + 30)
         if "child" not in char.achievements:
             char.achievements.append("child")
-        msg = f"👶 Dünyalar tatlısı bir {'oğlunuz' if b_gender == 'Erkek' else 'kızınız'} doğdu! Adını {baby_name} koydunuz!"
+        msg = f"👶 Müjde! Dünyalar tatlısı bir {'oğlunuz' if b_gender == 'Erkek' else 'kızınız'} doğdu! Adını {baby_name} koydunuz! (İstersen Baby Shower / Hoşgeldin Bebek partisi düzenleyebilirsin!)"
         char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🍼"))
         return {"success": True, "message": msg}
     else:
@@ -1008,7 +1038,399 @@ def interact_with_person(char: Character, person_id: str, action: str) -> Dict[s
                 msg = f"💔 {person.name} ile ayrıldınız. Artık 'Eski Sevgili' statüsünde."
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💔"))
             return {"success": True, "message": msg}
+
+    elif action == "introduce_family":
+        if person.relation not in ["Flört", "Sevgili", "Nişanlı", "Eş"]:
+            return {"success": False, "message": "Sadece romantik partnerini ailenle tanıştırabilirsin."}
+        parents = [p for p in char.relationships if p.relation in ["Anne", "Baba"] and p.is_alive]
+        if not parents:
+            person.met_family = True
+            person.family_approval = 85
+            return {"success": True, "message": f"{person.name}'e aile yadigarı fotoğrafları gösterip geçmişini anlattın."}
+
+        person.met_family = True
+        approval_score = int((person.smarts * 0.4) + (person.loyalty * 0.4) + random.randint(10, 25))
+        if person.personality in ["Sadık & Aileci", "Entelektüel", "Romantik", "Hırslı & Kariyerist"]:
+            approval_score += 12
+        elif person.personality in ["Çapkın & Özgür Ruhlu", "Materyalist"]:
+            approval_score -= 10
+        person.family_approval = max(15, min(100, approval_score))
+
+        if person.family_approval >= 65:
+            person.relationship_level = min(100, person.relationship_level + 16)
+            for pr in parents:
+                pr.relationship_level = min(100, pr.relationship_level + 12)
+            person.memories.append(f"Ailenle tanıştı ve %{person.family_approval} aile onayı aldı!")
+            char.happiness = min(100, char.happiness + 15)
+            msg = f"👨‍👩‍👧‍👦 {person.name}'i ailenle tanıştırdın! Anne ve baban onun saygısına ve muhabbetine hayran kaldı! (Aile Onayı: %{person.family_approval}, İlişki +16)"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="👨‍👩‍👧"))
+            return {"success": True, "message": msg}
+        else:
+            person.relationship_level = max(10, person.relationship_level - 6)
+            person.memories.append("Ailenle tanışma yemeğinde biraz soğuk rüzgarlar esti.")
+            msg = f"😬 {person.name} ile ailenin tanışma yemeğinde biraz gerginlik yaşandı. Ailen pek ısınamadı (Aile Onayı: %{person.family_approval})."
+            return {"success": True, "message": msg}
+
+    elif action == "check_loyalty":
+        if person.loyalty < 45:
+            person.has_prenup = True  # Kusurlu taraf olduğu için nafaka/mal paylaşımı hakkını kaybeder
+            person.relationship_level = max(5, person.relationship_level - 35)
+            person.memories.append("Gizli mesajlarını yakaladın!")
+            msg = f"🕵️‍♂️ ŞOK GERÇEK! {person.name}'in telefonunda gizli flört mesajları yakaladın! Sadakati çok düşükmüş (%{person.loyalty}). Artık kusurlu sayıldığı için tazminatsız ayrılabilirsin!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🕵️‍♂️"))
+            return {"success": True, "message": msg}
+        else:
+            if random.random() < 0.45:
+                person.relationship_level = max(10, person.relationship_level - 14)
+                person.memories.append("Telefonunu karıştırdığını fark edip kırıldı.")
+                return {"success": False, "message": f"🕵️ {person.name} tertemiz ve sadık çıktı (%{person.loyalty}), ancak onu gizlice kontrol ettiğini fark edip sana kırıldı! (İlişki -14)"}
+            return {"success": True, "message": f"🛡️ {person.name}'in sadakatini kontrol ettin: Sana tamamen bağlı ve sadık (%{person.loyalty})! İçini ferah tutabilirsin."}
+
+    elif action == "celebrate_anniversary":
+        cost = 3000
+        if char.money < cost:
+            return {"success": False, "message": f"Yıldönümü kutlaması için {cost:,} TL gerekli."}
+        char.money -= cost
+        boost = 22
+        if person.love_language in ["Hediye & Sürprizler", "Kaliteli Zaman"]:
+            boost += 8
+        person.relationship_level = min(100, person.relationship_level + boost)
+        person.loyalty = min(100, person.loyalty + 8)
+        char.happiness = min(100, char.happiness + 16)
+        person.memories.append("Romantik bir yıldönümü sürpriziyle aşkınızı tazelediniz.")
+        msg = f"🥂✨ {person.name} için muhteşem bir yıldönümü sürprizi hazırladın! Gözleri mutluluktan parladı! (İlişki +{boost})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🥂"))
+        return {"success": True, "message": msg}
+
+    elif action == "apologize":
+        boost = 20 if person.relationship_level < 60 else 10
+        person.relationship_level = min(100, person.relationship_level + boost)
+        char.karma = min(100, char.karma + 5)
+        person.memories.append("İçten bir özür dileyip gönlünü aldın.")
+        return {"success": True, "message": f"🕊️ {person.name}'den içtenlikle özür dileyip gönlünü aldın. Aranızdaki buzlar eridi! (İlişki +{boost})"}
+
+    elif action == "visit_inlaws":
+        # Kayınvalide / Görümce / Eşin Ailesini Ziyaret & Kriz Yönetimi
+        if person.relation not in ["Flört", "Sevgili", "Nişanlı", "Eş"]:
+            return {"success": False, "message": "Sadece romantik partnerinin ailesini ziyaret edebilirsin."}
+        cost = 1500
+        if char.money < cost:
+            return {"success": False, "message": "Aile ziyaretine eli boş gitmemek (tatlı & çiçek) için 1.500 TL gerekli."}
+        char.money -= cost
+        person.met_family = True
+        if random.random() < 0.72 + (char.skills.get("charisma", 20) / 400.0):
+            person.family_approval = min(100, person.family_approval + 20)
+            person.relationship_level = min(100, person.relationship_level + 16)
+            char.happiness = min(100, char.happiness + 12)
+            person.memories.append("Kayınvalide ve ailesini ziyaret edip gönüllerini fethettin.")
+            msg = f"👵💐 {person.name}'in ailesini ziyarete gittin! Kayınvaliden götürdüğün baklavaya ve tatlı diline bayıldı! (Aile Onayı: %{person.family_approval}, İlişki +16)"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="👵"))
+            return {"success": True, "message": msg}
+        else:
+            person.family_approval = max(10, person.family_approval - 8)
+            person.relationship_level = min(100, person.relationship_level + 6)
+            person.memories.append("Kayınvalide/görümce ziyaretinde ufak bir laf sokma krizi yaşandı ama eşinin yanında durdun.")
+            msg = f"😅 {person.name}'in ailesini ziyarette kayınvalide/görümce biraz laf soktu ama ortamı kibarca idare ettin! ({person.name} sabrına hayran kaldı: İlişki +6)"
+            return {"success": True, "message": msg}
+
+    elif action == "baby_shower":
+        # Baby Shower & Cinsiyet / Hoşgeldin Bebek Partisi
+        cost = 5000
+        if char.money < cost:
+            return {"success": False, "message": f"Baby Shower & Cinsiyet Partisi organizasyonu için {cost:,} TL gerekli."}
+        char.money -= cost
+        gifts = random.randint(15000, 48000)
+        char.money += gifts
+        person.relationship_level = min(100, person.relationship_level + 22)
+        for p in char.relationships:
+            if p.is_alive and p.relation in ["Anne", "Baba", "Çocuk", "Arkadaş", "Kardeş", "Abla", "Ağabey"]:
+                p.relationship_level = min(100, p.relationship_level + 12)
+        char.happiness = min(100, char.happiness + 24)
+        b_gen = char.pregnancy_baby_gender or random.choice(["Erkek", "Kadın"])
+        confetti = "💙 MAVİ KONFETİ (Erkek Bebek!)" if b_gen == "Erkek" else "🩷 PEMBE KONFETİ (Kız Bebek!)"
+        person.memories.append(f"Muhteşem bir Baby Shower & Cinsiyet Partisi düzenlediniz ({confetti}).")
+        msg = f"🎈👶 BABY SHOWER & CİNSİYET PARTİSİ! Balon patlatıldı: {confetti}! Akraba ve dostlardan {gifts:,} TL altın ve bebek hediyesi toplandı!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🎈"))
+        return {"success": True, "message": msg}
+
+    elif action == "group_party":
+        return do_group_party(char)
+
+    elif action == "fake_stalk":
+        # Sahte (Fake) Hesaptan Stalklama
+        if person.relation in ["Eski Sevgili", "Eski Eş"]:
+            person.memories.append("Onu fake hesaptan gizlice stalkladın.")
+            if person.relationship_level >= 50:
+                return {"success": True, "message": f"🕵️‍♀️ Fake hesaptan {person.name}'in profiline baktın: Hâlâ hüzünlü şarkılar paylaşıyor ve seni unutamamış! (Barışma şansı yüksek)"}
+            else:
+                return {"success": True, "message": f"🕵️‍♀️ Fake hesaptan {person.name}'i stalkladın: Yeni bir hayata başlamış görünüyor."}
+        elif person.loyalty < 55:
+            person.has_prenup = True
+            person.relationship_level = max(10, person.relationship_level - 25)
+            person.memories.append("Fake hesaptan gizli flörtlerini yakaladın!")
+            msg = f"🕵️‍♀️🚨 FAKE HESAPTAN YAKALADIN! Açtığın sahte hesaptan {person.name}'in başkalarının fotoğraflarına '🔥' attığını ve DM'leştiğini belgeledin!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🕵️‍♀️"))
+            return {"success": True, "message": msg}
+        else:
+            return {"success": True, "message": f"🕵️‍♀️ Fake hesaptan {person.name}'in takip ettiklerini ve beğenilerini inceledin: Şüpheli hiçbir durum yok, sana tamamen sadık (%{person.loyalty})!"}
+
+    elif action == "ghost_block":
+        # Ghostlama & Her Yerden Engelleme
+        person.is_blocked = True
+        person.cohabiting = False
+        if person.relation in ["Flört", "Sevgili", "Nişanlı"]:
+            person.relation = "Eski Sevgili"
+            if char.dating_partner_id == person.id:
+                char.dating_partner_id = None
+        person.relationship_level = 0
+        person.memories.append("Onu her yerden engelleyip (Ghosting) hayatından çıkardın.")
+        msg = f"🚫👻 {person.name}'i WhatsApp ve tüm sosyal ağlardan engelleyip (Ghosting) hayatından çıkardın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🚫"))
+        return {"success": True, "message": msg}
+
+    elif action == "hire_detective":
+        # Özel Dedektif Tutma (Paket 11)
+        cost = 15000
+        if char.money < cost:
+            return {"success": False, "message": f"Özel dedektif ve gizli takip dosyası için {cost:,} TL gerekli."}
+        char.money -= cost
+        if person.loyalty < 60:
+            person.has_prenup = True
+            person.relationship_level = max(5, person.relationship_level - 35)
+            person.memories.append("Özel dedektif tutarak gizli buluşmasını fotoğraflarla belgeledin!")
+            msg = f"🕵️‍♂️📸 DEDEKTİF DOSYASI! Tuttuğun özel dedektif, {person.name}'in gizli bir buluşmasını fotoğraflarla belgeledi! Artık mahkemede %100 haklısın, tek kuruş nafaka ödemeden ayrılabilirsin!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🕵️‍♂️"))
+            return {"success": True, "message": msg}
+        else:
+            person.memories.append("Özel dedektif takibinden tertemiz çıktı.")
+            return {"success": True, "message": f"🕵️‍♂️✅ Özel dedektif 1 hafta boyunca {person.name}'i adım adım izledi: 'Rapor tertemiz! Eşiniz/partneriniz işten eve, evden işe gidiyor ve size %100 sadık!'"}
+
+    elif action == "dna_test":
+        # Gizli DNA / Babalık Testi (Paket 11)
+        cost = 8000
+        if char.money < cost:
+            return {"success": False, "message": f"Özel genetik laboratuvarında DNA testi için {cost:,} TL gerekli."}
+        char.money -= cost
+        if random.random() < 0.88:
+            person.relationship_level = min(100, person.relationship_level + 10)
+            msg = f"🧬✅ DNA TEST SONUCU: %99.99 Biyolojik Uyum! {person.name} ile genetik bağınız resmi laboratuvar raporuyla doğrulandı. İçindeki tüm şüpheler silindi!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🧬"))
+            return {"success": True, "message": msg}
+        else:
+            char.happiness = max(10, char.happiness - 25)
+            msg = f"🧬😱 YASAK ELMA ŞOKU! Laboratuvardan gelen DNA raporunda hastanede bebeklerin karışmış olabileceği veya büyük bir aile sırrı olduğu ortaya çıktı! Tazminat davası açtın ve +250.000 TL kazandın!"
+            char.money += 250000
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="😱"))
+            return {"success": True, "message": msg}
+
+    elif action == "kiz_isteme":
+        # Geleneksel Kız İsteme & Tuzlu Kahve Merasimi (Paket 17)
+        if person.relation not in ["Flört", "Sevgili", "Nişanlı"]:
+            return {"success": False, "message": "Geleneksel isteme merasimi sadece sevgilin veya nişanlın için yapılabilir."}
+        cost = 12000
+        if char.money < cost:
+            return {"success": False, "message": f"Gümüş gondol çikolata, çiçek buketi ve isteme hazırlığı için {cost:,} TL gerekli."}
+        char.money -= cost
+
+        # Gerçekçi Zorluk: Düzenli iş/gelir veya yüksek aile onayı & hitabet kontrolü
+        has_income_source = bool(char.current_job or char.business or char.political_office or char.sports_career or char.money >= 250000)
+        charisma = char.skills.get("charisma", 20)
+        if not has_income_source and person.family_approval < 65 and charisma < 50:
+            person.family_approval = max(15, person.family_approval - 8)
+            return {
+                "success": False,
+                "message": f"☕😬 {person.name}'in babası kaşlarını çattı: 'Evladım henüz düzenli bir işin veya birikimin yok, önce hayatını kur sonra tekrar konuşalım!' diyerek yüzükleri takmayı reddetti!"
+            }
+
+        person.kiz_isteme_done = True
+        person.met_family = True
+        person.relation = "Nişanlı"
+        person.family_approval = min(100, person.family_approval + 22)
+        person.relationship_level = min(100, person.relationship_level + 18)
+        char.happiness = min(100, char.happiness + 18)
+        person.memories.append("Aile büyükleriyle istemeye gittiniz, bol tuzlu damat kahvesini son damlasına kadar içip söz yüzüklerini taktınız!")
+        msg = f"☕💍 KIZ İSTEME & TUZLU KAHVE! Aile büyükleriyle {person.name}'i istemeye gittiniz! Bol tuzlu kahveyi yüzünü bile buruşturmadan içtin, 'Allah'ın emri peygamberin kavliyle' söz ve nişan yüzükleri takıldı! (Aile Onayı: %{person.family_approval})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="☕"))
+        return {"success": True, "message": msg}
+
+    elif action == "nisan_kina":
+        # Karşılıklı Nişan Bohçası & Kına Gecesi / Bekarlığa Veda (Paket 17)
+        if person.relation not in ["Sevgili", "Nişanlı", "Eş"]:
+            return {"success": False, "message": "Nişan bohçası ve kına gecesi için bir partnerin olmalı."}
+        cost = 35000
+        if char.money < cost:
+            return {"success": False, "message": f"Nişan bohçası alışverişi ve Kına / Bekarlığa Veda gecesi için {cost:,} TL gerekli."}
+        char.money -= cost
+        person.nisan_bohca_done = True
+        kina_gold = random.randint(22000, 58000)
+        char.money += kina_gold
+        person.family_approval = min(100, person.family_approval + 18)
+        person.relationship_level = min(100, person.relationship_level + 16)
+        char.happiness = min(100, char.happiness + 20)
+        person.memories.append("Özenli nişan bohçaları hazırlandı ve unutulmaz bir Kına Gecesi & Bekarlığa Veda kutlaması yapıldı.")
+        msg = f"🎁💃 NİŞAN BOHÇASI & KINA GECESİ! Karşılıklı lüks nişan bohçaları verildi, kına gecesinde 'Yüksek Yüksek Tepelere' eşliğinde avuçlara altınlar konuldu (+{kina_gold:,} TL takı toplandı)!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💃"))
+        return {"success": True, "message": msg}
+
+    elif action == "private_school":
+        # Çocuğu Özel Koleje / Kurs & Etüde Gönderme (Paket 17)
+        cost = 45000
+        if char.money < cost:
+            return {"success": False, "message": f"Özel kolej, yabancı dil ve bilim/sanat akademisi kaydı için {cost:,} TL gerekli."}
+        char.money -= cost
+        person.smarts = min(100, person.smarts + 18)
+        person.relationship_level = min(100, person.relationship_level + 15)
+        char.happiness = min(100, char.happiness + 12)
+        person.memories.append("Onu en iyi özel koleje ve yabancı dil/bilim kurslarına gönderdin.")
+        msg = f"🎓🏫 {person.name}'i seçkin bir özel koleje ve yetenek kurslarına kaydettirdin! Zekası ve gelecek vizyonu parladı! (Çocuk Zekası: %{person.smarts})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🏫"))
+        return {"success": True, "message": msg}
+
+    elif action == "marry_off_child":
+        # Çocuğunu Evlendirme & Torun Sahibi Olma (Paket 17)
+        cost = 85000
+        if char.money < cost:
+            return {"success": False, "message": f"Çocuğunun düğün ve çeyiz/ev kurma desteği için {cost:,} TL gerekli."}
+        char.money -= cost
+        if person.age < 20:
+            person.age = 22
+        person.job = person.job or "Uzman Mühendis / Doktor"
+        person.relationship_level = 100
+        person.memories.append("Ona muhteşem bir düğün yaptın ve ilk torununu kucağına verdiler!")
+
+        g_gender = random.choice(["Erkek", "Kadın"])
+        pool = FIRST_NAMES_MALE if g_gender == "Erkek" else FIRST_NAMES_FEMALE
+        g_name = f"{random.choice(pool)} {char.last_name}"
+        grandchild = Person(
+            id=f"grandchild_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=g_name,
+            relation="Torun",
+            gender=g_gender,
+            age=0,
+            relationship_level=100,
+            zodiac=random.choice(ZODIAC_SIGNS),
+            looks=random.randint(70, 98),
+            smarts=random.randint(70, 98),
+            memories=[f"{person.name}'in evliliğinden dünyaya gelen ilk torunun!"]
+        )
+        char.relationships.append(grandchild)
+        char.happiness = 100
+        if "grandparent" not in char.achievements:
+            char.achievements.append("grandparent")
+
+        msg = f"👰🤵👶 TORUN MÜJDESİ! Çocuğun {person.name}'i görkemli bir düğünle evlendirdin ve çok geçmeden nur topu gibi torunun '{g_name}' dünyaya geldi! Artık bir Büyükbaba/Büyükanne oldun!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="👶"))
+        return {"success": True, "message": msg}
+
     return {"success": False, "message": "Geçersiz eylem."}
+
+def send_dm_message(char: Character, person_id: str, topic_id: str) -> Dict[str, Any]:
+    """Kişiye WhatsApp/DM üzerinden mesaj gönderir ve kişiliğine uygun canlı yanıt üretir."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    topic = next((t for t in DM_TOPICS if t["id"] == topic_id), None)
+    if not topic:
+        return {"success": False, "message": "Mesaj konusu bulunamadı."}
+
+    my_msg = topic["my_text"]
+    person.chat_history.append({"sender": "me", "text": my_msg})
+
+    reply = "Teşekkür ederim canım 😊"
+    rel_delta = 10
+
+    if topic_id == "flirt_msg":
+        rel_delta = 14
+        if person.love_language == "Tatlı Sözler & İltifat":
+            rel_delta += 8
+        replies_by_p = {
+            "Romantik": "Kalbim yerinden çıkacak gibi oldu... Ben de seni her saniye düşünüyorum aşkım 🌹❤️",
+            "Kıskanç & Tutkulu": "Sadece beni düşün zaten! Akşam buluşalım, seni çok özledim ❤️‍🔥",
+            "Materyalist": "Çok tatlısın hayatım! Akşam şık bir yerde kutlayalım mı? 💎🥂",
+            "Entelektüel": "Ruhuma dokunan kelimelerin günümü aydınlattı, iyi ki varsın ✨📚",
+            "Eğlenceli": "Ooo bugün romantizm tavan yapmış! Akşama hazır ol 😍🎉"
+        }
+        reply = replies_by_p.get(person.personality, "Senin bu tatlı mesajların beni benden alıyor, iyi ki hayatımdasın 💘")
+
+    elif topic_id == "funny_meme":
+        rel_delta = 12
+        reply = "Ahahaha sesli güldüm! 😂 Seninle enerjimiz gerçekten bambaşka ya! 🔥"
+        char.happiness = min(100, char.happiness + 8)
+
+    elif topic_id == "future_dream":
+        rel_delta = 15
+        person.loyalty = min(100, person.loyalty + 6)
+        reply = "Seninle kuracağımız güzel geleceği düşündükçe içim huzurla doluyor 🏡🤍"
+
+    elif topic_id == "jealous_check":
+        if person.craziness > 65 or person.personality == "Çapkın & Özgür Ruhlu":
+            rel_delta = -12
+            reply = "Bana sürekli hesap sormandan bunaldım artık! Biraz güvenmeyi öğren! 😤"
+        else:
+            rel_delta = 6
+            reply = "Aşkım kıskandın mı sen beni? 😊 Merak etme, yanımdaki kuzenimdi, gözüm senden başkasını görmez ❤️"
+
+    elif topic_id == "apology_msg":
+        rel_delta = 18 if person.relationship_level < 65 else 9
+        reply = "Böyle düşünmen ve yazman beni çok mutlu etti, kırgınlığım geçti bile 🕊️🤍"
+
+    person.relationship_level = max(0, min(100, person.relationship_level + rel_delta))
+    person.chat_history.append({"sender": "them", "text": reply})
+    if len(person.chat_history) > 12:
+        person.chat_history = person.chat_history[-12:]
+
+    sign = f"+{rel_delta}" if rel_delta >= 0 else str(rel_delta)
+    return {
+        "success": rel_delta >= 0,
+        "message": f"📱 {person.name}: \"{reply}\" (İlişki {sign})",
+        "reply": reply
+    }
+
+def take_couple_vacation(char: Character, person_id: str, vacation_id: str) -> Dict[str, Any]:
+    """Partnerle baş başa romantik tatil / balayı."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    vac = next((v for v in COUPLE_VACATIONS if v["id"] == vacation_id), None)
+    if not vac:
+        return {"success": False, "message": "Tatil rotası bulunamadı."}
+    if char.money < vac["cost"]:
+        return {"success": False, "message": f"{vac['name']} için {vac['cost']:,} TL gerekli."}
+
+    char.money -= vac["cost"]
+    boost = vac["rel_boost"]
+    if person.love_language == "Kaliteli Zaman":
+        boost += 10
+    person.relationship_level = min(100, person.relationship_level + boost)
+    person.loyalty = min(100, person.loyalty + 8)
+    char.happiness = min(100, char.happiness + vac["hap_boost"])
+    person.memories.append(f"Birlikte unutulmaz bir '{vac['name']}' tatiline çıktınız.")
+    person.chat_history.append({"sender": "them", "text": f"{vac['name']} tatilimiz hayatımın en güzel günleriydi! 🥰✈️"})
+
+    msg = f"✈️💑 {person.name} ile '{vac['name']}' kaçamağınız rüya gibi geçti! (İlişki +{boost}, Mutluluk +{vac['hap_boost']})"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="✈️"))
+    return {"success": True, "message": msg}
+
+def do_social_hangout(char: Character, person_id: str, hangout_id: str) -> Dict[str, Any]:
+    """Arkadaş, kardeş veya aile üyesiyle sosyal aktivite."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+    hg = next((h for h in SOCIAL_HANGOUTS if h["id"] == hangout_id), None)
+    if not hg:
+        return {"success": False, "message": "Aktivite bulunamadı."}
+    if char.money < hg["cost"]:
+        return {"success": False, "message": f"{hg['name']} için {hg['cost']:,} TL gerekli."}
+
+    char.money -= hg["cost"]
+    person.relationship_level = min(100, person.relationship_level + hg["rel_boost"])
+    char.happiness = min(100, char.happiness + 14)
+    person.memories.append(f"Birlikte '{hg['name']}' etkinliğinde harika vakit geçirdiniz.")
+    person.chat_history.append({"sender": "them", "text": f"Bugünkü {hg['name']} çok iyi geldi, iyi ki varsın dostum! 🙌"})
+
+    msg = f"🎉 {person.name} ile '{hg['name']}' yaptınız, dostluğunuz pekişti! (İlişki +{hg['rel_boost']})"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🎉"))
+    return {"success": True, "message": msg}
 
 def set_will_beneficiary(char: Character, target: str) -> Dict[str, Any]:
     char.will_beneficiary = target
@@ -1029,6 +1451,7 @@ def buy_real_estate(char: Character, index: int) -> Dict[str, Any]:
         return {"success": False, "message": f"Bu mülkü almak için {prop['price']:,} TL gerekli."}
     
     char.money -= prop["price"]
+    t_name = f"{random.choice(FIRST_NAMES_MALE + FIRST_NAMES_FEMALE)} {random.choice(LAST_NAMES)}"
     new_asset = Asset(
         id=f"house_{len(char.assets)+1}_{random.randint(10,99)}",
         name=prop["name"],
@@ -1036,7 +1459,8 @@ def buy_real_estate(char: Character, index: int) -> Dict[str, Any]:
         purchase_price=prop["price"],
         current_value=prop["price"],
         annual_cost=prop["annual_cost"],
-        annual_income=prop["annual_rent"]
+        annual_income=prop["annual_rent"],
+        tenant_name=t_name
     )
     char.assets.append(new_asset)
     if "homeowner" not in char.achievements:
@@ -1410,3 +1834,972 @@ def take_vacation(char: Character, destination: str) -> Dict[str, Any]:
     msg = f"✈️ {name} tatiline çıktın! Tüm yorgunluğun ve stresin sıfırlandı. (Mutluluk +{hap_boost})"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="✈️"))
     return {"success": True, "message": msg}
+
+# ----------------- PAKET 1: GRUP ARKADAŞ ORTAMI & EV PARTİSİ -----------------
+
+def do_group_party(char: Character) -> Dict[str, Any]:
+    """Tüm arkadaşlar, kardeşler ve partnerle toplu ev partisi / mangal gecesi."""
+    cost = 3500
+    if char.money < cost:
+        return {"success": False, "message": f"Ev partisi & mangal organizasyonu için {cost:,} TL gerekli."}
+    char.money -= cost
+    attendees = 0
+    for p in char.relationships:
+        if p.is_alive and p.relation in ["Arkadaş", "Sevgili", "Nişanlı", "Eş", "Flört", "Ağabey", "Abla", "Kardeş"]:
+            p.relationship_level = min(100, p.relationship_level + 18)
+            attendees += 1
+    char.happiness = min(100, char.happiness + 22)
+    char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + 5)
+
+    # Eğer bekarsa partide arkadaşının arkadaşıyla tanışma şansı!
+    bonus_note = ""
+    has_partner = any(p.relation in ["Sevgili", "Nişanlı", "Eş"] and p.is_alive for p in char.relationships)
+    if not has_partner and char.age >= 18 and random.random() < 0.45:
+        meet_res = meet_someone_at_place(char, "night_club")
+        if meet_res.get("success"):
+            bonus_note = " Ayrıca partiye katılan sürpriz biriyle aranda kıvılcım çaktı!"
+
+    msg = f"🍻🎶 EFSANE EV PARTİSİ! {max(1, attendees)} yakın dostun ve sevdiklerinle sabaha kadar müzik, mangal ve kahkaha dolu bir gece geçirdiniz! (Tüm Dostluklar +18, Karizma +5){bonus_note}"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🍻"))
+    return {"success": True, "message": msg}
+
+# ----------------- PAKET 2: ÜNLÜ OLMA, ŞÖHRET & MAGAZİN SİSTEMİ -----------------
+
+def do_fame_activity(char: Character, sub_action: str) -> Dict[str, Any]:
+    """Şöhret, Konser/Albüm/Film, TV Şovu, Sponsorluk, Magazin Skandalı ve VIP Ünlü Flörtü."""
+    if char.age < 16:
+        return {"success": False, "message": "Şöhret ve magazin dünyasına adım atmak için en az 16 yaşında olmalısın."}
+
+    if sub_action == "audition_fame":
+        cost = 2000
+        if char.money < cost:
+            return {"success": False, "message": f"Yetenek seçmeleri ve ajans kaydı için {cost:,} TL gerekli."}
+        char.money -= cost
+        score = char.looks + char.skills.get("charisma", 20) + char.skills.get("music", 10) + random.randint(10, 45)
+        if score >= 110:
+            fame_gain = random.randint(25, 42)
+            char.fame = min(100, char.fame + fame_gain)
+            char.happiness = min(100, char.happiness + 20)
+            if "famous" not in char.achievements and char.fame >= 50:
+                char.achievements.append("famous")
+            msg = f"🌟 YILDIZ DOĞUYOR! Katıldığın Türkiye Yetenek & Ekran Seçmelerinde jüriyi büyüledin! (Şöhret +{fame_gain} -> %{char.fame})"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🌟"))
+            return {"success": True, "message": msg}
+        else:
+            char.fame = min(100, char.fame + 8)
+            return {"success": True, "message": f"🎭 Seçmelerde elinden geleni yaptın ve kamera önü tecrübesi kazandın. (Şöhret +8 -> %{char.fame})"}
+
+    elif sub_action == "release_work":
+        is_celeb_job = char.current_job and char.current_job.category in ["Sanat", "Spor"]
+        if char.fame < 20 and not is_celeb_job:
+            return {"success": False, "message": "Hit Albüm / Başrol Film / Şampiyonluk Maçı çıkarmak için en az %20 Şöhrete veya Sanat/Spor kariyerine sahip olmalısın!"}
+        royalties = random.randint(250000, 1850000) + (char.fame * 12000)
+        char.money += royalties
+        char.fame = min(100, char.fame + 20)
+        char.happiness = min(100, char.happiness + 24)
+        if "famous" not in char.achievements:
+            char.achievements.append("famous")
+        msg = f"🏆🔥 ZİRVEDESİN! Yeni eserin / performansın tüm Türkiye'de 1 numaraya yerleşti! Telif ve primlerden +{royalties:,} TL kazandın! (Şöhret: %{char.fame})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏆"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "tv_show":
+        if char.fame < 15:
+            return {"success": False, "message": "Prime-Time Talk Show'a davet edilmek için en az %15 Şöhret gerekli (Önce seçmelere katıl veya sosyal medyada büyü)."}
+        char.fame = min(100, char.fame + 16)
+        char.happiness = min(100, char.happiness + 15)
+        if "Instagram" not in char.social_media:
+            char.social_media["Instagram"] = SocialMediaAccount(platform="Instagram", followers=0)
+        char.social_media["Instagram"].followers += 45000
+        if "famous" not in char.achievements and char.fame >= 50:
+            char.achievements.append("famous")
+        msg = f"📺✨ Cuma gecesi en çok izlenen Talk Show programına konuk oldun! Esprilerin sosyal medyada gündem oldu! (Şöhret +16, +45.000 Takipçi)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="📺"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "brand_deal":
+        if char.fame < 30:
+            return {"success": False, "message": "Dev markaların reklam yüzü olmak için en az %30 Şöhret gerekli."}
+        deal_pay = char.fame * 25000 + random.randint(100000, 500000)
+        char.money += deal_pay
+        char.fame = min(100, char.fame + 10)
+        if "famous" not in char.achievements:
+            char.achievements.append("famous")
+        msg = f"💎📸 Lüks bir markanın reklam yüzü oldun! Billboardlarda fotoğrafların asıldı ve +{deal_pay:,} TL reklam ücreti aldın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="💎"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "paparazzi_stunt":
+        char.fame = min(100, char.fame + 18)
+        char.karma = max(0, char.karma - 8)
+        bonus_cash = random.randint(35000, 140000)
+        char.money += bonus_cash
+        msg = f"📸💥 MAGAZİN BOMBA! Bebek sahilinde paparazzilere verdiğin sansasyonel demeç tüm magazin programlarında 1. sıraya oturdu! (Şöhret +18, Magazin Telifi +{bonus_cash:,} TL)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="📸"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "celebrity_date":
+        if char.fame < 25 and char.money < 500000:
+            return {"success": False, "message": "VIP Ünlüler Kulübünde bir yıldızla flört etmek için en az %25 Şöhret veya 500.000 TL servet gerekli!"}
+        target_gender = "Kadın" if char.gender == "Erkek" else "Erkek"
+        pool = FIRST_NAMES_FEMALE if target_gender == "Kadın" else FIRST_NAMES_MALE
+        celeb_name = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+        celeb_jobs = ["Ünlü Dizi Yıldızı", "Pop Müzik İkonu", "Milli Futbolcu / Sporcu", "Süpermodel", "Sosyal Medya Fenomeni"]
+        p_spec = random.choice(PERSONALITIES)
+
+        celeb_person = Person(
+            id=f"celeb_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=celeb_name,
+            relation="Sevgili",
+            gender=target_gender,
+            age=max(19, char.age + random.randint(-3, 3)),
+            relationship_level=86,
+            job=random.choice(celeb_jobs),
+            personality=p_spec["id"],
+            zodiac=random.choice(ZODIAC_SIGNS),
+            looks=random.randint(88, 100),
+            smarts=random.randint(70, 96),
+            loyalty=random.randint(65, 95),
+            wealth=random.randint(88, 100),
+            interests=random.sample(INTERESTS_POOL, 3),
+            love_language=random.choice(LOVE_LANGUAGES),
+            memories=[f"VIP Ünlüler Galasında tanışıp yılın aşkına başladınız!"]
+        )
+        char.relationships.append(celeb_person)
+        char.dating_partner_id = celeb_person.id
+        char.fame = min(100, char.fame + 15)
+        char.happiness = min(100, char.happiness + 25)
+        if "first_love" not in char.achievements:
+            char.achievements.append("first_love")
+        msg = f"🌟💘 YILIN MAGAZİN AŞKI! {celeb_person.job} {celeb_name} (Görünüş: %{celeb_person.looks}, Servet: %{celeb_person.wealth}) ile VIP Galada tanışıp sevgili oldunuz!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🌟"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz şöhret işlemi."}
+
+# ----------------- PAKET 3: SİYASET & DEVLET YÖNETİMİ SİSTEMİ -----------------
+
+def run_for_political_office(char: Character, office_id: str) -> Dict[str, Any]:
+    """Muhtarlık, Belediye Başkanlığı, Milletvekilliği veya Cumhurbaşkanlığı seçimine katılma."""
+    office = next((o for o in POLITICAL_OFFICES if o["id"] == office_id), None)
+    if not office:
+        return {"success": False, "message": "Seçim makamı bulunamadı."}
+    if char.is_in_prison:
+        return {"success": False, "message": "Cezaevindeyken aday olamazsın."}
+    if char.age < office["min_age"]:
+        return {"success": False, "message": f"{office['title']} adaylığı için en az {office['min_age']} yaşında olmalısın."}
+    if office["req_edu"] == "Üniversite" and char.education_level != "Üniversite":
+        return {"success": False, "message": f"{office['title']} için Üniversite mezunu olmalısın!"}
+    if char.money < office["campaign_cost"]:
+        return {"success": False, "message": f"Seçim kampanyası bütçesi için {office['campaign_cost']:,} TL gerekli."}
+
+    char.money -= office["campaign_cost"]
+    win_chance = 0.35 + (char.smarts / 300.0) + (char.skills.get("charisma", 20) / 250.0) + (char.fame / 300.0) + (char.karma / 400.0)
+    if office_id == "muhtar":
+        win_chance += 0.25
+
+    if random.random() < win_chance:
+        char.political_office = office["title"]
+        char.political_salary = office["salary"]
+        char.approval_rating = random.randint(58, 78)
+        char.fame = min(100, char.fame + 20)
+        char.happiness = min(100, char.happiness + 30)
+        if "politician" not in char.achievements:
+            char.achievements.append("politician")
+        msg = f"🗳️🏛️ SEÇİM ZAFERİ! Sandıklar açıldı ve halkın büyük desteğiyle '{office['title']}' seçildin! (Yıllık Makam Maaşı: {office['salary']:,} TL, Halk Desteği: %{char.approval_rating})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏛️"))
+        return {"success": True, "won": True, "message": msg}
+    else:
+        char.fame = min(100, char.fame + 6)
+        msg = f"🗳️ Seçim yarışı çok çekişmeli geçti ancak az farkla '{office['title']}' seçimini kaybettin. (Kampanya sayesinde bilinirliğin arttı!)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🗳️"))
+        return {"success": False, "won": False, "message": msg}
+
+def do_political_action(char: Character, sub_action: str) -> Dict[str, Any]:
+    """Seçilmiş siyasetçi için miting, altyapı hizmeti, TV tartışması ve lobi faaliyetleri."""
+    if not char.political_office:
+        return {"success": False, "message": "Bu eylemi yapmak için önce bir siyasi makama (Muhtar, Belediye Başkanı, Vekil veya Cumhurbaşkanı) seçilmelisin!"}
+
+    if sub_action == "hold_rally":
+        cost = 25000
+        if char.money < cost:
+            return {"success": False, "message": f"Büyük meydan mitingi organizasyonu için {cost:,} TL gerekli."}
+        char.money -= cost
+        char.approval_rating = min(100, char.approval_rating + 15)
+        char.fame = min(100, char.fame + 10)
+        char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + 6)
+        msg = f"📢🇹🇷 MEYDANLAR DOLDU TAŞTI! Coşkulu konuşmanla halkı selamladın! (Halk Desteği: %{char.approval_rating}, Karizma +6)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="📢"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "public_project":
+        char.approval_rating = min(100, char.approval_rating + 18)
+        char.karma = min(100, char.karma + 15)
+        char.happiness = min(100, char.happiness + 14)
+        msg = f"🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %{char.approval_rating}, Karma +15)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏗️"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "tv_debate":
+        if char.smarts + char.skills.get("charisma", 20) >= 95:
+            char.approval_rating = min(100, char.approval_rating + 20)
+            char.fame = min(100, char.fame + 12)
+            return {"success": True, "message": f"📺⚖️ Canlı yayın açık oturumunda belgelerle ve hitabetinle rakiplerini mat ettin! (Halk Desteği: %{char.approval_rating})"}
+        else:
+            char.approval_rating = min(100, char.approval_rating + 8)
+            return {"success": True, "message": f"📺 Canlı yayında projelerini anlattın ve seçmenin sorularını yanıtladın. (Halk Desteği: %{char.approval_rating})"}
+
+    elif sub_action == "corrupt_lobby":
+        char.karma = max(0, char.karma - 25)
+        if random.random() < 0.68:
+            kickback = random.randint(600000, 3500000)
+            char.money += kickback
+            char.approval_rating = max(10, char.approval_rating - 8)
+            return {"success": True, "message": f"💼🤫 Gizli imar ve lobi anlaşmasından İsviçre hesabına +{kickback:,} TL komisyon aktarıldı!"}
+        else:
+            char.approval_rating = 10
+            old_office = char.political_office
+            char.political_office = None
+            char.political_salary = 0
+            msg = f"🚨📰 SKANDAL PATLADI! Gazeteciler gizli ihale belgelerini yayınladı! '{old_office}' görevinden istifa etmek zorunda kaldın!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="🚨"))
+            return {"success": False, "message": msg}
+
+    return {"success": False, "message": "Geçersiz siyasi eylem."}
+
+# ----------------- PAKET 4: EV TADİLATI, KİRACI YÖNETİMİ, MODİFİYE & MÜZAYEDE -----------------
+
+def manage_asset_extra(char: Character, asset_id: str, sub_action: str) -> Dict[str, Any]:
+    """Ev dekorasyonu/tadilat, kiracı yönetimi ve araç modifiye sistemi."""
+    asset = next((a for a in char.assets if a.id == asset_id), None)
+    if not asset:
+        return {"success": False, "message": "Mülk veya araç bulunamadı."}
+
+    if sub_action == "renovate_house":
+        if asset.asset_type != "Ev":
+            return {"success": False, "message": "Sadece gayrimenkullere tadilat yapılabilir."}
+        if asset.upgrade_level >= 3:
+            return {"success": False, "message": f"'{asset.name}' zaten maksimum (Ultra Lüks VIP) dekorasyon seviyesinde!"}
+        cost = int(asset.current_value * 0.15)
+        if char.money < cost:
+            return {"success": False, "message": f"Lüks iç mimari tadilat için {cost:,} TL gerekli."}
+        char.money -= cost
+        asset.upgrade_level += 1
+        asset.current_value = int(asset.current_value * 1.28)
+        asset.annual_income = int(asset.annual_income * 1.35)
+        char.happiness = min(100, char.happiness + 15)
+        msg = f"🛠️🏠 '{asset.name}' baştan aşağı lüks malzemelerle yenilendi! (Seviye {asset.upgrade_level}/3 — Yeni Değer: {asset.current_value:,} TL, Yıllık Kira: {asset.annual_income:,} TL)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🏠"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "find_tenant":
+        if asset.asset_type != "Ev":
+            return {"success": False, "message": "Sadece konutlara kiracı alınabilir."}
+        t_name = f"{random.choice(FIRST_NAMES_MALE + FIRST_NAMES_FEMALE)} {random.choice(LAST_NAMES)}"
+        asset.tenant_name = t_name
+        asset.is_rented_out = True
+        asset.annual_income = int(max(asset.annual_income, asset.current_value * 0.09) * 1.15)
+        return {"success": True, "message": f"🔑 '{asset.name}' için referanslı, düzenli ödeme yapan yeni kiracı ({t_name}) bulundu! (Yıllık Kira: {asset.annual_income:,} TL)"}
+
+    elif sub_action == "raise_rent":
+        if asset.asset_type != "Ev":
+            return {"success": False, "message": "Sadece konutlarda kira zammı yapılabilir."}
+        if not asset.tenant_name:
+            asset.tenant_name = f"{random.choice(FIRST_NAMES_MALE + FIRST_NAMES_FEMALE)} {random.choice(LAST_NAMES)}"
+        if random.random() < 0.78:
+            asset.annual_income = int(asset.annual_income * 1.25)
+            return {"success": True, "message": f"📈 Kiracın {asset.tenant_name} %25 kira zammını kabul etti! Yeni yıllık kira geliri: {asset.annual_income:,} TL."}
+        else:
+            old_t = asset.tenant_name
+            asset.tenant_name = f"{random.choice(FIRST_NAMES_MALE + FIRST_NAMES_FEMALE)} {random.choice(LAST_NAMES)}"
+            asset.annual_income = int(asset.annual_income * 1.15)
+            return {"success": True, "message": f"📦 Eski kiracı ({old_t}) zammı yüksek bulup taşındı; yerine %15 zamlı fiyattan yeni kiracı ({asset.tenant_name}) girdi! (Kira: {asset.annual_income:,} TL)"}
+
+    elif sub_action == "tune_car":
+        if asset.asset_type != "Araba":
+            return {"success": False, "message": "Sadece araçlar modifiye edilebilir."}
+        if asset.upgrade_level >= 3:
+            return {"success": False, "message": f"'{asset.name}' zaten Stage-3 Tam Performans modifiyeli!"}
+        cost = int(asset.current_value * 0.15)
+        if char.money < cost:
+            return {"success": False, "message": f"Stage-3 Motor, Egzoz ve Bodykit modifiyesi için {cost:,} TL gerekli."}
+        char.money -= cost
+        asset.upgrade_level += 1
+        asset.current_value = int(asset.current_value * 1.25)
+        char.looks = min(100, char.looks + 5)
+        char.happiness = min(100, char.happiness + 16)
+        msg = f"🏎️🔥 '{asset.name}' aracına Stage-{asset.upgrade_level} performans paketi, seramik kaplama ve özel jant uygulandı! (Yeni Değer: {asset.current_value:,} TL)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🏎️"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz mülk/araç işlemi."}
+
+def buy_auction_item(char: Character, item_id: str) -> Dict[str, Any]:
+    """Sanat, Antika ve Lüks Koleksiyon Müzayedesinden nadir eser satın alma."""
+    item = next((a for a in AUCTION_ITEMS if a["id"] == item_id), None)
+    if not item:
+        return {"success": False, "message": "Müzayede eseri bulunamadı."}
+    if char.money < item["price"]:
+        return {"success": False, "message": f"'{item['name']}' için müzayedede {item['price']:,} TL nakit gerekli."}
+
+    char.money -= item["price"]
+    new_asset = Asset(
+        id=f"art_{len(char.assets)+1}_{random.randint(10,99)}",
+        name=item["name"],
+        asset_type="Koleksiyon",
+        purchase_price=item["price"],
+        current_value=item["price"],
+        annual_cost=0,
+        annual_income=0
+    )
+    char.assets.append(new_asset)
+    char.fame = min(100, char.fame + 10)
+    char.happiness = min(100, char.happiness + 20)
+    if "collector" not in char.achievements:
+        char.achievements.append("collector")
+    msg = f"🖼️🔨 SATILDI! Müzayedede en yüksek teklifi vererek '{item['name']}' eserini koleksiyonuna kattın! (Her yıl yüksek değer kazanır, Şöhret +10)"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🖼️"))
+    return {"success": True, "message": msg}
+
+# ----------------- PAKET 2 (YENİ): INSTASTORY, ALEV (🔥) & STALK SİSTEMİ -----------------
+
+def do_insta_story(char: Character, story_type: str) -> Dict[str, Any]:
+    """InstaStory paylaşımı: Alev (🔥) yanıtları, gizli hayranlar, eski sevgili dönüşü ve kıskançlık."""
+    if char.age < 15:
+        return {"success": False, "message": "Story paylaşmak için en az 15 yaşında olmalısın."}
+
+    if "Instagram" not in char.social_media:
+        char.social_media["Instagram"] = SocialMediaAccount(platform="Instagram", followers=250)
+    char.social_media["Instagram"].followers += random.randint(120, 950)
+
+    if story_type == "gym_mirror":
+        char.looks = min(100, char.looks + 3)
+        char.happiness = min(100, char.happiness + 10)
+        # Yeni bir gizli hayran story'e 🔥 atar!
+        meet_res = meet_someone_at_place(char, "fitness_club")
+        new_admirer_name = "Gizli Hayran"
+        if meet_res.get("success") and meet_res.get("person_id"):
+            p_obj = next((p for p in char.relationships if p.id == meet_res["person_id"]), None)
+            if p_obj:
+                new_admirer_name = p_obj.name
+                p_obj.chat_history.append({"sender": "them", "text": "🔥🔥 Story'n yıkılıyor! Kahve içelim mi?"})
+
+        # Mevcut kıskanç partner tepkisi
+        partner = next((p for p in char.relationships if p.relation in ["Sevgili", "Nişanlı", "Eş"] and p.is_alive and p.id != meet_res.get("person_id")), None)
+        jealous_note = ""
+        if partner and partner.personality in ["Kıskanç & Tutkulu"] and random.random() < 0.50:
+            partner.relationship_level = max(15, partner.relationship_level - 8)
+            partner.chat_history.append({"sender": "them", "text": "O attığın story ne öyle?! Kimler alev attı çabuk ekran görüntüsü at! 😤🔥"})
+            jealous_note = f" (Ancak kıskanç partnerin {partner.name} story'ni görüp hesap sordu!)"
+
+        msg = f"📸🔥 Spor & Ayna Story'n büyük ilgi gördü! {new_admirer_name} hikayene '🔥🔥' yanıtı gönderip DM kutuna düştü! (Görünüş +3){jealous_note}"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🔥"))
+        return {"success": True, "message": msg}
+
+    elif story_type == "night_out":
+        char.happiness = min(100, char.happiness + 12)
+        ex_partner = next((p for p in char.relationships if p.relation in ["Eski Sevgili", "Eski Eş"] and p.is_alive and not p.is_blocked), None)
+        if ex_partner and random.random() < 0.70:
+            ex_partner.relationship_level = min(100, ex_partner.relationship_level + 18)
+            ex_partner.chat_history.append({"sender": "them", "text": "Story'de gördüm, bizim gittiğimiz mekandasın... Seni hâlâ unutamadım 😔❤️"})
+            msg = f"🍸🌙 Gece gezmesi story'ni gören eski sevgilin {ex_partner.name} dayanamayıp DM attı: 'Seni hâlâ unutamadım...' (İstersen profilinden barışabilirsin!)"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🍸"))
+            return {"success": True, "message": msg}
+        else:
+            meet_someone_at_place(char, "night_club")
+            msg = "🍸✨ Gece kulübünden attığın story'ye yeni bir flört adayı '🔥' yanıtı bıraktı ve İlişkiler listene eklendi!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🍸"))
+            return {"success": True, "message": msg}
+
+    elif story_type == "couple_story":
+        partner = next((p for p in char.relationships if p.relation in ["Flört", "Sevgili", "Nişanlı", "Eş"] and p.is_alive), None)
+        if not partner:
+            return {"success": False, "message": "Çift story'si paylaşmak için aktif bir flörtün, sevgilin veya eşin olmalı."}
+        partner.relationship_level = min(100, partner.relationship_level + 18)
+        partner.loyalty = min(100, partner.loyalty + 10)
+        char.happiness = min(100, char.happiness + 14)
+        partner.memories.append("Sosyal medyada baş başa romantik fotoğrafınızı paylaştın.")
+        partner.chat_history.append({"sender": "them", "text": "Bizi paylaştığın story çok tatlı olmuş aşkım, herkese ilan ettik! 🥰❤️"})
+        msg = f"💑💖 {partner.name} ile romantik bir çift story'si paylaştın! Nazardan korunmak için 🧿 koydunuz. (İlişki +18, Sadakat +10)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🧿"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz story türü."}
+
+# ----------------- PAKET 3 (YENİ): DETAYLI ASKERLİK, BEDELLİ & KIŞLA SİSTEMİ -----------------
+
+def do_military_service(char: Character, service_type: str) -> Dict[str, Any]:
+    """Bedelli Askerlik, 6 Ay Erbaş Kışla Görevi veya 12 Ay Yedek Subay (Asteğmen)."""
+    if char.age < 18:
+        return {"success": False, "message": "Askerlik şubesine başvurmak için en az 18 yaşında olmalısın."}
+    if "Terhis" in char.military_status:
+        return {"success": False, "message": f"Askerlik görevini zaten tamamladın ({char.military_status})!"}
+
+    if service_type == "bedelli":
+        cost = 180000
+        if char.money < cost:
+            return {"success": False, "message": f"Bedelli askerlik ücreti için {cost:,} TL gerekli."}
+        char.money -= cost
+        char.military_status = "Terhis (Bedelli)"
+        char.happiness = min(100, char.happiness + 15)
+        if "military_vet" not in char.achievements:
+            char.achievements.append("military_vet")
+        msg = f"🪖💳 Bedelli askerlik ücretini ({cost:,} TL) yatırıp 28 günlük temel kışla eğitimini tamamladın ve tezkereni aldın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🪖"))
+        return {"success": True, "message": msg}
+
+    elif service_type == "erbas":
+        char.military_status = "Terhis (Çavuş)"
+        char.health = min(100, char.health + 12)
+        char.skills["athletics"] = min(100, char.skills.get("athletics", 15) + 15)
+        char.skills["martial_arts"] = min(100, char.skills.get("martial_arts", 5) + 12)
+        if "military_vet" not in char.achievements:
+            char.achievements.append("military_vet")
+
+        # Kışladan ömürlük asker arkadaşı (Tertip) kazan!
+        tertip_name = f"{random.choice(FIRST_NAMES_MALE)} {random.choice(LAST_NAMES)}"
+        tertip = Person(
+            id=f"tertip_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=tertip_name,
+            relation="Arkadaş",
+            gender="Erkek",
+            age=char.age,
+            relationship_level=95,
+            job="Asker Arkadaşı (Tertip)",
+            personality="Sadık & Aileci",
+            zodiac=random.choice(ZODIAC_SIGNS),
+            loyalty=98,
+            interests=random.sample(INTERESTS_POOL, 2),
+            memories=["Askerde aynı koğuşta şafak sayıp nöbet tuttunuz."]
+        )
+        char.relationships.append(tertip)
+        msg = f"🪖🇹🇷 ŞAFAK DOĞAN GÜNEŞ! 6 aylık kışla görevini Çavuş olarak tamamlayıp terhis oldun! Koğuş arkadaşı {tertip_name} ile ömürlük dost oldun! (Sağlık +12, Atletizm +15)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🪖"))
+        return {"success": True, "message": msg}
+
+    elif service_type == "yedek_subay":
+        if char.education_level != "Üniversite":
+            return {"success": False, "message": "Yedek Subay (Asteğmen) olmak için Üniversite mezunu olmalısın!"}
+        pay = 380000
+        char.money += pay
+        char.military_status = "Terhis (Asteğmen)"
+        char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + 15)
+        char.karma = min(100, char.karma + 15)
+        if "military_vet" not in char.achievements:
+            char.achievements.append("military_vet")
+        msg = f"⭐🪖 Yedek Subay (Asteğmen) olarak vatan görevini üstün başarıyla tamamladın! Görev süresince +{pay:,} TL subay maaşı aldın! (Hitabet +15)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="⭐"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz askerlik seçeneği."}
+
+# ----------------- PAKET 4 (YENİ): YKS / KPSS SINAVI & KYK YURDU / ÖĞRENCİ EVİ -----------------
+
+def take_national_exam(char: Character, exam_type: str, ans1: int = 0, ans2: int = 1) -> Dict[str, Any]:
+    """İnteraktif YKS (Burs & Üniversite) ve KPSS (Devlet Memurluğu / Kaymakamlık Ataması) Sınavı."""
+    if char.age < 17:
+        return {"success": False, "message": "Ulusal sınavlara (YKS / KPSS) girmek için en az 17 yaşında olmalısın."}
+
+    questions = EXAM_QUESTIONS.get(exam_type, [])
+    correct_count = 0
+    if len(questions) >= 2:
+        if int(ans1) == questions[0]["correct"]:
+            correct_count += 1
+        if int(ans2) == questions[1]["correct"]:
+            correct_count += 1
+
+    if exam_type == "yks":
+        score = min(500, 260 + int(char.smarts * 1.4) + (correct_count * 55))
+        char.yks_score = score
+        char.smarts = min(100, char.smarts + 10)
+        if score >= 410:
+            char.scholarship_annual = 45000
+            char.happiness = min(100, char.happiness + 25)
+            msg = f"🎓🏆 YKS TÜRKİYE DERECESİ! Sınavdan {score} puan aldın ({correct_count}/2 Doğru)! Yıllık 45.000 TL Başarı & KYK Bursu kazandın! (Zeka +10)"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="🎓"))
+            return {"success": True, "score": score, "message": msg}
+        else:
+            msg = f"📝 YKS Sınavı tamamlandı! Puanın: {score} ({correct_count}/2 Doğru). Artık istediğin üniversite bölümüne başvurabilirsin!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="📝"))
+            return {"success": True, "score": score, "message": msg}
+
+    elif exam_type == "kpss":
+        score = min(100, 52 + int(char.smarts * 0.28) + (correct_count * 12))
+        char.kpss_score = score
+        if score >= 80:
+            gov_title = "🏛️ Devlet Başmüfettişi / Kaymakam" if char.education_level == "Üniversite" else "📋 Kadrolu Devlet Memuru"
+            gov_sal = 980000 if char.education_level == "Üniversite" else 640000
+            char.current_job = Job(
+                id="gov_appointed",
+                title=gov_title,
+                category="Kamu",
+                salary=gov_sal,
+                required_education=char.education_level,
+                required_smarts=60,
+                performance=90
+            )
+            char.happiness = min(100, char.happiness + 28)
+            if "civil_servant" not in char.achievements:
+                char.achievements.append("civil_servant")
+            msg = f"🎉📋 KPSS ATAMA MÜJDESİ! KPSS'den {score} puan alarak '{gov_title}' kadrosuna (Maaş: {gov_sal:,} TL/yıl) resmen atandın!"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="📋"))
+            return {"success": True, "score": score, "message": msg}
+        else:
+            return {"success": False, "score": score, "message": f"📝 KPSS Puanın: {score}. Kadrolu atama taban puanı (80) altında kaldın, sorulara dikkat edip tekrar deneyebilirsin!"}
+
+    return {"success": False, "message": "Geçersiz sınav türü."}
+
+def change_student_housing(char: Character, housing_mode: str) -> Dict[str, Any]:
+    """KYK Yurdu veya Arkadaşlarla Öğrenci Evi yaşam seçimi."""
+    if char.age < 17:
+        return {"success": False, "message": "Yurt veya öğrenci evine çıkmak için en az 17 yaşında olmalısın."}
+
+    if housing_mode == "kyk_dorm":
+        char.housing_type = "🛏️ KYK Öğrenci Yurdu"
+        char.happiness = min(100, char.happiness + 10)
+        # Oda arkadaşı ekle
+        rm_gender = char.gender
+        pool = FIRST_NAMES_MALE if rm_gender == "Erkek" else FIRST_NAMES_FEMALE
+        rm_name = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+        roommate = Person(
+            id=f"roommate_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=rm_name,
+            relation="Arkadaş",
+            gender=rm_gender,
+            age=char.age,
+            relationship_level=85,
+            job="Yurt Oda Arkadaşı",
+            personality=random.choice([p["id"] for p in PERSONALITIES]),
+            zodiac=random.choice(ZODIAC_SIGNS),
+            interests=random.sample(INTERESTS_POOL, 2),
+            memories=["KYK yurdunda ranzada sabaha kadar sınavlara çalıştınız."]
+        )
+        char.relationships.append(roommate)
+        msg = f"🛏️ KYK Öğrenci Yurduna yerleştin! Yıllık yaşam masrafların düştü ve oda arkadaşın {rm_name} ile sıkı dost oldun!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="🛏️"))
+        return {"success": True, "message": msg}
+
+    elif housing_mode == "student_house":
+        cost = 15000
+        if char.money < cost:
+            return {"success": False, "message": f"Öğrenci evi depozito ve ikinci el eşya masrafı için {cost:,} TL gerekli."}
+        char.money -= cost
+        char.housing_type = "🍜 Öğrenci Evi"
+        char.happiness = min(100, char.happiness + 20)
+        char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + 8)
+        rm_gender = random.choice(["Erkek", "Kadın"])
+        pool = FIRST_NAMES_MALE if rm_gender == "Erkek" else FIRST_NAMES_FEMALE
+        rm_name = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+        housemate = Person(
+            id=f"housemate_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=rm_name,
+            relation="Arkadaş",
+            gender=rm_gender,
+            age=char.age,
+            relationship_level=88,
+            job="Ev Arkadaşı",
+            personality=random.choice([p["id"] for p in PERSONALITIES]),
+            zodiac=random.choice(ZODIAC_SIGNS),
+            interests=random.sample(INTERESTS_POOL, 2),
+            memories=["Öğrenci evinde makarna yapıp vize/final haftalarını beraber atlattınız."]
+        )
+        char.relationships.append(housemate)
+        msg = f"🍜🏠 Arkadaşın {rm_name} ile Öğrenci Evine çıktınız! Özgürlük, gitar geceleri ve dostluk! (Mutluluk +20, Karizma +8)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="school", icon="🍜"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz barınma seçimi."}
+
+# ----------------- PAKET 10 (YENİ): GARDIROP, TARZ & KOMBİN SİSTEMİ -----------------
+
+def change_outfit_style(char: Character, style_id: str) -> Dict[str, Any]:
+    """Karakterin giyim kuşam ve kombin tarzını değiştirir, görünüş ve karizmayı artırır."""
+    style = next((s for s in OUTFIT_STYLES if s["id"] == style_id), None)
+    if not style:
+        return {"success": False, "message": "Kombin tarzı bulunamadı."}
+    if char.money < style["cost"]:
+        return {"success": False, "message": f"'{style['name']}' kombini için {style['cost']:,} TL gerekli."}
+
+    char.money -= style["cost"]
+    char.outfit_style = style["name"]
+    char.looks = min(100, char.looks + style["looks_boost"])
+    char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + style["charisma_boost"])
+    char.happiness = min(100, char.happiness + 12)
+    if style["cost"] >= 35000 and "fashion_icon" not in char.achievements:
+        char.achievements.append("fashion_icon")
+
+    msg = f"👔✨ Yeni Tarzın: '{style['name']}'! Aynadaki görüntüne hayran kaldın! (Görünüş +{style['looks_boost']}, Hitabet +{style['charisma_boost']})"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="👔"))
+    return {"success": True, "message": msg}
+
+# ----------------- PAKET 11 (YENİ): EVLİLİK TV ŞOVU, OFİS AŞKI & ENTRİKA -----------------
+
+def do_drama_intrigue_action(char: Character, sub_action: str) -> Dict[str, Any]:
+    """Kısmet Evi TV Evlilik Programı ve Plazalarda Ofis/Patron Aşkı."""
+    if char.age < 18:
+        return {"success": False, "message": "Bu etkinlik için en az 18 yaşında olmalısın."}
+
+    if sub_action == "tv_dating_show":
+        prize = random.randint(180000, 450000)
+        char.money += prize
+        char.fame = min(100, char.fame + 24)
+        char.happiness = min(100, char.happiness + 25)
+        if "tv_star_love" not in char.achievements:
+            char.achievements.append("tv_star_love")
+
+        target_gender = "Kadın" if char.gender == "Erkek" else "Erkek"
+        pool = FIRST_NAMES_FEMALE if target_gender == "Kadın" else FIRST_NAMES_MALE
+        star_name = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+        p_spec = random.choice(PERSONALITIES)
+
+        tv_partner = Person(
+            id=f"tvlove_{len(char.relationships)+1}_{random.randint(10,99)}",
+            name=star_name,
+            relation="Sevgili",
+            gender=target_gender,
+            age=max(19, char.age + random.randint(-2, 2)),
+            relationship_level=92,
+            job="TV Yıldızı & Model",
+            personality=p_spec["id"],
+            zodiac=random.choice(ZODIAC_SIGNS),
+            looks=random.randint(85, 100),
+            smarts=random.randint(65, 95),
+            loyalty=random.randint(70, 95),
+            wealth=random.randint(75, 98),
+            interests=random.sample(INTERESTS_POOL, 3),
+            love_language=random.choice(LOVE_LANGUAGES),
+            memories=["'Kısmet Evi' TV yarışmasında halk oylamasıyla şampiyon olup aşkınızı ilan ettiniz!"]
+        )
+        char.relationships.append(tv_partner)
+        char.dating_partner_id = tv_partner.id
+        msg = f"📺💘 KISMET EVİ ŞAMPİYONU! Katıldığın izdivaç/flört TV programında hem {star_name} ile büyük aşkı buldun hem de halk oylamasıyla +{prize:,} TL büyük ödülü kazandın! (Şöhret +24)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="📺"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "office_romance":
+        if not char.current_job:
+            return {"success": False, "message": "Ofis aşkı yaşamak için önce tam zamanlı bir işte çalışıyor olmalısın!"}
+        target_gender = "Kadın" if char.gender == "Erkek" else "Erkek"
+        pool = FIRST_NAMES_FEMALE if target_gender == "Kadın" else FIRST_NAMES_MALE
+        boss_name = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+
+        if random.random() < 0.78:
+            char.current_job.salary = int(char.current_job.salary * 1.28)
+            char.current_job.level += 1
+            office_lover = Person(
+                id=f"office_{len(char.relationships)+1}_{random.randint(10,99)}",
+                name=boss_name,
+                relation="Sevgili",
+                gender=target_gender,
+                age=max(22, char.age + random.randint(-2, 5)),
+                relationship_level=88,
+                job=f"Üst Düzey Yönetici ({char.current_job.category})",
+                personality="Hırslı & Kariyerist",
+                zodiac=random.choice(ZODIAC_SIGNS),
+                looks=random.randint(78, 98),
+                smarts=random.randint(80, 98),
+                wealth=random.randint(82, 98),
+                interests=random.sample(INTERESTS_POOL, 2),
+                love_language="Kaliteli Zaman",
+                memories=["Şirket toplantısı sonrası kahve içerken başlayan tutkulu ofis aşkınız!"]
+            )
+            char.relationships.append(office_lover)
+            char.dating_partner_id = office_lover.id
+            msg = f"💼❤️‍🔥 PLAZA & OFİS AŞKI! Şirketteki üst düzey yönetici {boss_name} ile aranızda tutkulu bir aşk başladı! Sana özel %28 zam ve terfi onayladı! (Yeni Maaş: {char.current_job.salary:,} TL)"
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💼"))
+            return {"success": True, "message": msg}
+        else:
+            char.current_job.performance = max(20, char.current_job.performance - 15)
+            return {"success": False, "message": "😬 İş yerinde flört girişimin İK (İnsan Kaynakları) dedikodularına takıldı! Performans puanın biraz düştü."}
+
+    return {"success": False, "message": "Geçersiz entrika eylemi."}
+
+# ----------------- PAKET 14 (YENİ): ROCK GRUBU / RAP KOLEKTİFİ & STADYUM TURNESİ -----------------
+
+def create_music_band(char: Character, band_name: str, genre_id: str) -> Dict[str, Any]:
+    """Kendi müzik grubunu veya rap kolektifini kurma."""
+    if char.age < 15:
+        return {"success": False, "message": "Müzik grubu kurmak için en az 15 yaşında olmalısın."}
+    genre = next((g for g in BAND_GENRES if g["id"] == genre_id), BAND_GENRES[0])
+    if char.money < genre["cost"]:
+        return {"success": False, "message": f"Stüdyo ekipmanları ve grup kurulumu için {genre['cost']:,} TL gerekli."}
+
+    char.money -= genre["cost"]
+    clean_name = band_name.strip() if band_name and band_name.strip() else f"Grup {char.last_name} & Dostlar"
+    char.band = MusicBand(
+        name=clean_name,
+        genre=genre["name"],
+        albums_count=0,
+        chemistry=85,
+        fans=2500,
+        annual_royalties=45000
+    )
+    char.skills["music"] = min(100, char.skills.get("music", 10) + 12)
+    char.happiness = min(100, char.happiness + 20)
+    msg = f"🎸🎤 '{clean_name}' ({genre['name']}) resmen kuruldu! Garajda ilk provalara başladınız!"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🎸"))
+    return {"success": True, "message": msg}
+
+def do_band_action(char: Character, sub_action: str) -> Dict[str, Any]:
+    """Müzik grubuyla prova, albüm çıkarma, stadyum turnesi ve grup içi ego yönetimi."""
+    if not char.band:
+        return {"success": False, "message": "Önce bir müzik grubu veya rap kolektifi kurmalısın!"}
+
+    b = char.band
+    if sub_action == "rehearse":
+        b.chemistry = min(100, b.chemistry + 15)
+        char.skills["music"] = min(100, char.skills.get("music", 10) + 10)
+        return {"success": True, "message": f"🎶 '{b.name}' ile 8 saatlik stüdyo provası yaptınız! (Grup Uyumu: %{b.chemistry}, Müzik: %{char.skills['music']})"}
+
+    elif sub_action == "record_album":
+        b.albums_count += 1
+        earned = random.randint(250000, 950000) + (b.chemistry * 3000)
+        new_fans = random.randint(25000, 90000)
+        b.fans += new_fans
+        b.annual_royalties += 180000
+        char.money += earned
+        char.fame = min(100, char.fame + 16)
+        msg = f"💿🔥 '{b.name}' {b.albums_count}. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+{earned:,} TL Telif, +{new_fans:,} Hayran)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="💿"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "stadium_tour":
+        tour_income = random.randint(650000, 2400000) + int(b.fans * 4)
+        char.money += tour_income
+        b.fans += 65000
+        char.fame = min(100, char.fame + 20)
+        char.happiness = min(100, char.happiness + 25)
+        if "rockstar" not in char.achievements:
+            char.achievements.append("rockstar")
+        msg = f"🏟️🎸 DEV STADYUM TURNESİ! '{b.name}' ile 50.000 kişilik kapalı gişe stadyum konseri verdiniz! Bilet ve sponsorluktan +{tour_income:,} TL kazandın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏟️"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "resolve_drama":
+        b.chemistry = 100
+        char.karma = min(100, char.karma + 8)
+        return {"success": True, "message": f"🤝 Grup üyeleriyle akşam yemeğinde tüm ego tartışmalarını çözdün! '{b.name}' uyumu %100!"}
+
+    return {"success": False, "message": "Geçersiz grup eylemi."}
+
+# ----------------- PAKET 15 (YENİ): BANKA KREDİSİ (MORTGAGE) & İSVİÇRE OFFSHORE HESABI -----------------
+
+def do_bank_offshore_action(char: Character, sub_action: str, amount: int = 250000) -> Dict[str, Any]:
+    """Banka kredisi çekme, borç kapatma ve İsviçre gizli Offshore hesabına para aktarma/çekme."""
+    if char.age < 18:
+        return {"success": False, "message": "Bankacılık ve Offshore işlemleri için en az 18 yaşında olmalısın."}
+
+    if sub_action == "take_loan":
+        if char.debt >= 10000000:
+            return {"success": False, "message": "Banka kredi limitin doldu! Önce mevcut kredi borcunun bir kısmını kapatmalısın."}
+        char.money += amount
+        repay_total = int(amount * 1.15)
+        char.debt += repay_total
+        msg = f"🏦💳 Bankadan +{amount:,} TL kredi çektin ve anında hesabına geçti! (Faiziyle toplam geri ödeme borcu: {char.debt:,} TL)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🏦"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "pay_debt":
+        if char.debt <= 0:
+            return {"success": False, "message": "Bankaya herhangi bir kredi borcun bulunmuyor!"}
+        if char.money <= 0:
+            return {"success": False, "message": "Borç ödemek için nakit paran yok."}
+        pay = min(char.money, char.debt, amount if amount > 0 else char.debt)
+        char.money -= pay
+        char.debt -= pay
+        return {"success": True, "message": f"🏦✅ Bankaya {pay:,} TL kredi borcu ödedin! Kalan borç: {char.debt:,} TL."}
+
+    elif sub_action == "deposit_offshore":
+        if char.money < amount or amount <= 0:
+            return {"success": False, "message": f"Offshore hesabına aktarmak için en az {amount:,} TL nakit paran olmalı."}
+        char.money -= amount
+        char.offshore_balance += amount
+        msg = f"🇨🇭🔒 İsviçre Gizli Offshore Hesabına {amount:,} TL aktardın! (Boşanma nafakasından ve hacizden %100 muaf, yıllık %8 döviz getirili • Toplam Offshore: {char.offshore_balance:,} TL)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🇨🇭"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "withdraw_offshore":
+        if char.offshore_balance <= 0:
+            return {"success": False, "message": "Offshore hesabında bakiye bulunmuyor."}
+        w_amt = char.offshore_balance if amount <= 0 else min(char.offshore_balance, amount)
+        char.offshore_balance -= w_amt
+        char.money += w_amt
+        return {"success": True, "message": f"🇨🇭💸 İsviçre Offshore hesabından {w_amt:,} TL'yi Türkiye'deki nakit hesabına geri çektin!"}
+
+    return {"success": False, "message": "Geçersiz banka işlemi."}
+
+# ----------------- PAKET 18 (YENİ): ÇİFTLER ARASI ORTAK GİRİŞİM & İNTERAKTİF BOŞANMA MAHKEMESİ -----------------
+
+def do_couple_business(char: Character, person_id: str, biz_id: str) -> Dict[str, Any]:
+    """Partnerle (Sevgili/Nişanlı/Eş) ortak kafe, moda atölyesi veya e-ticaret markası açma."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person or person.relation not in ["Sevgili", "Nişanlı", "Eş"]:
+        return {"success": False, "message": "Ortak girişim kurmak için bir sevgilin, nişanlın veya eşin olmalı."}
+    biz = next((b for b in COUPLE_BUSINESS_TYPES if b["id"] == biz_id), COUPLE_BUSINESS_TYPES[0])
+
+    # Partnerin maddi durumuna göre sermayenin %30'unu o karşılar
+    partner_share = int(biz["cost"] * 0.30) if person.wealth >= 45 else 0
+    my_cost = biz["cost"] - partner_share
+    if char.money < my_cost:
+        return {"success": False, "message": f"'{biz['name']}' ortaklığı için senin payına düşen {my_cost:,} TL nakit gerekli."}
+
+    char.money -= my_cost
+    person.joint_venture_name = biz["name"]
+    person.joint_venture_profit = biz["annual_profit"]
+    person.relationship_level = min(100, person.relationship_level + 20)
+    person.loyalty = min(100, person.loyalty + 10)
+    char.happiness = min(100, char.happiness + 18)
+    person.memories.append(f"Birlikte '{biz['name']}' ortak girişimini kurdunuz.")
+    msg = f"🤝🏪 ÇİFT ORTAKLIĞI! {person.name} ile birlikte '{biz['name']}' açtınız! (Partnerin sermayeye {partner_share:,} TL kattı • Yıllık Ortak Gelir: +{biz['annual_profit']:,} TL/yıl)"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🏪"))
+    return {"success": True, "message": msg}
+
+def do_divorce_court(char: Character, person_id: str, lawyer_id: str = "baro") -> Dict[str, Any]:
+    """İnteraktif Aile & Boşanma Mahkemesi: Avukat seçimi, deliller, tazminat ve nafaka kararı."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person or person.relation not in ["Eş", "Nişanlı", "Sevgili"]:
+        return {"success": False, "message": "Boşanma / ayrılık mahkemesi için aktif bir eş veya partner seçmelisin."}
+
+    lawyer = next((l for l in DIVORCE_LAWYERS if l["id"] == lawyer_id), DIVORCE_LAWYERS[0])
+    if char.money < lawyer["cost"]:
+        return {"success": False, "message": f"'{lawyer['name']}' vekalet ücreti için {lawyer['cost']:,} TL gerekli."}
+
+    char.money -= lawyer["cost"]
+    person.relation = "Eski Eş" if person.relation == "Eş" else "Eski Sevgili"
+    person.cohabiting = False
+    person.joint_venture_name = None
+    person.joint_venture_profit = 0
+    if char.spouse_id == person.id:
+        char.spouse_id = None
+    if char.dating_partner_id == person.id:
+        char.dating_partner_id = None
+
+    # Mahkeme kazanma puanı (Avukat + Evlilik Sözleşmesi/Dedektif Kanıtı + Hitabet/Zeka)
+    court_score = lawyer["win_bonus"] + (char.smarts / 300.0) + (char.skills.get("charisma", 20) / 350.0)
+    if person.has_prenup or person.loyalty < 55:
+        court_score += 0.55
+
+    if court_score >= 0.72:
+        comp = random.randint(120000, 380000)
+        char.money += comp
+        char.alimony_annual = 0
+        person.relationship_level = 10
+        person.memories.append("Boşanma davasını kazandın ve ondan tazminat aldın.")
+        msg = f"⚖️🏆 MAHKEME ZAFERİ! '{lawyer['name']}' savunması ve sunduğun delillerle hakimi ikna ettin! Tek kuruş nafaka ödemeden boşandın ve karşı taraftan +{comp:,} TL manevi tazminat kazandın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="⚖️"))
+        return {"success": True, "message": msg}
+    elif court_score >= 0.45:
+        settlement = max(0, int(char.money * 0.15))
+        char.money -= settlement
+        char.alimony_annual = 0
+        person.relationship_level = 25
+        msg = f"⚖️🤝 ANLAŞMALI BOŞANMA: Mahkemede '{lawyer['name']}' aracılığıyla uzlaştınız. {settlement:,} TL protokol ödemesiyle nafakasız ayrıldınız."
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="⚖️"))
+        return {"success": True, "message": msg}
+    else:
+        loss = max(0, int(char.money * 0.42))
+        char.money -= loss
+        char.alimony_annual = max(45000, int(loss * 0.15) + 45000)
+        char.happiness = max(5, char.happiness - 25)
+        person.relationship_level = 5
+        msg = f"⚖️💸 AĞIR MAHKEME KARARI! Hakim seni kusurlu buldu! Nakit servetinin %42'sini ({loss:,} TL) tazminat ödedin ve eski eşine yıllık {char.alimony_annual:,} TL nafaka bağlandı! (Offshore hesabın korundu)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💸"))
+        return {"success": True, "message": msg}
+
+# ----------------- PAKET 19 (YENİ): PROFESYONEL FUTBOLCU / BASKETBOLCU KARİYERİ & KULÜP BAŞKANLIĞI -----------------
+
+def do_pro_sports_action(char: Character, sub_action: str, club_id: str = "anadolu_fk") -> Dict[str, Any]:
+    """Altyapı seçmeleri, Süper Lig/Avrupa transferi, Şampiyonluk maçı (Ballon d'Or) ve Kulüp Başkanlık Sistemi."""
+    if char.age < 14:
+        return {"success": False, "message": "Profesyonel spor kariyeri için en az 14 yaşında olmalısın."}
+
+    ath = char.skills.get("athletics", 15)
+
+    if sub_action == "join_academy":
+        # Gerçekçi Zorluk: Kondisyon & Sağlık kontrolü
+        char.skills["athletics"] = min(100, ath + 18)
+        char.health = min(100, char.health + 8)
+        if char.skills["athletics"] < 32 or char.health < 50:
+            return {"success": False, "message": f"⚽😓 Altyapı seçmelerinde kondisyonun yetersiz kaldı (Atletizm: %{char.skills['athletics']}). Biraz daha spor yapıp tekrar dene!"}
+        char.sports_career = ProSportsCareer(
+            sport="Futbol",
+            team_name=f"{char.city} Gençlik Akademisi",
+            league_tier="Altyapı Akademisi",
+            salary=240000
+        )
+        msg = f"⚽🏃 ALTYAPIYA SEÇİLDİN! '{char.city} Gençlik Akademisi' seçmelerinde yeteneğinle göz doldurdun ve profesyonel aday sözleşmesi imzaladın! (Yıllık: 240.000 TL, Atletizm: %{char.skills['athletics']})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="⚽"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "sign_club":
+        club = next((c for c in SPORTS_CLUBS if c["id"] == club_id), SPORTS_CLUBS[0])
+        if ath < club["req_ath"]:
+            return {
+                "success": False,
+                "message": f"🏟️❌ '{club['name']}' scout ekibi transferi veto etti! Gereken Atletizm/Kondisyon: %{club['req_ath']} (Senin: %{ath}). Spor salonunda veya altyapıda kendini geliştirmelisin!"
+            }
+        signing_bonus = int(club["salary"] * 0.25)
+        char.money += signing_bonus
+        char.sports_career = ProSportsCareer(
+            sport=club["sport"],
+            team_name=club["name"],
+            league_tier=club["tier"],
+            salary=club["salary"],
+            goals_or_points=char.sports_career.goals_or_points if char.sports_career else 0,
+            trophies=char.sports_career.trophies if char.sports_career else 0,
+            national_caps=char.sports_career.national_caps if char.sports_career else 0
+        )
+        char.fame = min(100, char.fame + 22)
+        char.happiness = min(100, char.happiness + 25)
+        msg = f"✍️🏟️ DEV TRANSFER! '{club['name']}' ({club['tier']}) ile yıllık {club['salary']:,} TL maaş + {signing_bonus:,} TL imza parasıyla sözleşme imzaladın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="⚽"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "play_season_match":
+        if not char.sports_career:
+            return {"success": False, "message": "Maça çıkmak için önce altyapıya veya bir spor kulübüne katılmalısın!"}
+        sc = char.sports_career
+        # Gerçekçi Sakatlık Riski (%15)
+        if random.random() < 0.15 and char.health < 75:
+            char.health = max(15, char.health - 18)
+            return {"success": False, "message": f"🚑⚠️ Дерbi maçında sert bir müdahaleyle sakatlandın! Doktorlar dinlenmeni önerdi (Sağlık -18)."}
+
+        scored = random.randint(12, 32)
+        sc.goals_or_points += scored
+        sc.trophies += 1
+        sc.national_caps += 5
+        bonus = random.randint(350000, 1800000)
+        char.money += bonus
+        char.fame = min(100, char.fame + 18)
+        char.skills["athletics"] = min(100, ath + 8)
+        if "ballon_dor" not in char.achievements:
+            char.achievements.append("ballon_dor")
+        msg = f"🏆⚽ ŞAMPİYONLUK & ALTIN TOP! '{sc.team_name}' formasıyla sezonda {scored} gol/sayı katkısı verdin, 90. dakikada kupayı getiren golü atıp +{bonus:,} TL şampiyonluk primi ve Milli Takım daveti kazandın!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏆"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "buy_sports_club":
+        cost = 20000000
+        if char.money < cost:
+            return {"success": False, "message": f"Bir Süper Lig kulübünün çoğunluk hisselerini satın alıp Kulüp Başkanı olmak için {cost:,} TL gerekli."}
+        char.money -= cost
+        club_name = f"{char.city} SK"
+        char.sports_career = ProSportsCareer(
+            sport="Futbol Kulüp Başkanlığı",
+            team_name=club_name,
+            league_tier="Kulüp Başkanı & Sahibi",
+            salary=3200000,
+            owns_club=True,
+            club_valuation=cost
+        )
+        char.fame = min(100, char.fame + 30)
+        char.happiness = 100
+        msg = f"👑🏟️ KULÜP BAŞKANI OLDUN! 20.000.000 TL ödeyerek '{club_name}' kulübünü satın aldın! Artık protokol tribününde oturuyor ve yıldız transferleri yönetiyorsun (Yıllık Yayın/Gişe Geliri: +3.200.000 TL)!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="👑"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz spor kariyeri eylemi."}
+
+
+
+
