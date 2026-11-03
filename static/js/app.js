@@ -1112,6 +1112,7 @@ function openPersonModal(personId) {
         const actions = [];
 
         if (isPartner) {
+            actions.push({ id: "modal_intimacy", text: "🔥 Birlikte Ol & Seviş (Yatak Odası & İntimite)", primary: true });
             actions.push({ id: "modal_detailed_kiss", text: "💋 Romantik Öp & Yakınlaş (Öpüşme Stili Seç)", primary: true });
             actions.push({ id: "modal_detailed_date", text: "🌹 Çok Aşamalı Özel Randevuya Çık (Mekan & Diyalog)", primary: true });
             actions.push({ id: "modal_detailed_fight", text: "💥 Şiddetli Kavga Et & Hesap Sor (Rest Çek)" });
@@ -1169,6 +1170,7 @@ function openPersonModal(personId) {
             const breakupLabel = person.relation === "Eş" ? "💔 Hızlı Boşanma" : (person.relation === "Nişanlı" ? "💔 Nişanı At" : "💔 Ayrıl");
             actions.push({ id: "breakup", text: breakupLabel });
         } else if (isEx) {
+            actions.push({ id: "modal_intimacy", text: "🔥 Eski Sevgiliyle Yatak Odası Yakınlaşması (Aşkı Alevlendir)" });
             actions.push({ id: "text_ex", text: "📱 Gece Yarısı 'Seni Özledim' Mesajı At & Barışmayı Dene", primary: true });
             actions.push({ id: "modal_handle_ex_text", text: "📱 Gece 02:30 'Uyudun mu?' Krizini Yönet" });
             actions.push({ id: "modal_detailed_kiss", text: "💋 Dudaktan Ateşli Öp & Aşkı Alevlendir" });
@@ -1285,6 +1287,11 @@ async function handlePersonAction(actId) {
     if (actId === "consolidated_chat") {
         await performActivity("consolidated_chat", { person_id: pid });
         closeModal("personModal");
+        return;
+    }
+    if (actId === "modal_intimacy" || actId === "intimacy") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openIntimacyModal(pid);
         return;
     }
     if (actId === "modal_detailed_kiss") {
@@ -3748,6 +3755,7 @@ let dateSimState = {
     greetingId: "passionate_hug",
     dialogueId: "topic_destiny",
     dialogueChoiceId: null,
+    tactileId: null,
     midEventId: "live_music_slow",
     midChoiceId: null,
     finaleId: null,
@@ -4030,6 +4038,85 @@ function chooseDateDialogueOption(optionId) {
                     "${opt.partner_reply}"
                 </div>
             </div>
+            <button type="button" class="btn-primary" style="width:100%; padding:11px;" onclick="renderDateSimTactile()">
+                Devam Et (Tensel Yakınlaşma & Beden Dili) ➔
+            </button>
+        `;
+    }
+}
+
+function renderDateSimTactile() {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+    const tactiles = (marketData && marketData.date_tactiles) || [];
+
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">💫 Tensel Çekim & Beden Dili</span>
+                <span class="card-badge badge-green">❤️ Kimya: %${dateSimState.chemistry}</span>
+            </div>
+            <div class="stat-progress-bg" style="height:7px; margin-top:8px;">
+                <div class="stat-progress-bar" style="width:${dateSimState.chemistry}%; background:linear-gradient(90deg, #ec4899, #f43f5e);"></div>
+            </div>
+        </div>
+
+        <div style="background:rgba(236,72,153,0.08); border-left:3px solid #ec4899; border-radius:8px; padding:12px; margin-bottom:14px;">
+            <div style="font-size:11px; font-weight:700; color:#f472b6; text-transform:uppercase;">Tensel Gerilim Yükseliyor</div>
+            <div style="font-size:13.5px; font-weight:500; color:#e2e8f0; font-style:italic; margin-top:4px;">
+                Diyalog ilerledikçe aranızdaki elektrik gözle görülür bir boyuta ulaştı. ${person?.name || 'Partnerin'} gözlerini gözlerinden kaçıramıyor. Aranızdaki dokunsal bağı ve tutkuyu başlatmak için nasıl bir temas seçeceksin?
+            </div>
+        </div>
+
+        <div class="person-action-group-title">Dokunsal Hamleni Seç</div>
+        <div id="dateSimTactileOptions" style="display:flex; flex-direction:column; gap:8px;">
+            ${tactiles.map(t => `
+                <button type="button" class="btn-choice" style="text-align:left; padding:11px 13px;" onclick="chooseDateTactileOption('${t.id}')">
+                    <div style="font-weight:700; color:#f8fafc; font-size:13.5px;">${t.name}</div>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">${t.short_desc} • <span style="color:#f472b6;">${t.style}</span></div>
+                </button>
+            `).join("")}
+        </div>
+        <div id="dateSimTactileFeedback" style="display:none; margin-top:12px;"></div>
+    `;
+}
+
+function chooseDateTactileOption(optionId) {
+    sound.playClick();
+    dateSimState.tactileId = optionId;
+    const tactiles = (marketData && marketData.date_tactiles) || [];
+    const t = tactiles.find(item => item.id === optionId) || tactiles[0];
+    const person = (gameState.relationships || []).find(p => p.id === dateSimState.personId);
+
+    let delta = t.chemistry_boost || 20;
+    if (person && ["Romantik", "Entelektüel"].includes(person.personality) && ["hair_tuck", "chin_lift_gaze"].includes(t.id)) {
+        delta += 6;
+    } else if (person && ["Kıskanç & Tutkulu", "Çapkın & Özgür Ruhlu"].includes(person.personality) && ["whisper_ear_neck", "thigh_touch_secret"].includes(t.id)) {
+        delta += 8;
+    }
+
+    dateSimState.chemistry = Math.min(100, dateSimState.chemistry + delta);
+
+    const optionsContainer = document.getElementById("dateSimTactileOptions");
+    const feedbackBox = document.getElementById("dateSimTactileFeedback");
+
+    if (optionsContainer) optionsContainer.style.display = "none";
+    if (feedbackBox) {
+        feedbackBox.style.display = "block";
+        feedbackBox.innerHTML = `
+            <div class="panel-card" style="border-left:3px solid #ec4899; padding:13px; margin-bottom:12px; background:rgba(236,72,153,0.06);">
+                <div style="font-size:11px; font-weight:700; color:#f472b6; margin-bottom:4px;">
+                    Tensel Uyum Patlaması (+${delta}% Kimya)
+                </div>
+                <div style="font-size:13px; color:#f1f5f9; line-height:1.5;">
+                    ${t.sensory_log}
+                </div>
+                <div style="font-size:12.5px; font-style:italic; color:#cbd5e1; margin-top:6px; border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;">
+                    ${t.partner_reaction}
+                </div>
+            </div>
             <button type="button" class="btn-primary" style="width:100%; padding:11px;" onclick="renderDateSimMidEvent()">
                 Devam Et (Randevu Ortası Sürprizi) ➔
             </button>
@@ -4142,6 +4229,7 @@ async function submitDateSimFinale(finaleId) {
         greeting_id: dateSimState.greetingId,
         dialogue_id: dateSimState.dialogueId,
         dialogue_choice_id: dateSimState.dialogueChoiceId,
+        tactile_id: dateSimState.tactileId || "hand_caress_table",
         mid_event_id: dateSimState.midEventId,
         mid_choice_id: dateSimState.midChoiceId,
         finale_id: dateSimState.finaleId
@@ -4185,6 +4273,7 @@ function renderDateSimScorecard(res) {
                 ${res.outfit_log ? `<div class="memory-item">• ${res.outfit_log}</div>` : ''}
                 ${res.greeting_log ? `<div class="memory-item">• ${res.greeting_log}</div>` : ''}
                 ${res.dialogue_log ? `<div class="memory-item">• "${res.dialogue_log}"</div>` : ''}
+                ${res.tactile_log ? `<div class="memory-item" style="color:#fbcfe8;">• 💫 ${res.tactile_log}</div>` : ''}
                 ${res.mid_log ? `<div class="memory-item">• ${res.mid_log}</div>` : ''}
                 ${res.finale_log ? `<div class="memory-item">• ${res.finale_log}</div>` : ''}
             </div>
@@ -4247,6 +4336,176 @@ async function submitDetailedFightForm(personId) {
         attitude_id: attitudeId
     });
     closeModal("genericModal");
+}
+
+// ----------------- YATAK ODASI, İNTİMİTE & BİRLİKTE OL MOTORU -----------------
+
+function openIntimacyPickerModal() {
+    sound.playClick();
+    const partners = (gameState.relationships || []).filter(p => p.is_alive && ["Sevgili", "Nişanlı", "Eş", "Flört", "Eski Sevgili", "Arkadaş"].includes(p.relation));
+    document.getElementById("genericModalTitle").textContent = "🔥 Yatak Odası & Romantik Yakınlaşma";
+    const body = document.getElementById("genericModalBody");
+
+    if (partners.length === 0) {
+        body.innerHTML = `
+            <div class="panel-card" style="text-align:center; padding:20px;">
+                <div style="font-size:36px; margin-bottom:10px;">💔</div>
+                <div class="card-title" style="margin-bottom:6px;">Yakınlaşacak Partner Yok</div>
+                <p class="card-desc" style="margin-bottom:16px;">
+                    Şu anda birlikte olabileceğin bir sevgilin, flörtün veya partnerin bulunmuyor.
+                    KısmetApp'e girerek yeni biriyle tanışabilir veya gece kulüplerinde kaçamak yapabilirsin!
+                </p>
+                <div style="display:flex; gap:8px; justify-content:center;">
+                    <button type="button" class="btn-primary" onclick="closeModal('genericModal'); openKismetAppModal();">📱 KısmetApp</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('genericModal'); openHookupModal();">🍸 Kaçamak Yap</button>
+                </div>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `
+            <p class="card-desc" style="margin-bottom:12px;">
+                Kiminle baş başa kalıp tutku dolu romantik anlar yaşamak istiyorsun? Partnerini seç, mekanı ve atmosferi belirle:
+            </p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                ${partners.map(p => `
+                    <button type="button" class="btn-choice" style="display:flex; align-items:center; justify-content:space-between; padding:12px;" onclick="closeModal('genericModal'); openIntimacyModal('${p.id}');">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:22px;">${getRelationEmoji(p.relation)}</span>
+                            <div style="text-align:left;">
+                                <div style="font-weight:700; color:var(--text-primary); font-size:14px;">${p.name}</div>
+                                <div style="font-size:12px; color:var(--text-secondary);">${p.relation} • ${p.age} Yaşında • ${p.personality || 'Romantik'}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:12px; font-weight:700; color:var(--accent-pink);">İlişki: %${p.relationship_level}</div>
+                            <span class="status-chip" style="font-size:11px; padding:2px 8px; margin-top:2px; display:inline-block;">Seç 🔥</span>
+                        </div>
+                    </button>
+                `).join("")}
+            </div>
+        `;
+    }
+    openDialogModal("genericModal");
+}
+
+function openIntimacyModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+
+    const venues = (marketData && marketData.intimacy_venues) || [];
+    const moods = (marketData && marketData.intimacy_moods) || [];
+    const protections = (marketData && marketData.intimacy_protections) || [];
+
+    document.getElementById("genericModalTitle").textContent = `🔥 Birlikte Ol & İntimite: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:14px; background:linear-gradient(135deg, rgba(244,63,94,0.12), rgba(168,85,247,0.12)); border:1px solid rgba(244,63,94,0.3);">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                    <h3 style="font-size:15px; font-weight:700; margin:0 0 2px 0; color:#fda4af;">${getRelationEmoji(person.relation)} ${person.name}</h3>
+                    <div style="font-size:12px; color:var(--text-secondary);">${person.relation} • ${person.age} Yaşında • ${person.personality || 'Romantik'}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:11px; color:#fbcfe8;">İlişki Uyumu</div>
+                    <div style="font-size:16px; font-weight:800; color:#fb7185;">%${person.relationship_level}</div>
+                </div>
+            </div>
+        </div>
+
+        <form id="intimacySimForm" onsubmit="event.preventDefault(); submitIntimacyForm('${person.id}');">
+            <div class="person-action-group-title">1. Atmosfer & Mekan Tercihi</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="intimacyVenueSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${venues.map(v => `<option value="${v.id}">${v.name} ${v.cost > 0 ? `(${v.cost.toLocaleString('tr-TR')} ₺)` : '(Ücretsiz)'}</option>`).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">2. Yakınlaşma Tarzı & Tutku Seviyesi</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="intimacyMoodSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${moods.map(m => `<option value="${m.id}">${m.name}</option>`).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">3. Korunma Yöntemi & Niyet</div>
+            <div class="form-group" style="margin-bottom:16px;">
+                <select id="intimacyProtectionSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${protections.map(pr => `<option value="${pr.id}">${pr.name} - [${pr.safety_label}]</option>`).join("")}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background:linear-gradient(135deg, #f43f5e, #e11d48); border:none; font-size:15px; padding:12px; box-shadow:0 4px 15px rgba(244,63,94,0.4);">
+                🔥 Aşkı Yaşa & Başla
+            </button>
+        </form>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitIntimacyForm(personId) {
+    const venueId = document.getElementById("intimacyVenueSelect")?.value || "bedroom_candlelight";
+    const moodId = document.getElementById("intimacyMoodSelect")?.value || "tender_romantic";
+    const protectionId = document.getElementById("intimacyProtectionSelect")?.value || "condom_safe";
+
+    const res = await performActivity("do_intimacy", {
+        person_id: personId,
+        venue_id: venueId,
+        mood_id: moodId,
+        protection_id: protectionId
+    });
+
+    if (res && res.success) {
+        showIntimacyResultModal(res);
+    } else {
+        closeModal("genericModal");
+    }
+}
+
+function showIntimacyResultModal(res) {
+    document.getElementById("genericModalTitle").textContent = "🔥 Birliktelik & Sabahın İlk Işıkları";
+    const body = document.getElementById("genericModalBody");
+
+    const starIcons = "⭐".repeat(res.stars || 4);
+    body.innerHTML = `
+        <div style="text-align:center; padding:10px 0;">
+            <div style="font-size:26px; margin-bottom:4px;">${starIcons}</div>
+            <h3 style="font-size:17px; font-weight:800; color:#fb7185; margin:0 0 10px 0;">${res.star_title || 'ÇOK TUTKULU BİR GECE!'}</h3>
+            
+            <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px; margin-bottom:14px; text-align:left; border:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:13px; color:#f1f5f9; line-height:1.6; margin-bottom:8px;">
+                    <b>${res.venue}</b> ortamında <b>${res.mood.toLowerCase()}</b> unutulmaz saatler geçirdiniz.
+                </div>
+                <div style="font-size:12.5px; color:#cbd5e1; font-style:italic; border-left:3px solid #f43f5e; padding-left:10px; margin-top:8px;">
+                    "${res.afterglow}"
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
+                <div class="person-stat-pill" style="padding:10px; text-align:center;">
+                    <div style="font-size:11px; color:var(--text-secondary);">Memnuniyet / Uyum</div>
+                    <div style="font-size:18px; font-weight:800; color:#f43f5e;">%${res.satisfaction || 85}</div>
+                </div>
+                <div class="person-stat-pill" style="padding:10px; text-align:center;">
+                    <div style="font-size:11px; color:var(--text-secondary);">Ruh Hali & Bağ</div>
+                    <div style="font-size:14px; font-weight:700; color:#4ade80;">İlişki +${res.rel_boost} • Stres -${res.stress_relief}</div>
+                </div>
+            </div>
+
+            ${res.pregnancy_occurred ? `
+                <div style="background:rgba(236,72,153,0.15); border:1px solid rgba(236,72,153,0.4); border-radius:12px; padding:12px; margin-bottom:14px; text-align:center;">
+                    <div style="font-size:24px; margin-bottom:4px;">🍼👶</div>
+                    <div style="font-size:13.5px; font-weight:700; color:#fbcfe8;">${res.pregnancy_msg}</div>
+                </div>
+            ` : ""}
+
+            <button type="button" class="btn-primary" onclick="closeModal('genericModal');">
+                ✨ Harika Bir Geceydi
+            </button>
+        </div>
+    `;
+    openDialogModal("genericModal");
 }
 
 

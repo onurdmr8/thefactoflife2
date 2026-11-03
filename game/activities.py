@@ -25,7 +25,8 @@ from .data import (
     KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES,
     PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
     HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL,
-    DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_MID_EVENTS, DATE_FINALES
+    DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_TACTILE_ACTIONS, DATE_MID_EVENTS, DATE_FINALES,
+    INTIMACY_VENUES, INTIMACY_MOODS, INTIMACY_PROTECTIONS, INTIMACY_AFTERGLOWS
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -3232,6 +3233,7 @@ def run_date_simulation(
     greeting_id: str = "passionate_hug",
     dialogue_id: str = "topic_destiny",
     dialogue_choice_id: str = "destiny_romantic",
+    tactile_id: str = "hand_caress_table",
     mid_event_id: str = "live_music_slow",
     mid_choice_id: str = "dance_floor",
     finale_id: str = "passionate_kiss"
@@ -3298,7 +3300,24 @@ def run_date_simulation(
     else:
         chemistry = min(100, chemistry + 8)
 
-    # 6. Randevu Ortası Olayı (Mid Event)
+    # 6. Dokunsal Beden Dili & Tensel Yakınlaşma (Tactile Escalation)
+    tactile = next((t for t in DATE_TACTILE_ACTIONS if t["id"] == tactile_id), DATE_TACTILE_ACTIONS[0])
+    if chemistry < 40:
+        tactile_boost = -15
+        tactile_log = f"Temas kurmaya çalıştığında {person.name} irkildi ve geri çekilerek mesafesini korudu: 'Lütfen, şu an pek rahat hissetmiyorum...' (Soğuk Duş)"
+    else:
+        tactile_boost = tactile.get("chemistry_boost", 18)
+        if person.personality in ["Romantik", "Entelektüel"] and tactile["id"] in ["hair_tuck", "chin_lift_gaze"]:
+            tactile_boost += 6
+        elif person.personality in ["Kıskanç & Tutkulu", "Çapkın & Özgür Ruhlu"] and tactile["id"] in ["whisper_ear_neck", "thigh_touch_secret"]:
+            tactile_boost += 8
+        elif person.personality in ["Sadık & Aileci", "Uyumlu"] and tactile["id"] in ["jacket_shoulders", "hand_caress_table"]:
+            tactile_boost += 6
+        tactile_log = f"{tactile['sensory_log']} {tactile['partner_reaction']}"
+
+    chemistry = max(5, min(100, chemistry + tactile_boost))
+
+    # 7. Randevu Ortası Olayı (Mid Event)
     mid_event = next((e for e in DATE_MID_EVENTS if e["id"] == mid_event_id), DATE_MID_EVENTS[0])
     mid_choice = next((o for o in mid_event["options"] if o["id"] == mid_choice_id), mid_event["options"][0])
 
@@ -3306,7 +3325,7 @@ def run_date_simulation(
     chemistry = max(5, min(100, chemistry + mid_score))
     mid_log = f"{mid_choice['note']}"
 
-    # 7. Final Kapanış Hamlesi
+    # 8. Final Kapanış Hamlesi
     finale = next((f for f in DATE_FINALES if f["id"] == finale_id), DATE_FINALES[0])
     finale_success = chemistry >= finale.get("chemistry_min", 40)
     finale_log = finale["high_text"] if finale_success else finale["low_text"]
@@ -3314,9 +3333,9 @@ def run_date_simulation(
     if finale_success:
         chemistry = min(100, chemistry + 10)
     else:
-        chemistry = max(10, chemistry - 10)
+        chemistry = max(5, chemistry - 18)
 
-    # 8. Skor, Yıldız ve Sonuç
+    # 9. Skor, Yıldız ve Sonuç
     if chemistry >= 85:
         stars = 5
         rating_title = "🌟🌟🌟🌟🌟 KUSURSUZ & BÜYÜLEYİCİ RANDEVU! (10/10)"
@@ -3364,7 +3383,7 @@ def run_date_simulation(
     memory = f"'{venue['name']}' randevusu ({rating_title}): {outfit['name']} ile buluştunuz, kimya %{chemistry} oldu."
     person.memories.append(memory)
 
-    summary_log = f"🌹 DATE SİMÜLASYONU ({person.name}): {rating_title} | Kimya: %{chemistry} | {outfit_log} {dialogue_log} {finale_log} (İlişki: {rel_boost:+d})"
+    summary_log = f"🌹 DATE SİMÜLASYONU ({person.name}): {rating_title} | Kimya: %{chemistry} | {outfit_log} {dialogue_log} {tactile_log} {finale_log} (İlişki: {rel_boost:+d})"
     if promoted_to_lover:
         summary_log += " 💘 Artık resmen SEVGİLİSİNİZ!"
 
@@ -3382,8 +3401,186 @@ def run_date_simulation(
         "greeting_log": greeting_log,
         "venue_log": venue_log,
         "dialogue_log": dialogue_log,
+        "tactile_log": tactile_log,
         "mid_log": mid_log,
         "finale_log": finale_log
+    }
+
+def do_intimacy(
+    char: Character,
+    person_id: str,
+    venue_id: str = "bedroom_candlelight",
+    protection_id: str = "condom_safe",
+    mood_id: str = "tender_romantic"
+) -> Dict[str, Any]:
+    """
+    Yatak Odası, İntimite & Romantik Yakınlaşma (Make Love) Motoru.
+    Partnerle derin bağ kurma, tutku, rahatlama, memnuniyet ve gebelik simülasyonu.
+    """
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Partner bulunamadı veya hayatta değil."}
+
+    if char.age < 16 or person.age < 16:
+        return {"success": False, "message": "Bu tür bir yakınlaşma için henüz reşit değilsiniz."}
+
+    # Yasaklı veya uygunsuz akrabalık kontrolü
+    if person.relation in ["Anne", "Baba", "Kardeş", "Abla", "Ağabey", "Çocuk", "Torun", "Öğretmen", "Patron"]:
+        return {"success": False, "message": "Bu kişiyle böyle bir yakınlaşma yaşayamazsın."}
+
+    venue = next((v for v in INTIMACY_VENUES if v["id"] == venue_id), INTIMACY_VENUES[0])
+    protection = next((p for p in INTIMACY_PROTECTIONS if p["id"] == protection_id), INTIMACY_PROTECTIONS[0])
+    mood = next((m for m in INTIMACY_MOODS if m["id"] == mood_id), INTIMACY_MOODS[0])
+
+    if char.money < venue["cost"]:
+        return {"success": False, "message": f"{venue['name']} ortamı için {venue['cost']:,} TL gerekli (Mevcut paran: {char.money:,} TL)."}
+
+    # 1. Partnerin Rızası & İlişki Durumu Kontrolü
+    is_committed = person.relation in ["Eş", "Nişanlı", "Sevgili"]
+    is_flirt = person.relation == "Flört"
+    is_friend = person.relation == "Arkadaş"
+    is_ex = person.relation in ["Eski Sevgili", "Eski Eş"]
+
+    if is_flirt and person.relationship_level < 60:
+        return {
+            "success": False,
+            "rejected": True,
+            "message": f"✋ {person.name} biraz geri çekildi: 'Aramızdaki çekimi hissediyorum ama henüz biraz erken değil mi? Birbirimizi biraz daha tanıyalım...' (İlişki Seviyesi: %{person.relationship_level} - En az %60 gerekli)"
+        }
+
+    if is_friend:
+        if person.relationship_level < 75 or random.random() > 0.65:
+            return {
+                "success": False,
+                "rejected": True,
+                "message": f"✋ {person.name} şaşkınlıkla geri adım attı: 'Biz çok yakın arkadaşız, bu dostluğumuzu zedeleyebilir! Lütfen aramızdaki çizgiyi koruyalım.' (Reddedildi)"
+            }
+        else:
+            person.relation = "Flört"
+            person.memories.append("Arkadaşlığınız tutkulu bir yakınlaşmayla romantik bir aşka evrildi.")
+
+    if is_ex:
+        if person.relationship_level < 60 or random.random() > 0.60:
+            return {
+                "success": False,
+                "rejected": True,
+                "message": f"✋ {person.name} başını iki yana salladı: 'Eskiye sünger çektik, bunu tekrarlamak ikimize de acı verir...' diyerek reddetti."
+            }
+
+    # Ücreti tahsil et
+    char.money -= venue["cost"]
+
+    # 2. Memnuniyet & Uyum (Satisfaction) Skoru Hesabı (0-100)
+    base_satisfaction = int(person.relationship_level * 0.35 + char.looks * 0.25 + char.health * 0.25 + random.randint(5, 15))
+
+    # Mood & Kişilik Uyumu Bonusu
+    if person.personality in mood.get("preferred_personalities", []):
+        base_satisfaction += mood.get("satisfaction_boost", 20)
+    else:
+        base_satisfaction += 10
+
+    # Mekan Konfor & Romantizm Katkısı
+    if venue["comfort_score"] >= 90:
+        base_satisfaction += 8
+
+    satisfaction = max(40, min(100, base_satisfaction))
+
+    # 3. İstatistik Güncellemeleri
+    hap_boost = int(satisfaction * 0.35)
+    stress_relief = int(satisfaction * 0.30)
+    rel_boost = int(satisfaction * 0.22)
+    loyalty_boost = 6 if satisfaction >= 75 else 2
+
+    char.happiness = min(100, char.happiness + hap_boost)
+    char.stress = max(0, char.stress - stress_relief)
+    person.relationship_level = min(100, person.relationship_level + rel_boost)
+    person.loyalty = min(100, person.loyalty + loyalty_boost)
+
+    # 4. Sabah & Anı Notu
+    afterglow = random.choice(INTIMACY_AFTERGLOWS)
+    person.memories.append(f"{venue['name']} ortamında unutulmaz bir gece geçirdiniz (Memnuniyet: %{satisfaction}).")
+
+    # 5. Yıldız ve Derecelendirme
+    if satisfaction >= 85:
+        stars = 5
+        star_title = "🌟🌟🌟🌟🌟 KUSURSUZ & BÜYÜLEYİCİ BİR GECE! (Tutku Tavan)"
+    elif satisfaction >= 70:
+        stars = 4
+        star_title = "🌟🌟🌟🌟 ÇOK TUTKULU & ROMANTİK BİR YAKINLAŞMA"
+    elif satisfaction >= 55:
+        stars = 3
+        star_title = "🌟🌟🌟 KEYİFLİ & HUZURLU BİR BİRLİKTELİK"
+    else:
+        stars = 2
+        star_title = "🌟🌟 BİRAZ YORGUN AMA TATLI BİR AN"
+
+    # 6. Gebelik Simülasyonu
+    pregnancy_occurred = False
+    pregnancy_msg = ""
+
+    # Biyolojik kontrol: Biri erkek, biri kadın ve doğurgan yaş
+    is_fertile_pair = (
+        (char.gender == "Erkek" and person.gender == "Kadın" and 16 <= person.age <= 48) or
+        (char.gender == "Kadın" and person.gender == "Erkek" and 16 <= char.age <= 48)
+    )
+
+    if is_fertile_pair and protection["pregnancy_chance"] > 0:
+        roll = random.random()
+        if roll < protection["pregnancy_chance"]:
+            pregnancy_occurred = True
+            b_gender = random.choice(["Erkek", "Kadın"])
+            b_names = FIRST_NAMES_MALE if b_gender == "Erkek" else FIRST_NAMES_FEMALE
+            baby_name = f"{random.choice(b_names)} {char.last_name}"
+            p_spec = random.choice(PERSONALITIES)
+
+            char.pregnancy_partner_id = person.id
+            char.pregnancy_baby_gender = b_gender
+
+            baby_obj = Person(
+                id=f"person_child_{len(char.relationships)+1}_{random.randint(10,99)}",
+                name=baby_name,
+                relation="Çocuk",
+                gender=b_gender,
+                age=0,
+                relationship_level=100,
+                personality=p_spec["id"],
+                zodiac=random.choice(ZODIAC_SIGNS),
+                looks=random.randint(60, 99),
+                smarts=random.randint(60, 99),
+                memories=[f"{char.age} yaşındayken dünyaya geldi."]
+            )
+            char.relationships.append(baby_obj)
+            person.memories.append(f"{baby_name} adlı bebeğiniz dünyaya geldi!")
+            if "child" not in char.achievements:
+                char.achievements.append("child")
+
+            if protection["id"] == "try_baby":
+                pregnancy_msg = f"🎉 BEBEK MÜJDESİ! Birkaç hafta sonra yapılan hamilelik testi POZİTİF çıktı! Dünyalar tatlısı bir {'erkek' if b_gender == 'Erkek' else 'kız'} bebeğiniz doğdu ve adını {baby_name} koydunuz! 🍼👶"
+            else:
+                pregnancy_msg = f"⚠️ SÜRPRİZ HAMİLELİK! Korunmasız birliktelik sonucunda bir bebek dünyaya geldi: {baby_name}! (Artık bir ebeveynsin!) 🍼👶"
+
+    # Log kaydı
+    log_text = f"🔥 YATAK ODASI & İNTİMİTE ({person.name}): {star_title} | {venue['name']} | {mood['name']} (Memnuniyet: %{satisfaction}, Mutluluk +{hap_boost}, Stres -{stress_relief})"
+    if pregnancy_occurred:
+        log_text += f" | {pregnancy_msg}"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=log_text, category="love", icon="🔥"))
+
+    return {
+        "success": True,
+        "person_name": person.name,
+        "venue": venue["name"],
+        "mood": mood["name"],
+        "protection": protection["name"],
+        "satisfaction": satisfaction,
+        "stars": stars,
+        "star_title": star_title,
+        "afterglow": afterglow,
+        "hap_boost": hap_boost,
+        "stress_relief": stress_relief,
+        "rel_boost": rel_boost,
+        "pregnancy_occurred": pregnancy_occurred,
+        "pregnancy_msg": pregnancy_msg,
+        "message": f"{star_title}\n\n{venue['name']} ortamında {mood['name'].lower()} unutulmaz bir gece yaşadınız.\n\n✨ {afterglow}\n(Memnuniyet: %{satisfaction} | İlişki +{rel_boost} | Mutluluk +{hap_boost} | Stres -{stress_relief}){(' ' + pregnancy_msg) if pregnancy_occurred else ''}"
     }
 
 def do_detailed_fight(char: Character, person_id: str, topic_id: str, attitude_id: str) -> Dict[str, Any]:

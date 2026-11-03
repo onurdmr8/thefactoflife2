@@ -1163,6 +1163,63 @@ DATE_CONVERSATION_TOPICS = [
     }
 ]
 
+DATE_TACTILE_ACTIONS = [
+    {
+        "id": "hair_tuck",
+        "name": "💇‍♀️ Saçını Kulağının Arkasına İt & Tenini Okşa",
+        "short_desc": "Rüzgarda yüzüne düşen saç tutamını usulca kulağının arkasına iliştir.",
+        "sensory_log": "Rüzgarda gözlerine düşen bir tutam saçı parmak uçlarınla alıp usulca kulağının arkasına iliştirdin. Parmakların boyun kıvrımına hafifçe değdiğinde gözleri kısıldı, teninin sıcacık ürpertisini hissettin.",
+        "partner_reaction": "Nefesi bir anlığına kesildi, dudaklarını hafifçe aralayarak gözlerinin içine baktı: 'Çok naziksin...' diye fısıldadı.",
+        "chemistry_boost": 20,
+        "style": "Romantik & Duygusal"
+    },
+    {
+        "id": "hand_caress_table",
+        "name": "🤲 Masanın Üzerinden Elini Tut & Parmaklarını Kenetle",
+        "short_desc": "Masanın üzerinden uzanıp elini sımsıkı avucunun içine al.",
+        "sensory_log": "Masanın üzerinden uzanıp elini sıcacık avucunun içine aldın. Başparmağınla elinin üzerini ve bileğindeki atan nabzı yavaşça okşadın; parmakları parmaklarına sımsıkı kenetlendi.",
+        "partner_reaction": "Bileğindeki nabzın heyecandan deli gibi hızlandığını hissettin. Parmaklarını hafifçe sıkarak sıcacık gülümsedi.",
+        "chemistry_boost": 18,
+        "style": "Güven & Samimiyet"
+    },
+    {
+        "id": "jacket_shoulders",
+        "name": "🧥 Ceketini Omuzlarına Sar & Kollarını Sıcakça Okşa",
+        "short_desc": "Akşam serinliğinde ceketini çıkarıp arkasından omuzlarına bırak.",
+        "sensory_log": "Hafifçe ürperdiğini fark ettiğin an ceketini çıkardın ve arkasından nazikçe omuzlarına sardın. İki elini kollarının üzerinde yukarıdan aşağıya gezdirerek tenini ısıttın; parfümünün kokusu üzerine sindi.",
+        "partner_reaction": "Ceketine sıkıca sarılıp derin bir nefes aldı: 'Kokun büyüleyici... Yanında kendimi o kadar güvende hissediyorum ki' dedi.",
+        "chemistry_boost": 17,
+        "style": "Koruyucu & Şefkatli"
+    },
+    {
+        "id": "whisper_ear_neck",
+        "name": "👂 Kulağına Eğilip Fısılda & Ilık Nefesini Tenine Bırak",
+        "short_desc": "Kulağına eğilip fısıldarken dudaklarınla boynuna yaklaş.",
+        "sensory_log": "Müzik sesini bahane edip yüzünü kulağına ve boyun kıvrımına yaklaştırdın. Dudakların tenine teğet geçerken fısıldadın. Ilık nefesin boynuna çarptığında tüyleri diken diken oldu ve nabzı fırladı.",
+        "partner_reaction": "Bedeninin titrediğini hissettin; gözlerini kapatıp dudaklarını ısırdı ve sana doğru bir milim daha sokuldu.",
+        "chemistry_boost": 24,
+        "style": "Tutkulu & Çekici"
+    },
+    {
+        "id": "thigh_touch_secret",
+        "name": "🔥 Masanın Altından Bacağını Okşa (Gizli & Cüretkar Dokunuş)",
+        "short_desc": "Masa örtüsünün altında elini yavaşça dizine ve bacağına koy.",
+        "sensory_log": "Masanın örtüsü altında elini yavaşça partnerinin dizine ve bacağına koydun; parmak uçlarınla tenini yukarı doğru usulca okşadın.",
+        "partner_reaction": "Göz bebekleri aniden büyüdü, derin ve kesik bir nefes aldı; masadaki bardağı tutan eli hafifçe titredi ve kaçamak bir tebessümle sana baktı.",
+        "chemistry_boost": 25,
+        "style": "Cüretkar & Tensel"
+    },
+    {
+        "id": "chin_lift_gaze",
+        "name": "✨ Çenesinden Hafifçe Tutup Yüzünü Kendine Çevir & Dudağını Okşa",
+        "short_desc": "Çenesini nazikçe kavrayıp başparmağınla alt dudağının kenarını sev.",
+        "sensory_log": "İki parmağınla çenesini nazikçe kavrayıp yüzünü kendine doğru çevirdin. Başparmağınla alt dudağının kenarını yavaşça okşadın; nefesleriniz birkaç santim mesafede birbirine karıştı.",
+        "partner_reaction": "Gözlerini kısıp dokunuşuna teslim oldu; parmaklarının değdiği dudakları hafifçe aralandı, adeta bir öpücük için yalvarır gibi baktı.",
+        "chemistry_boost": 23,
+        "style": "Ateşli & Romantik"
+    }
+]
+
 DATE_MID_EVENTS = [
     {
         "id": "waiter_spill",
@@ -1614,4 +1671,104 @@ GREEN_FLAGS_POOL = [
     "Yolda gördüğü yaralı sokak kedisini veterinere götürdü",
     "Kendi sınırlarını ve hayattaki hedeflerini açık yüreklilikle paylaştı",
     "Ailesine ve kardeşlerine çok düşkün ve sevgi dolu"
+]
+
+# ----------------- YATAK ODASI, İNTİMİTE & ROMANTİK YAKINLAŞMA -----------------
+
+INTIMACY_VENUES = [
+    {
+        "id": "bedroom_candlelight",
+        "name": "🕯️ Mum Işığında Sıcak Yatak Odası & İpeksi Çarşaflar",
+        "desc": "Gül yaprakları, loş aydınlatma ve sakinleştirici melodiler eşliğinde güvenli ve samimi bir atmosfer.",
+        "cost": 0,
+        "comfort_score": 85,
+        "romance_score": 90,
+        "icon": "🕯️"
+    },
+    {
+        "id": "jacuzzi_wine",
+        "name": "🛁 Köpüklü Jakuzi, Şömine Çıtırtısı & Kırmızı Şarap",
+        "desc": "Sıcak suların ve şöminenin huzurunda son derece rahatlatıcı, tutkulu ve lüks bir deneyim.",
+        "cost": 1800,
+        "comfort_score": 95,
+        "romance_score": 92,
+        "icon": "🛁"
+    },
+    {
+        "id": "balcony_night",
+        "name": "🏖️ Yıldızların Altında Gece Esintisi & Spontane Tutku",
+        "desc": "Gecenin sessizliğinde aniden alevlenen, heyecan ve macera dolu spontane bir yakınlaşma.",
+        "cost": 0,
+        "comfort_score": 75,
+        "romance_score": 88,
+        "icon": "🏖️"
+    },
+    {
+        "id": "luxury_hotel_suite",
+        "name": "🏨 Boutique Otelde Boğaz Manzaralı Kaçamak Süit",
+        "desc": "Şehrin gürültüsünden uzak, sadece ikinize özel büyüleyici bir süit odada aşk tazeleme.",
+        "cost": 4500,
+        "comfort_score": 98,
+        "romance_score": 98,
+        "icon": "🏨"
+    }
+]
+
+INTIMACY_MOODS = [
+    {
+        "id": "tender_romantic",
+        "name": "💕 Şefkatli, Yavaş & Derin Duygusal Bağ",
+        "desc": "Gözlerinin içine bakarak, sevgi sözcükleri ve sımsıkı sarılmalarla ruhunuzun birleştiği anlar.",
+        "satisfaction_boost": 20,
+        "emotional_boost": 25,
+        "preferred_personalities": ["Romantik", "Sadık & Aileci", "Entelektüel"]
+    },
+    {
+        "id": "wild_passionate",
+        "name": "🔥 Ateşli, Heyecanlı & Spontane Tutku",
+        "desc": "Kalp atışlarının ritmini hızlandıran, engellenemez bir arzu ve enerji patlaması.",
+        "satisfaction_boost": 26,
+        "emotional_boost": 16,
+        "preferred_personalities": ["Kıskanç & Tutkulu", "Çapkın & Özgür Ruhlu", "Çılgın & Maceracı"]
+    },
+    {
+        "id": "relaxed_cuddle",
+        "name": "💆 Masaj, Mum Kokuları & Huzurlu Sımsıkı Sarılma",
+        "desc": "Günün tüm yorgunluğunu unutturan, şefkatli bir masaj ve göğsüne yaslanarak huzur bulma.",
+        "satisfaction_boost": 18,
+        "emotional_boost": 22,
+        "preferred_personalities": ["Uyumlu", "Duygusal & Kırılgan", "Hırslı & Kariyerist"]
+    }
+]
+
+INTIMACY_PROTECTIONS = [
+    {
+        "id": "condom_safe",
+        "name": "🛡️ Korunmalı (Kondom & Doğum Kontrol)",
+        "desc": "Tamamen güvenli, plansız gebelik riski %0. Endişesiz ve rahat.",
+        "pregnancy_chance": 0.0,
+        "safety_label": "Güvenli"
+    },
+    {
+        "id": "unprotected",
+        "name": "🎲 Korunmasız & Tutkunun Akışına Bırak",
+        "desc": "Hiçbir engelin olmadığı doğal tutku! Ancak sürpriz bir gebelik ihtimali taşır.",
+        "pregnancy_chance": 0.22,
+        "safety_label": "Riskli (%22 Gebelik)"
+    },
+    {
+        "id": "try_baby",
+        "name": "🍼 Bebek Yapma Amacıyla (Yeni Bir Can Müjdesi)",
+        "desc": "Birlikte bir aile kurma veya aileyi büyütme hayaliyle aşkı taçlandırmak.",
+        "pregnancy_chance": 0.70,
+        "safety_label": "Bebek Denemesi (%70)"
+    }
+]
+
+INTIMACY_AFTERGLOWS = [
+    "Sabah güneşin ilk ışıkları odaya dolarken birbirinize sarılarak uyandınız; sana şefkatle sokulup 'Seninle olmak dünyadaki her şeyden daha güzel' diye fısıldadı.",
+    "Yataktan kalkıp mutfakta birlikte kahve ve sıcak kruvasan yaptınız, kahkaha dolu sıcacık bir pazar sabahı havası esti.",
+    "Göğsüne yaslanıp kalp atışlarını dinledi ve 'Kendimi yanında hiç olmadığım kadar huzurlu ve güvende hissediyorum' dedi.",
+    "Gözlerini açtığında başucuna bir gül ve sıcacık bir tebessüm bırakmıştı; aranızdaki çekim tavan yaptı.",
+    "Gece boyunca süren tatlı fısıldaşmalar ve şakalaşmalar sabah kahvaltısına kadar neşeyle devam etti."
 ]
