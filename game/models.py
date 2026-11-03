@@ -120,6 +120,9 @@ class Asset(BaseModel):
     annual_income: int = 0
     is_rented_out: bool = True
     tenant_name: Optional[str] = None
+    tenant_reliability: int = 85  # 0 - 100
+    tenant_issue: Optional[str] = None  # Gecikmiş Kira, Gürültü Şikayeti, vb.
+    has_insurance: bool = False  # Kasko / Sigorta
     upgrade_level: int = 0
 
 class Stock(BaseModel):
@@ -270,6 +273,7 @@ class Character(BaseModel):
     alimony_annual: int = 0
     last_tax_paid: int = 0
     difficulty_mode: str = "Gerçek Hayat (Zor)"
+    last_annual_summary: Dict[str, Any] = Field(default_factory=dict)
     
     # Achievements
     achievements: List[str] = Field(default_factory=list)

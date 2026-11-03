@@ -1,49 +1,71 @@
 {
   "character": {
-    "id": "48e324d2",
-    "first_name": "Onur",
-    "last_name": "Demir",
+    "id": "fe0a9412",
+    "first_name": "Yiğit",
+    "last_name": "Tekin",
     "gender": "Erkek",
-    "birth_year": 2003,
-    "current_year": 2028,
-    "age": 25,
-    "city": "İstanbul",
+    "birth_year": 2004,
+    "current_year": 2042,
+    "age": 38,
+    "city": "Antalya",
     "country": "Türkiye",
-    "zodiac": "Yengeç ♋",
+    "zodiac": "Aslan ♌",
     "generation": 1,
     "happiness": 100,
     "health": 5,
     "smarts": 100,
-    "looks": 98,
-    "fame": 0,
-    "karma": 50,
-    "stress": 10,
+    "looks": 70,
+    "fame": 100,
+    "karma": 100,
+    "stress": 6,
     "skills": {
       "coding": 10,
-      "music": 10,
-      "athletics": 30,
-      "charisma": 98,
+      "music": 22,
+      "athletics": 23,
+      "charisma": 84,
       "martial_arts": 17
     },
-    "money": 1466937,
+    "money": 33224528,
     "debt": 0,
-    "net_worth": 1466937,
-    "annual_income_last": 0,
-    "annual_expense_last": 120000,
+    "net_worth": 246038634,
+    "annual_income_last": 41017398,
+    "annual_expense_last": 20365987,
     "will_beneficiary": "all_children",
     "criminal_record": [],
     "is_in_prison": false,
     "prison_years_left": 0,
     "prison_sentence": 0,
-    "military_status": "Tamamlandı",
+    "military_status": "Terhis (Bedelli)",
     "education_level": "Üniversite",
     "current_school": null,
     "school_years_left": 0,
     "school_performance": 90,
     "school_club": null,
     "has_drivers_license": true,
-    "current_job": null,
-    "part_time_job": null,
+    "current_job": {
+      "id": "junior_dev",
+      "title": "Yazılım Geliştirici",
+      "category": "Teknoloji",
+      "salary": 14728167,
+      "required_education": "Lise",
+      "required_smarts": 65,
+      "performance": 21,
+      "stress": 100,
+      "experience_years": 14,
+      "level": 11
+    },
+    "part_time_job": {
+      "id": "pt_freelance",
+      "title": "Freelance Web & Logo Tasarımcısı",
+      "category": "Yarı Zamanlı",
+      "salary": 160000,
+      "required_education": "Yok",
+      "required_smarts": 0,
+      "performance": 80,
+      "stress": 20,
+      "experience_years": 0,
+      "level": 1
+    },
     "business": null,
     "job_history": [
       "milestone_school_start",
@@ -61,304 +83,603 @@
     "relationships": [
       {
         "id": "person_mother",
-        "name": "Yağmur Demir",
+        "name": "Ceyda Tekin",
         "relation": "Anne",
         "gender": "Kadın",
-        "age": 52,
-        "relationship_level": 100,
+        "age": 63,
+        "relationship_level": 26,
         "is_alive": true,
-        "job": "Kuaför",
-        "money_generosity": 57,
-        "personality": "Entelektüel",
-        "zodiac": "Boğa ♉",
-        "looks": 73,
-        "smarts": 89,
-        "craziness": 38,
-        "loyalty": 98,
-        "wealth": 53,
+        "job": "Banka Müdürü",
+        "money_generosity": 55,
+        "personality": "Eğlenceli",
+        "zodiac": "Aslan ♌",
+        "looks": 69,
+        "smarts": 85,
+        "craziness": 40,
+        "loyalty": 87,
+        "wealth": 84,
         "interests": [
-          "☕ Kahve & Kitap",
-          "🎬 Sinema & Tiyatro",
-          "🏋️ Spor & Fitness"
+          "🪩 Gece Hayatı",
+          "🐾 Hayvansever",
+          "🎬 Sinema & Tiyatro"
         ],
         "bio": "",
+        "love_language": "Hediye & Sürprizler",
+        "family_approval": 65,
+        "met_family": false,
         "cohabiting": false,
         "has_prenup": false,
         "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
         "memories": [
-          "2003: Seni dünyaya getirdi.",
-          "Elini öpüp hayır duasını aldın."
-        ]
+          "2004: Seni dünyaya getirdi."
+        ],
+        "chat_history": []
       },
       {
         "id": "person_father",
-        "name": "Efe Demir",
+        "name": "Murat Tekin",
         "relation": "Baba",
         "gender": "Erkek",
-        "age": 51,
-        "relationship_level": 94,
+        "age": 63,
+        "relationship_level": 26,
         "is_alive": true,
-        "job": "Diş Hekimi",
-        "money_generosity": 84,
-        "personality": "Çapkın & Özgür Ruhlu",
-        "zodiac": "İkizler ♊",
-        "looks": 92,
-        "smarts": 56,
-        "craziness": 58,
-        "loyalty": 85,
-        "wealth": 76,
-        "interests": [
-          "🏋️ Spor & Fitness",
-          "✈️ Seyahat & Kamp",
-          "🍳 Gastronomi & Gurme"
-        ],
-        "bio": "",
-        "cohabiting": false,
-        "has_prenup": false,
-        "years_together": 0,
-        "memories": [
-          "2003: Doğumunda hastane koridorunda heyecanla bekledi."
-        ]
-      },
-      {
-        "id": "person_lover_3_93",
-        "name": "Dilara Soylu",
-        "relation": "Eski Sevgili",
-        "gender": "Kadın",
-        "age": 26,
-        "relationship_level": 40,
-        "is_alive": true,
-        "job": "Öğrenci",
-        "money_generosity": 50,
-        "personality": "Kıskanç & Tutkulu",
-        "zodiac": "Terazi ♎",
-        "looks": 73,
-        "smarts": 74,
-        "craziness": 89,
-        "loyalty": 82,
-        "wealth": 60,
-        "interests": [
-          "🍳 Gastronomi & Gurme",
-          "🐾 Hayvansever",
-          "✈️ Seyahat & Kamp"
-        ],
-        "bio": "",
-        "cohabiting": false,
-        "has_prenup": false,
-        "years_together": 11,
-        "memories": [
-          "14 yaşındayken romantik bir şekilde tanıştınız.",
-          "Ailesini evinizde krallar gibi ağırladın.",
-          "2022: Birlikte 5. yılınızı kutladınız!",
-          "2027: Birlikte 10. yılınızı kutladınız!",
-          "Telefonunu gizlice karıştırdığın için sana kırıldı."
-        ]
-      },
-      {
-        "id": "person_lover_4_86",
-        "name": "Hilal Demir",
-        "relation": "Flört",
-        "gender": "Kadın",
-        "age": 25,
-        "relationship_level": 85,
-        "is_alive": true,
-        "job": "Mimar",
-        "money_generosity": 50,
-        "personality": "Sadık & Aileci",
-        "zodiac": "İkizler ♊",
-        "looks": 83,
-        "smarts": 88,
-        "craziness": 10,
-        "loyalty": 89,
-        "wealth": 72,
-        "interests": [
-          "🍳 Gastronomi & Gurme",
-          "🐾 Hayvansever",
-          "📈 Borsa & Yatırım"
-        ],
-        "bio": "",
-        "cohabiting": false,
-        "has_prenup": false,
-        "years_together": 2,
-        "memories": [
-          "23 yaşındayken romantik bir şekilde tanıştınız."
-        ]
-      },
-      {
-        "id": "person_lover_5_62",
-        "name": "Seda Koç",
-        "relation": "Sevgili",
-        "gender": "Kadın",
-        "age": 27,
-        "relationship_level": 100,
-        "is_alive": true,
-        "job": "Grafik Tasarımcı",
-        "money_generosity": 84,
-        "personality": "Romantik",
-        "zodiac": "Kova ♒",
-        "looks": 84,
-        "smarts": 96,
-        "craziness": 10,
-        "loyalty": 100,
-        "wealth": 69,
-        "interests": [
-          "✈️ Seyahat & Kamp",
-          "🏋️ Spor & Fitness",
-          "🐾 Hayvansever"
-        ],
-        "bio": "Sahilde gün batımını izleyip şiir konuşabileceğim gerçek aşkı arıyorum 🌅",
-        "cohabiting": false,
-        "has_prenup": true,
-        "years_together": 0,
-        "memories": [
-          "📚 Kitapçı & Üçüncü Nesil Kahveci vasıtasıyla tanıştınız.",
-          "Birlikte 🕯️ Boğaz'da Mum Işığında Lüks Restoran randevusuna çıktınız.",
-          "Ona 💎 Pırlanta Kolye & Lüks Saat hediye ettin.",
-          "Resmen sevgili oldunuz!",
-          "Anahtarları birleştirip aynı eve taşındınız.",
-          "👑 3 Karat Kraliyet Safir & Pırlantası ile evlilik teklifini kabul etti ve nişanlandınız.",
-          "💃 Geleneksel Salon Düğünü & Takı Merasimi ile evlendiniz. Takıdan 188,837 TL toplandı.",
-          "Çift terapisine giderek aranızdaki sorunları çözdünüz.",
-          "Mahkemede resmen boşandınız.",
-          "Ona 🚗 Kurdeleli Spor Otomobil Sürprizi hediye ettin.",
-          "Ayrılığa dayanamayıp yeniden barıştınız!",
-          "Birlikte 🎬 Sinema & Kahve Randevusu randevusuna çıktınız."
-        ]
-      },
-      {
-        "id": "person_lover_6_94",
-        "name": "Sinem Çakır",
-        "relation": "Flört",
-        "gender": "Kadın",
-        "age": 23,
-        "relationship_level": 82,
-        "is_alive": true,
-        "job": "Fitness Antrenörü",
-        "money_generosity": 76,
-        "personality": "Kıskanç & Tutkulu",
-        "zodiac": "Akrep ♏",
+        "job": "Öğretmen",
+        "money_generosity": 63,
+        "personality": "Hırslı & Kariyerist",
+        "zodiac": "Yengeç ♋",
         "looks": 91,
-        "smarts": 86,
-        "craziness": 92,
-        "loyalty": 76,
-        "wealth": 39,
+        "smarts": 60,
+        "craziness": 50,
+        "loyalty": 93,
+        "wealth": 73,
         "interests": [
-          "🍳 Gastronomi & Gurme",
-          "🎸 Canlı Müzik & Konser",
-          "✈️ Seyahat & Kamp"
+          "☕ Kahve & Kitap",
+          "💻 Teknoloji & Oyun",
+          "🎸 Canlı Müzik & Konser"
         ],
-        "bio": "Sevdiğimi sahiplenirim, gözü benden başkasını görmeyecek biri olmalı 🔥",
+        "bio": "",
+        "love_language": "Güven & Sadakat",
+        "family_approval": 65,
+        "met_family": false,
         "cohabiting": false,
         "has_prenup": false,
         "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
         "memories": [
-          "KısmetApp üzerinden %91 uyumla eşleşip tanıştınız."
-        ]
+          "2004: Doğumunda hastane koridorunda heyecanla bekledi."
+        ],
+        "chat_history": []
       },
       {
-        "id": "person_child_7_32",
-        "name": "Güneş Demir",
-        "relation": "Çocuk",
-        "gender": "Kadın",
-        "age": 2,
-        "relationship_level": 100,
+        "id": "person_sibling_1",
+        "name": "Bora Tekin",
+        "relation": "Ağabey",
+        "gender": "Erkek",
+        "age": 42,
+        "relationship_level": 25,
         "is_alive": true,
         "job": null,
         "money_generosity": 50,
-        "personality": "Romantik",
-        "zodiac": "Kova ♒",
-        "looks": 70,
-        "smarts": 77,
+        "personality": "Sadık & Aileci",
+        "zodiac": "Boğa ♉",
+        "looks": 78,
+        "smarts": 92,
         "craziness": 25,
         "loyalty": 80,
         "wealth": 50,
-        "interests": [],
+        "interests": [
+          "📈 Borsa & Yatırım",
+          "🏋️ Spor & Fitness"
+        ],
         "bio": "",
+        "love_language": "Kaliteli Zaman",
+        "family_approval": 65,
+        "met_family": false,
         "cohabiting": false,
         "has_prenup": false,
         "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
         "memories": [
-          "Sevgi dolu yuvana evlat edinildi.",
-          "Derslerine yardım edip gelecek vizyonu kazandırdın."
+          "2004: Kardeşin olarak seninle büyümeye başladı."
+        ],
+        "chat_history": []
+      },
+      {
+        "id": "person_lover_4_88",
+        "name": "Ceren Avcı",
+        "relation": "Eski Sevgili",
+        "gender": "Kadın",
+        "age": 39,
+        "relationship_level": 58,
+        "is_alive": true,
+        "job": "Öğrenci",
+        "money_generosity": 50,
+        "personality": "Romantik",
+        "zodiac": "Koç ♈",
+        "looks": 71,
+        "smarts": 81,
+        "craziness": 29,
+        "loyalty": 100,
+        "wealth": 69,
+        "interests": [
+          "🪩 Gece Hayatı",
+          "🎸 Canlı Müzik & Konser",
+          "✈️ Seyahat & Kamp"
+        ],
+        "bio": "",
+        "love_language": "Kaliteli Zaman",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 11,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "14 yaşındayken romantik bir şekilde tanıştınız.",
+          "🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda ile romantik ve unutulmaz bir an yaşadınız.",
+          "Ayrılığa dayanamayıp yeniden barıştınız!",
+          "'☕ Sahilde Çay, Simit ve Gün Batımı' randevusunda unutulmaz bir gece geçirdiniz.",
+          "2023: Birlikte 5. yılınızı kutladınız!",
+          "2028: Birlikte 10. yılınızı kutladınız!",
+          "Telefonunu gizlice karıştırdığın için sana kırıldı.",
+          "'📱 Sosyal Medyada Gizli Takipleşmeler & Şüpheli Beğeniler' tartışmasında bağırıp çağırdığın için evi terk etti.",
+          "🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış ile romantik ve unutulmaz bir an yaşadınız.",
+          "🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış ile romantik ve unutulmaz bir an yaşadınız.",
+          "Ona 📱 Son Model Akıllı Telefon hediye ettin."
+        ],
+        "chat_history": [
+          {
+            "sender": "me",
+            "text": "Bugün bütün gün aklımdan hiç çıkmadın, seni çok özledim ❤️✨"
+          },
+          {
+            "sender": "them",
+            "text": "Kalbim yerinden çıkacak gibi oldu... Ben de seni her saniye düşünüyorum aşkım 🌹❤️"
+          }
         ]
       },
       {
-        "id": "person_lover_8_68",
-        "name": "Yasemin Özdemir",
-        "relation": "Flört",
+        "id": "person_lover_5_72",
+        "name": "Dilara Bulut",
+        "relation": "Eski Sevgili",
         "gender": "Kadın",
-        "age": 25,
-        "relationship_level": 70,
+        "age": 38,
+        "relationship_level": 56,
         "is_alive": true,
-        "job": "Moda İkonu / Manken",
-        "money_generosity": 72,
-        "personality": "Sadık & Aileci",
-        "zodiac": "Kova ♒",
-        "looks": 89,
-        "smarts": 82,
-        "craziness": 18,
-        "loyalty": 86,
-        "wealth": 35,
+        "job": "Lise Öğrencisi",
+        "money_generosity": 53,
+        "personality": "Maceracı",
+        "zodiac": "Terazi ♎",
+        "looks": 49,
+        "smarts": 61,
+        "craziness": 59,
+        "loyalty": 68,
+        "wealth": 33,
         "interests": [
+          "🎬 Sinema & Tiyatro",
           "🍳 Gastronomi & Gurme",
-          "💻 Teknoloji & Oyun",
-          "🎬 Sinema & Tiyatro"
+          "✈️ Seyahat & Kamp"
         ],
-        "bio": "Yalanı asla affetmem, ömürlük bir yol arkadaşı arıyorum 💍",
+        "bio": "Rutin hayattan sıkılanlar burada mı? Hadi yola çıkalım! 🚐",
+        "love_language": "Hediye & Sürprizler",
+        "family_approval": 65,
+        "met_family": false,
         "cohabiting": false,
         "has_prenup": false,
         "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
         "memories": [
-          "KısmetApp üzerinden %95 uyumla eşleşip tanıştınız."
+          "🏋️ Lüks Spor & Tenis Kulübü vasıtasıyla tanıştınız.",
+          "🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda ile romantik ve unutulmaz bir an yaşadınız.",
+          "Ayrılığın ardından aranızda yeniden ateşli bir öpüşme yaşandı."
+        ],
+        "chat_history": [
+          {
+            "sender": "them",
+            "text": "Bugün 🏋️ Lüks Spor & Tenis Kulübü ortamında tanışmamız harika bir tesadüftü 🌟"
+          },
+          {
+            "sender": "them",
+            "text": "🔥🔥 Story'n yıkılıyor! Kahve içelim mi?"
+          }
+        ]
+      },
+      {
+        "id": "person_lover_6_95",
+        "name": "Damla Kara",
+        "relation": "Eş",
+        "gender": "Kadın",
+        "age": 36,
+        "relationship_level": 65,
+        "is_alive": true,
+        "job": "Avukat",
+        "money_generosity": 40,
+        "personality": "Maceracı",
+        "zodiac": "Akrep ♏",
+        "looks": 59,
+        "smarts": 75,
+        "craziness": 61,
+        "loyalty": 90,
+        "wealth": 89,
+        "interests": [
+          "✈️ Seyahat & Kamp",
+          "📈 Borsa & Yatırım",
+          "🎸 Canlı Müzik & Konser"
+        ],
+        "bio": "Konfor alanından çıkabilen, adrenalin seven bir yol arkadaşı arıyorum 🪂",
+        "love_language": "Romantik Temas & Tutku",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": true,
+        "has_prenup": false,
+        "years_together": 13,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "🏋️ Lüks Spor & Tenis Kulübü vasıtasıyla tanıştınız.",
+          "🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış ile romantik ve unutulmaz bir an yaşadınız.",
+          "Yıl dönümünüzü Boğaz'da muhteşem bir yemekle kutladınız.",
+          "Özel dedektif takibinden tertemiz çıktı.",
+          "Yiğit Tekin adlı çocuğunuz dünyaya geldi.",
+          "2034: Birlikte 5. yılınızı kutladınız!",
+          "🏰 Boğaz'da Tarihi Yalı & Saray Düğünü ile evlendiniz. Takıdan 695,487 TL toplandı.",
+          "💋 Dudağına Masum ve Zarif Bir Öpücük Kondur ile romantik ve unutulmaz bir an yaşadınız.",
+          "2039: Birlikte 10. yılınızı kutladınız!",
+          "Telefonunu gizlice karıştırdığın için sana kırıldı."
+        ],
+        "chat_history": [
+          {
+            "sender": "them",
+            "text": "Bugün 🏋️ Lüks Spor & Tenis Kulübü ortamında tanışmamız harika bir tesadüftü 🌟"
+          },
+          {
+            "sender": "them",
+            "text": "🔥🔥 Story'n yıkılıyor! Kahve içelim mi?"
+          }
+        ]
+      },
+      {
+        "id": "office_7_93",
+        "name": "Gamze Yıldırım",
+        "relation": "Eş",
+        "gender": "Kadın",
+        "age": 37,
+        "relationship_level": 70,
+        "is_alive": true,
+        "job": "Üst Düzey Yönetici (Teknoloji)",
+        "money_generosity": 50,
+        "personality": "Hırslı & Kariyerist",
+        "zodiac": "Oğlak ♑",
+        "looks": 92,
+        "smarts": 90,
+        "craziness": 25,
+        "loyalty": 80,
+        "wealth": 82,
+        "interests": [
+          "💻 Teknoloji & Oyun",
+          "🏋️ Spor & Fitness"
+        ],
+        "bio": "",
+        "love_language": "Kaliteli Zaman",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": true,
+        "has_prenup": false,
+        "years_together": 12,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "Şirket toplantısı sonrası kahve içerken başlayan tutkulu ofis aşkınız!",
+          "'🏕️ Doğa & Yıldızlar Altında Glamping' randevusunda unutulmaz bir gece geçirdiniz.",
+          "2035: Birlikte 5. yılınızı kutladınız!",
+          "🌿 Bohem Kır & Sahil Düğünü ile evlendiniz. Takıdan 177,653 TL toplandı.",
+          "2040: Birlikte 10. yılınızı kutladınız!"
+        ],
+        "chat_history": []
+      },
+      {
+        "id": "person_child_8_70",
+        "name": "Yiğit Tekin",
+        "relation": "Çocuk",
+        "gender": "Erkek",
+        "age": 12,
+        "relationship_level": 88,
+        "is_alive": true,
+        "job": null,
+        "money_generosity": 50,
+        "personality": "Entelektüel",
+        "zodiac": "Balık ♓",
+        "looks": 93,
+        "smarts": 100,
+        "craziness": 25,
+        "loyalty": 80,
+        "wealth": 50,
+        "interests": [
+          "☕ Kahve & Kitap",
+          "✈️ Seyahat & Kamp"
+        ],
+        "bio": "",
+        "love_language": "Kaliteli Zaman",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "26 yaşındayken dünyaya geldi.",
+          "Derslerine yardım edip gelecek vizyonu kazandırdın.",
+          "Derslerine yardım edip gelecek vizyonu kazandırdın."
+        ],
+        "chat_history": []
+      },
+      {
+        "id": "celeb_9_92",
+        "name": "Ceyda Kara",
+        "relation": "Eski Eş",
+        "gender": "Kadın",
+        "age": 35,
+        "relationship_level": 10,
+        "is_alive": true,
+        "job": "Süpermodel",
+        "money_generosity": 50,
+        "personality": "Eğlenceli",
+        "zodiac": "Kova ♒",
+        "looks": 96,
+        "smarts": 92,
+        "craziness": 25,
+        "loyalty": 76,
+        "wealth": 91,
+        "interests": [
+          "🏋️ Spor & Fitness",
+          "📈 Borsa & Yatırım",
+          "🎸 Canlı Müzik & Konser"
+        ],
+        "bio": "",
+        "love_language": "Hediye & Sürprizler",
+        "family_approval": 87,
+        "met_family": true,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": true,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "VIP Ünlüler Galasında tanışıp yılın aşkına başladınız!",
+          "👑 3 Karat Kraliyet Safir & Pırlantası ile evlilik teklifini kabul etti ve nişanlandınız.",
+          "Aile büyükleriyle istemeye gittiniz, bol tuzlu damat kahvesini son damlasına kadar içip söz yüzüklerini taktınız!",
+          "🌿 Bohem Kır & Sahil Düğünü ile evlendiniz. Takıdan 328,309 TL toplandı.",
+          "Boşanma davasını kazandın ve ondan tazminat aldın."
+        ],
+        "chat_history": []
+      },
+      {
+        "id": "person_lover_10_38",
+        "name": "Derin Duran",
+        "relation": "Sevgili",
+        "gender": "Kadın",
+        "age": 36,
+        "relationship_level": 100,
+        "is_alive": true,
+        "job": "Müzisyen",
+        "money_generosity": 64,
+        "personality": "Çapkın & Özgür Ruhlu",
+        "zodiac": "Başak ♍",
+        "looks": 83,
+        "smarts": 53,
+        "craziness": 65,
+        "loyalty": 56,
+        "wealth": 89,
+        "interests": [
+          "💻 Teknoloji & Oyun",
+          "☕ Kahve & Kitap",
+          "📈 Borsa & Yatırım"
+        ],
+        "bio": "Bakalım beni kendine bağlayabilecek kadar etkileyici misin? 😉",
+        "love_language": "Güven & Sadakat",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 6,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "KısmetApp üzerinden %70 uyumla eşleşip tanıştınız.",
+          "'☕ Sahilde Çay, Simit ve Gün Batımı' randevusunda unutulmaz bir gece geçirdiniz.",
+          "2041: Birlikte 5. yılınızı kutladınız!",
+          "🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda ile romantik ve unutulmaz bir an yaşadınız.",
+          "🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda ile romantik ve unutulmaz bir an yaşadınız.",
+          "💋 Dudağına Masum ve Zarif Bir Öpücük Kondur ile romantik ve unutulmaz bir an yaşadınız.",
+          "😊 Yanağından Masum Bir Buse Al ile romantik ve unutulmaz bir an yaşadınız.",
+          "😊 Yanağından Masum Bir Buse Al ile romantik ve unutulmaz bir an yaşadınız."
+        ],
+        "chat_history": [
+          {
+            "sender": "them",
+            "text": "Selam Yiğit! Eşleştiğimize çok sevindim 😊✨"
+          }
+        ]
+      },
+      {
+        "id": "person_lover_11_42",
+        "name": "Derin Güneş",
+        "relation": "Flört",
+        "gender": "Kadın",
+        "age": 36,
+        "relationship_level": 100,
+        "is_alive": true,
+        "job": "Ünlü Müteahhit",
+        "money_generosity": 90,
+        "personality": "Entelektüel",
+        "zodiac": "Boğa ♉",
+        "looks": 73,
+        "smarts": 69,
+        "craziness": 13,
+        "loyalty": 86,
+        "wealth": 91,
+        "interests": [
+          "💻 Teknoloji & Oyun",
+          "🐾 Hayvansever",
+          "🎬 Sinema & Tiyatro"
+        ],
+        "bio": "Sığ sohbetlerden hoşlanmam; zeka en büyük çekiciliktir 🧠",
+        "love_language": "Romantik Temas & Tutku",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 6,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "🥂 VIP İş & Sanat Müzayedesi vasıtasıyla tanıştınız.",
+          "Ona 💎 Pırlanta Kolye & Lüks Saat hediye ettin.",
+          "2041: Birlikte 5. yılınızı kutladınız!",
+          "'☕ Sahilde Çay, Simit ve Gün Batımı' randevusunda unutulmaz bir gece geçirdiniz.",
+          "'📱 Sosyal Medyada Gizli Takipleşmeler & Şüpheli Beğeniler' tartışmasında bağırıp çağırdığın için evi terk etti.",
+          "'☕ Sahilde Çay, Simit ve Gün Batımı' randevusunda unutulmaz bir gece geçirdiniz."
+        ],
+        "chat_history": [
+          {
+            "sender": "them",
+            "text": "Bugün 🥂 VIP İş & Sanat Müzayedesi ortamında tanışmamız harika bir tesadüftü 🌟"
+          }
+        ]
+      },
+      {
+        "id": "person_lover_12_81",
+        "name": "Gökçe Yüksel",
+        "relation": "Flört",
+        "gender": "Kadın",
+        "age": 37,
+        "relationship_level": 74,
+        "is_alive": true,
+        "job": "Pazarlama Uzmanı",
+        "money_generosity": 68,
+        "personality": "Eğlenceli",
+        "zodiac": "Oğlak ♑",
+        "looks": 63,
+        "smarts": 46,
+        "craziness": 54,
+        "loyalty": 69,
+        "wealth": 78,
+        "interests": [
+          "💻 Teknoloji & Oyun",
+          "☕ Kahve & Kitap",
+          "📈 Borsa & Yatırım"
+        ],
+        "bio": "Espri anlayışı yüksek, spontane planlara 'evet' diyen biriysen sağa kaydır 😄",
+        "love_language": "Kaliteli Zaman",
+        "family_approval": 65,
+        "met_family": false,
+        "cohabiting": false,
+        "has_prenup": false,
+        "years_together": 0,
+        "is_blocked": false,
+        "kiz_isteme_done": false,
+        "nisan_bohca_done": false,
+        "joint_venture_name": null,
+        "joint_venture_profit": 0,
+        "memories": [
+          "🪩 Popüler Gece Kulübü & Lounge vasıtasıyla tanıştınız."
+        ],
+        "chat_history": [
+          {
+            "sender": "them",
+            "text": "Bugün 🪩 Popüler Gece Kulübü & Lounge ortamında tanışmamız harika bir tesadüftü 🌟"
+          }
         ]
       }
     ],
     "dating_candidates": [
       {
-        "id": "cand_7e3346",
-        "name": "Nehir Özdemir",
+        "id": "cand_c8fe67",
+        "name": "Pelin Yıldız",
         "gender": "Kadın",
-        "age": 24,
-        "job": "Hostes / Kabin Amiri",
-        "city": "İstanbul",
-        "zodiac": "Akrep ♏",
-        "personality": "Materyalist",
-        "looks": 98,
-        "smarts": 90,
-        "craziness": 64,
-        "loyalty": 56,
-        "wealth": 85,
-        "money_generosity": 74,
+        "age": 30,
+        "job": "Grafik Tasarımcı",
+        "city": "Antalya",
+        "zodiac": "İkizler ♊",
+        "personality": "Entelektüel",
+        "looks": 47,
+        "smarts": 62,
+        "craziness": 19,
+        "loyalty": 80,
+        "wealth": 33,
+        "money_generosity": 63,
         "interests": [
-          "🪩 Gece Hayatı",
-          "☕ Kahve & Kitap",
-          "🍳 Gastronomi & Gurme"
+          "🍳 Gastronomi & Gurme",
+          "💻 Teknoloji & Oyun",
+          "📈 Borsa & Yatırım"
         ],
-        "bio": "Lüks restoranlar, şık hediyeler ve kaliteli yaşam tarzım vazgeçilmezimdir 💎💅",
-        "compatibility": 81
+        "bio": "Sığ sohbetlerden hoşlanmam; zeka en büyük çekiciliktir 🧠",
+        "love_language": "Tatlı Sözler & İltifat",
+        "compatibility": 92
       },
       {
-        "id": "cand_2dcfc8",
-        "name": "Eylül Özkan",
+        "id": "cand_6f22c9",
+        "name": "Hande Kalkan",
         "gender": "Kadın",
-        "age": 27,
-        "job": "Pilates Eğitmeni",
-        "city": "İstanbul",
-        "zodiac": "Kova ♒",
-        "personality": "Sadık & Aileci",
-        "looks": 100,
-        "smarts": 65,
-        "craziness": 10,
-        "loyalty": 99,
-        "wealth": 38,
-        "money_generosity": 72,
+        "age": 33,
+        "job": "Öğretmen",
+        "city": "Antalya",
+        "zodiac": "Aslan ♌",
+        "personality": "Maceracı",
+        "looks": 50,
+        "smarts": 45,
+        "craziness": 41,
+        "loyalty": 64,
+        "wealth": 83,
+        "money_generosity": 92,
         "interests": [
-          "☕ Kahve & Kitap",
           "✈️ Seyahat & Kamp",
-          "💻 Teknoloji & Oyun"
+          "🪩 Gece Hayatı",
+          "🏋️ Spor & Fitness"
         ],
-        "bio": "Ciddi düşünmeyenler zahmet etmesin. Huzurlu bir yuva ve güven arıyorum 🏡",
-        "compatibility": 69
+        "bio": "Rutin hayattan sıkılanlar burada mı? Hadi yola çıkalım! 🚐",
+        "love_language": "Güven & Sadakat",
+        "compatibility": 94
       }
     ],
     "pets": [
@@ -367,7 +688,7 @@
         "name": "Şanslı",
         "species": "Kedi",
         "breed": "Tekir",
-        "age": 15,
+        "age": 19,
         "relationship_level": 100,
         "health": 95,
         "is_alive": false
@@ -377,46 +698,117 @@
         "name": "Şanslı",
         "species": "Kedi",
         "breed": "Tekir",
-        "age": 17,
+        "age": 16,
         "relationship_level": 100,
         "health": 95,
-        "is_alive": true
-      },
-      {
-        "id": "pet_3",
-        "name": "Şanslı",
-        "species": "Kedi",
-        "breed": "Tekir",
-        "age": 14,
-        "relationship_level": 100,
-        "health": 95,
-        "is_alive": true
+        "is_alive": false
       }
     ],
-    "assets": [],
+    "assets": [
+      {
+        "id": "car_1_32",
+        "name": "TOGG T10X Elektrikli SUV",
+        "asset_type": "Araba",
+        "purchase_price": 1650000,
+        "current_value": 365925,
+        "condition": 70,
+        "annual_cost": 48000,
+        "annual_income": 0,
+        "is_rented_out": true,
+        "tenant_name": null,
+        "tenant_reliability": 85,
+        "tenant_issue": null,
+        "has_insurance": false,
+        "upgrade_level": 0
+      },
+      {
+        "id": "house_2_98",
+        "name": "Boğaz Manzaralı Tarihi Yalı",
+        "asset_type": "Ev",
+        "purchase_price": 85000000,
+        "current_value": 96902792,
+        "condition": 100,
+        "annual_cost": 800000,
+        "annual_income": 5500000,
+        "is_rented_out": true,
+        "tenant_name": "Aylin Özkan",
+        "tenant_reliability": 67,
+        "tenant_issue": "Banyo & Tesisat Acil Onarım Talebi",
+        "has_insurance": false,
+        "upgrade_level": 0
+      },
+      {
+        "id": "car_3_93",
+        "name": "Porsche 911 Turbo S",
+        "asset_type": "Araba",
+        "purchase_price": 14500000,
+        "current_value": 12818589,
+        "condition": 100,
+        "annual_cost": 420000,
+        "annual_income": 0,
+        "is_rented_out": true,
+        "tenant_name": null,
+        "tenant_reliability": 85,
+        "tenant_issue": null,
+        "has_insurance": false,
+        "upgrade_level": 0
+      },
+      {
+        "id": "car_4_89",
+        "name": "Özel Süper Yat (35 Metre)",
+        "asset_type": "Araba",
+        "purchase_price": 48000000,
+        "current_value": 42895481,
+        "condition": 100,
+        "annual_cost": 2100000,
+        "annual_income": 0,
+        "is_rented_out": true,
+        "tenant_name": null,
+        "tenant_reliability": 85,
+        "tenant_issue": null,
+        "has_insurance": false,
+        "upgrade_level": 0
+      },
+      {
+        "id": "art_5_34",
+        "name": "☄️ Nadir Mars Meteoriti & Elmas Küre",
+        "asset_type": "Koleksiyon",
+        "purchase_price": 35000000,
+        "current_value": 39831319,
+        "condition": 100,
+        "annual_cost": 0,
+        "annual_income": 0,
+        "is_rented_out": true,
+        "tenant_name": null,
+        "tenant_reliability": 85,
+        "tenant_issue": null,
+        "has_insurance": false,
+        "upgrade_level": 0
+      }
+    ],
     "stocks": {
       "BISTECH": {
         "symbol": "BISTECH",
         "name": "Bistech Yazılım & Teknoloji",
         "shares": 0,
         "avg_buy_price": 0.0,
-        "current_price": 457.15,
+        "current_price": 326.67,
         "history": [
-          146.38,
-          121.85,
-          149.35,
-          167.77,
-          196.15,
-          211.64,
-          251.03,
-          305.43,
-          280.79,
-          262.22,
-          261.26,
-          285.73,
-          336.36,
-          403.96,
-          457.15
+          221.71,
+          221.22,
+          264.51,
+          240.0,
+          274.11,
+          255.82,
+          290.91,
+          257.5,
+          288.46,
+          256.5,
+          287.31,
+          324.01,
+          380.13,
+          361.54,
+          326.67
         ]
       },
       "PETRO": {
@@ -424,23 +816,23 @@
         "name": "Marmara Enerji & Rafineri",
         "shares": 0,
         "avg_buy_price": 0.0,
-        "current_price": 133.62,
+        "current_price": 122.04,
         "history": [
-          99.25,
-          100.63,
-          106.69,
-          105.94,
-          113.21,
-          119.86,
-          119.05,
-          130.02,
-          121.28,
-          114.61,
-          111.7,
-          111.31,
-          118.61,
-          128.33,
-          133.62
+          114.52,
+          106.33,
+          99.88,
+          102.32,
+          110.17,
+          100.65,
+          97.15,
+          100.52,
+          110.54,
+          120.7,
+          110.12,
+          116.71,
+          126.73,
+          120.12,
+          122.04
         ]
       },
       "HAVACILIK": {
@@ -448,23 +840,23 @@
         "name": "Türk Gökleri Havayolları",
         "shares": 0,
         "avg_buy_price": 0.0,
-        "current_price": 816.44,
+        "current_price": 341.67,
         "history": [
-          384.42,
-          442.84,
-          491.22,
-          461.03,
-          510.71,
-          462.95,
-          468.56,
-          517.18,
-          463.0,
-          513.84,
-          527.93,
-          611.51,
-          691.25,
-          723.81,
-          816.44
+          261.1,
+          294.62,
+          324.65,
+          361.55,
+          351.34,
+          367.22,
+          394.4,
+          346.85,
+          313.43,
+          328.96,
+          344.61,
+          359.25,
+          350.48,
+          330.62,
+          341.67
         ]
       },
       "MOONCOIN": {
@@ -472,23 +864,23 @@
         "name": "Moon Kripto Token",
         "shares": 0,
         "avg_buy_price": 0.0,
-        "current_price": 52.06,
+        "current_price": 7.4,
         "history": [
-          49.41,
-          39.99,
-          44.21,
-          60.44,
-          47.96,
-          46.32,
-          37.45,
-          38.38,
-          46.83,
-          51.21,
-          59.0,
-          46.98,
-          63.32,
-          73.12,
-          52.06
+          14.95,
+          14.99,
+          17.17,
+          17.6,
+          12.04,
+          6.15,
+          7.21,
+          6.93,
+          4.71,
+          3.86,
+          4.74,
+          6.6,
+          6.18,
+          5.3,
+          7.4
         ]
       },
       "ALTIN": {
@@ -496,477 +888,1534 @@
         "name": "Gram Altın Yatırım Fonu",
         "shares": 0,
         "avg_buy_price": 0.0,
-        "current_price": 3947.21,
+        "current_price": 3129.09,
         "history": [
-          3742.89,
-          3568.22,
-          3532.1,
-          3756.39,
-          3882.65,
-          3861.81,
-          3976.88,
-          3746.51,
-          4009.3,
-          3863.23,
-          4032.94,
-          4050.6,
-          4139.51,
-          4048.45,
-          3947.21
+          3158.54,
+          3246.32,
+          3065.57,
+          2971.93,
+          2873.72,
+          2940.97,
+          2977.23,
+          3117.4,
+          3071.33,
+          3250.99,
+          3315.47,
+          3331.58,
+          3242.05,
+          3158.31,
+          3129.09
         ]
       }
     },
-    "social_media": {},
+    "social_media": {
+      "Instagram": {
+        "platform": "Instagram",
+        "followers": 2205,
+        "verified": false,
+        "posts_count": 0,
+        "earnings_annual": 0
+      }
+    },
     "illnesses": [
-      "Gastrit & Mide Ağrısı",
-      "Astım Krizi"
+      "Yüksek Tansiyon"
     ],
     "logs": [
       {
         "age": 0,
-        "year": 2003,
-        "text": "👶 İstanbul, Türkiye sınırları içinde dünyaya gözlerini açtın. Annen: Yağmur Demir (Kuaför), Baban: Efe Demir (Diş Hekimi).",
+        "year": 2004,
+        "text": "👶 Antalya, Türkiye sınırları içinde dünyaya gözlerini açtın. Annen: Ceyda Tekin (Banka Müdürü), Baban: Murat Tekin (Öğretmen).",
         "category": "milestone",
         "icon": "🍼"
       },
       {
         "age": 1,
-        "year": 2004,
+        "year": 2005,
         "text": "1 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 2,
-        "year": 2005,
-        "text": "2 Yaşına bastın.",
+        "year": 2006,
+        "text": "'Tükenmişlik Sendromu' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 2,
+        "year": 2006,
+        "text": "2 Yaşına bastın. 🤒 Sana 'Tükenmişlik Sendromu' teşhisi kondu! Doktora görünmelisin.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 3,
-        "year": 2006,
+        "year": 2007,
         "text": "3 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 4,
-        "year": 2007,
+        "year": 2008,
         "text": "4 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 5,
-        "year": 2008,
+        "year": 2009,
         "text": "5 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 6,
-        "year": 2009,
-        "text": "🎒 İstanbul İlkokulu'na başladın.",
+        "year": 2010,
+        "text": "🎒 Antalya İlkokulu'na başladın.",
         "category": "school",
         "icon": "🎒"
       },
       {
         "age": 6,
-        "year": 2009,
+        "year": 2010,
         "text": "6 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 6,
-        "year": 2009,
+        "year": 2010,
         "text": "Ön sıraya geçip dersi can kulağıyla dinledin. Öğretmenin seni çok sevdi! (Zeka +8)",
         "category": "school",
         "icon": "⚖️"
       },
       {
         "age": 7,
-        "year": 2010,
+        "year": 2011,
         "text": "7 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 7,
-        "year": 2010,
-        "text": "Yavru kediyi sahiplendin ve adını 'Şanslı' koydun! (Mutluluk +20, Karma +20)",
+        "year": 2011,
+        "text": "Kediye mama verdin, karnını doyurup mırıldandı.",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 8,
-        "year": 2011,
-        "text": "'Gastrit & Mide Ağrısı' rahatsızlığı başladı.",
-        "category": "health",
-        "icon": "🤒"
-      },
-      {
-        "age": 8,
-        "year": 2011,
-        "text": "8 Yaşına bastın. 🤒 Sana 'Gastrit & Mide Ağrısı' teşhisi kondu! Doktora görünmelisin.",
+        "year": 2012,
+        "text": "8 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 8,
-        "year": 2011,
-        "text": "Bütün büyüklerin elini öptün ve toplam 2,512 TL bayram harçlığı topladın!",
+        "year": 2012,
+        "text": "Bütün büyüklerin elini öptün ve toplam 5,811 TL bayram harçlığı topladın!",
         "category": "event",
         "icon": "⚖️"
       },
       {
-        "age": 9,
+        "age": 8,
         "year": 2012,
-        "text": "'Astım Krizi' rahatsızlığı başladı.",
+        "text": "Doktor tedavisiyle 'Tükenmişlik Sendromu' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 9,
+        "year": 2013,
+        "text": "'Kronik Depresyon' rahatsızlığı başladı.",
         "category": "health",
         "icon": "🤒"
       },
       {
         "age": 9,
-        "year": 2012,
-        "text": "9 Yaşına bastın. 🤒 Sana 'Astım Krizi' teşhisi kondu! Doktora görünmelisin.",
+        "year": 2013,
+        "text": "9 Yaşına bastın. 🤒 Sana 'Kronik Depresyon' teşhisi kondu! Doktora görünmelisin.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 9,
-        "year": 2012,
+        "year": 2013,
         "text": "Yavru kediyi sahiplendin ve adını 'Şanslı' koydun! (Mutluluk +20, Karma +20)",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 10,
-        "year": 2013,
-        "text": "📘 İlkokulu bitirip İstanbul Ortaokulu'na geçtin.",
+        "year": 2014,
+        "text": "📘 İlkokulu bitirip Antalya Ortaokulu'na geçtin.",
         "category": "school",
         "icon": "📘"
       },
       {
         "age": 10,
-        "year": 2013,
+        "year": 2014,
         "text": "10 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
-        "age": 11,
+        "age": 10,
         "year": 2014,
-        "text": "11 Yaşına bastın.",
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 11,
+        "year": 2015,
+        "text": "'Astım Krizi' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 11,
+        "year": 2015,
+        "text": "11 Yaşına bastın. 🤒 Sana 'Astım Krizi' teşhisi kondu! Doktora görünmelisin.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 11,
-        "year": 2014,
+        "year": 2015,
         "text": "Zorbaya sağlam bir karşılık verdin! Bir daha kimse senin tostuna yan gözle bakamadı.",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 12,
-        "year": 2015,
+        "year": 2016,
         "text": "12 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 12,
-        "year": 2015,
+        "year": 2016,
         "text": "Yavru kediyi sahiplendin ve adını 'Şanslı' koydun! (Mutluluk +20, Karma +20)",
         "category": "event",
         "icon": "⚖️"
       },
       {
-        "age": 13,
+        "age": 12,
         "year": 2016,
+        "text": "Doktor tedavisiyle 'Kronik Depresyon' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 12,
+        "year": 2016,
+        "text": "Doktor tedavisiyle 'Astım Krizi' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 13,
+        "year": 2017,
         "text": "13 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
-        "age": 13,
-        "year": 2016,
-        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
-        "category": "event",
-        "icon": "⚖️"
-      },
-      {
         "age": 14,
-        "year": 2017,
-        "text": "🏫 İstanbul Anadolu Lisesi'ne kayıt oldun!",
+        "year": 2018,
+        "text": "🏫 Antalya Anadolu Lisesi'ne kayıt oldun!",
         "category": "school",
         "icon": "🏫"
       },
       {
         "age": 14,
-        "year": 2017,
+        "year": 2018,
         "text": "14 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 14,
-        "year": 2017,
-        "text": "Kalbin yerinden çıkacak gibiydi ama Dilara Soylu teklifini gülümseyerek kabul etti! İlk gençlik aşkın başladı! 💘",
+        "year": 2018,
+        "text": "Kalbin yerinden çıkacak gibiydi ama Ceren Avcı teklifini gülümseyerek kabul etti! İlk gençlik aşkın başladı! 💘",
         "category": "love",
         "icon": "💘"
       },
       {
         "age": 15,
-        "year": 2018,
+        "year": 2019,
         "text": "15 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 15,
-        "year": 2018,
+        "year": 2019,
         "text": "İradeni korudun ve teklifi reddettin. (Sağlık +6, Zeka +5)",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 16,
-        "year": 2019,
+        "year": 2020,
         "text": "16 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 16,
-        "year": 2019,
-        "text": "Kayınvaliden ve kayınpederin sana bayıldı! 'Dilara Soylu çok şanslıymış!' diyerek övgüler yağdırdılar. (İlişki +20)",
+        "year": 2020,
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "🫦 Ceren Avcı ile romantik yakınlaşma: '🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda'! (İlişki +22, Sadakat +5, Stres -20)",
         "category": "love",
-        "icon": "🍲"
+        "icon": "💋"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "✨ 🏋️ Lüks Spor & Tenis Kulübü ortamında Dilara Bulut (16, Lise Öğrencisi - Maceracı) ile göz göze gelip tanıştın! (Flört)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "📸🔥 Spor & Ayna Story'n büyük ilgi gördü! Dilara Bulut hikayene '🔥🔥' yanıtı gönderip DM kutuna düştü! (Görünüş +3)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "🫦 Dilara Bulut ile romantik yakınlaşma: '🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda'! ❤️ Bu büyülü öpücükle birlikte resmen SEVGİLİ oldunuz! (İlişki +22, Sadakat +5, Stres -20)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "❤️‍🔥 AŞK YENİDEN! Gece yarısı attığın 'Seni çok özledim' mesajına Ceren Avcı anında cevap verdi ve buluşup barıştınız!",
+        "category": "love",
+        "icon": "❤️‍🔥"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "🔥 ESKİ AŞK YENİDEN ALEVLENDİ! Dilara Bulut gözlerini kapatıp sana teslim oldu: 'Seni asla unutamamışım...' Kalpleriniz yeniden aynı ritimde atıyor! (İlişki +25)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 16,
+        "year": 2020,
+        "text": "🌹 RANDEVU RAPORU: 😍 Ceren Avcı (Romantik) mekana bayıldı, gözleri parıldadı! Hesabı cömertçe ve sessizce tek başına ödedin; partnerin karizmandan çok etkilendi. Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı! (İlişki +32, Mutluluk +22, Stres -15)",
+        "category": "love",
+        "icon": "🌹"
       },
       {
         "age": 17,
-        "year": 2020,
+        "year": 2021,
         "text": "17 Yaşına bastın.",
         "category": "general",
         "icon": "🎂"
       },
       {
-        "age": 18,
+        "age": 17,
         "year": 2021,
+        "text": "Röveşata denerken bileğini burktun! Bir hafta topalladın.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 18,
+        "year": 2022,
         "text": "🎓 Liseden başarıyla mezun oldun!",
         "category": "school",
         "icon": "🎓"
       },
       {
         "age": 18,
-        "year": 2021,
-        "text": "18 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
+        "year": 2022,
+        "text": "'Mevsimsel Grip' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 18,
+        "year": 2022,
+        "text": "18 Yaşına bastın. 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü! | 🤒 Sana 'Mevsimsel Grip' teşhisi kondu! Doktora görünmelisin.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 18,
-        "year": 2021,
+        "year": 2022,
         "text": "Tebrikler! Direksiyon sınavını başarıyla geçtin ve B Sınıfı Ehliyetini aldın! 🚗",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 19,
-        "year": 2022,
-        "text": "19 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü! | 💖 Dilara Soylu ile birlikteliğinizin 5. yıl dönümü!",
+        "year": 2023,
+        "text": "19 Yaşına bastın. 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü! | 💖 Ceren Avcı ile birlikteliğinizin 5. yıl dönümü!",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 19,
-        "year": 2022,
+        "year": 2023,
         "text": "Üniversiteye yerleşerek akademik hayatına adım attın! (Zeka +10)",
         "category": "event",
         "icon": "⚖️"
       },
       {
-        "age": 20,
+        "age": 19,
         "year": 2023,
+        "text": "Tebrikler! Bilgisayar & Yazılım Mühendisliği bölümüne kabul edildin!",
+        "category": "school",
+        "icon": "🎓"
+      },
+      {
+        "age": 19,
+        "year": 2023,
+        "text": "🎭 Tiyatro ve Drama Kulübü üyesi oldun! Hem sosyal çevren genişledi hem de yeteneklerin gelişti.",
+        "category": "school",
+        "icon": "🏅"
+      },
+      {
+        "age": 20,
+        "year": 2024,
         "text": "20 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 20,
-        "year": 2023,
-        "text": "6 ay boyunca kışlada vatani görevini başarıyla yerine getirdin ve terhis oldun! 🪖",
+        "year": 2024,
+        "text": "Bedelli parası çıkışmadığı için askerliği 2 yıl tecil ettirdin.",
         "category": "event",
         "icon": "⚖️"
       },
       {
-        "age": 21,
+        "age": 20,
         "year": 2024,
-        "text": "21 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü! | 🐾 Sadık dostun Şanslı yaşlılık nedeniyle hayata gözlerini yumdu.",
-        "category": "general",
-        "icon": "🎂"
+        "text": "'Freelance Web & Logo Tasarımcısı' olarak yarı zamanlı işe başladın (Yıllık Ek Gelir: 160,000 TL)!",
+        "category": "career",
+        "icon": "⏱️"
       },
       {
         "age": 21,
-        "year": 2024,
-        "text": "Kayıt aldığını görünce saldırgan panikleyip kaçtı.",
-        "category": "event",
-        "icon": "⚖️"
-      },
-      {
-        "age": 22,
         "year": 2025,
-        "text": "22 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
+        "text": "21 Yaşına bastın. ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 22,
-        "year": 2025,
-        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "year": 2026,
+        "text": "22 Yaşına bastın. ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 22,
+        "year": 2026,
+        "text": "Ailenle sıcacık bir pazar kahvaltısı yaptınız.",
         "category": "event",
         "icon": "⚖️"
       },
       {
         "age": 23,
-        "year": 2026,
-        "text": "🎓 Kep attın! 'Üniversite (Lisans)' eğitimini başarıyla tamamlayıp diplomanı aldın!",
+        "year": 2027,
+        "text": "🎓 Kep attın! 'Bilgisayar & Yazılım Mühendisliği' eğitimini başarıyla tamamlayıp diplomanı aldın!",
         "category": "school",
         "icon": "🎓"
       },
       {
         "age": 23,
-        "year": 2026,
-        "text": "23 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
+        "year": 2027,
+        "text": "23 Yaşına bastın. ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 23,
-        "year": 2026,
-        "text": "Gizli hayranın Hilal Demir ile buluştun ama Dilara Soylu bunu duydu ve ortalık karıştı!",
-        "category": "love",
-        "icon": "💌"
+        "year": 2027,
+        "text": "Borç vermeyi kibarca reddettin.",
+        "category": "event",
+        "icon": "⚖️"
       },
       {
         "age": 24,
-        "year": 2027,
-        "text": "24 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü! | 💖 Dilara Soylu ile birlikteliğinizin 10. yıl dönümü!",
+        "year": 2028,
+        "text": "24 Yaşına bastın. ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL. | ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "1.000 TL zarf bıraktın, düğün pastasını afiyetle yedin.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "Mülakatı geçtin! 'Yazılım Geliştirici' olarak işe başladın (Yıllık: 850,000 TL)!",
+        "category": "career",
+        "icon": "💼"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,037,000 TL/yıl (Kademe 2)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,265,140 TL/yıl (Kademe 3)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,543,470 TL/yıl (Kademe 4)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 1,883,033 TL/yıl (Kademe 5)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 2,297,300 TL/yıl (Kademe 6)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 2,802,706 TL/yıl (Kademe 7)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 24,
+        "year": 2028,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 3,419,301 TL/yıl (Kademe 8)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 25,
+        "year": 2029,
+        "text": "25 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +3,419,301 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL.",
         "category": "general",
         "icon": "🎂"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "25 Yaşına bastın. ⚠️ Giderlerin gelirini aştı, bakiyen eksiye düştü!",
-        "category": "general",
-        "icon": "🎂"
-      },
-      {
-        "age": 25,
-        "year": 2028,
-        "text": "Telefonu karıştırdın; mesaj kuzenindenmiş! Ama Dilara Soylu uyandığında telefonunu karıştırdığını fark etti ve güveni sarsıldı! (İlişki -20)",
+        "year": 2029,
+        "text": "Telefonu karıştırdın; mesaj kuzenindenmiş! Ama Ceren Avcı uyandığında telefonunu karıştırdığını fark etti ve güveni sarsıldı! (İlişki -20)",
         "category": "love",
         "icon": "📱"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "✨ 📚 Kitapçı & Üçüncü Nesil Kahveci ortamında Seda Koç (27, Grafik Tasarımcı - Romantik) ile göz göze gelip tanıştın! (Flört)",
+        "year": 2029,
+        "text": "🚪💥 KAPIYI ÇARPIP GİTTİ! Ceren Avcı öfkene karşı dehşete düşüp çantasını aldı ve kapıyı çarpıp evi terk etti! (İlişki -32)",
         "category": "love",
-        "icon": "🌹"
+        "icon": "💥"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "💘 EŞLEŞME! Sinem Çakır (23, Fitness Antrenörü - Kıskanç & Tutkulu) seninle eşleşti ve ilk buluşmanız harika geçti! (Flört)",
+        "year": 2029,
+        "text": "🔥 Ceren Avcı ile romantik yakınlaşma: '🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış'! (Romantik ruhunu adeta mest etti! ✨) (İlişki +33, Sadakat +11, Stres -22)",
         "category": "love",
-        "icon": "💘"
+        "icon": "💋"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "🌹 Seda Koç ile '🕯️ Boğaz'da Mum Işığında Lüks Restoran' randevunuz büyüleyici geçti! (Romantik ruhuna tam hitap etti! 🔥) (İlişki +34)",
+        "year": 2029,
+        "text": "🔥 Ceren Avcı ile romantik yakınlaşma: '🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış'! (Romantik ruhunu adeta mest etti! ✨) (İlişki +33, Sadakat +11, Stres -22)",
         "category": "love",
-        "icon": "🌹"
+        "icon": "💋"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "🎁 Seda Koç aldığın '💎 Pırlanta Kolye & Lüks Saat' hediyesine bayıldı ve boynuna sarıldı! (İlişki +40)",
+        "year": 2029,
+        "text": "🎁 Ceren Avcı aldığın '📱 Son Model Akıllı Telefon' hediyesine bayıldı ve boynuna sarıldı! (İlişki +28)",
         "category": "love",
         "icon": "🎁"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "💘 Seda Koç çıkma teklifini kabul etti! Artık resmen SEVGİLİSİNİZ!",
-        "category": "love",
-        "icon": "💘"
+        "year": 2029,
+        "text": "🏎️ 'TOGG T10X Elektrikli SUV' satın aldın!",
+        "category": "milestone",
+        "icon": "🏎️"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "🏠🔑 Seda Koç ile aynı eve taşındınız! Artık hayatı ve ev masraflarını paylaşıyorsunuz!",
-        "category": "love",
-        "icon": "🏠"
+        "year": 2029,
+        "text": "🇨🇭🔒 İsviçre Gizli Offshore Hesabına 100,000 TL aktardın! (Boşanma nafakasından ve hacizden %100 muaf, yıllık %8 döviz getirili • Toplam Offshore: 100,000 TL)",
+        "category": "general",
+        "icon": "🇨🇭"
       },
       {
         "age": 25,
-        "year": 2028,
-        "text": "💍 EVET DEDİ! Seda Koç, '👑 3 Karat Kraliyet Safir & Pırlantası' ile yaptığın teklifi gözyaşlarıyla kabul etti! Artık NİŞANLISINIZ! Şimdi düğün organize edebilirsin.",
+        "year": 2029,
+        "text": "✨ 🏋️ Lüks Spor & Tenis Kulübü ortamında Damla Kara (23, Avukat - Maceracı) ile göz göze gelip tanıştın! (Flört)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 25,
+        "year": 2029,
+        "text": "📸🔥 Spor & Ayna Story'n büyük ilgi gördü! Damla Kara hikayene '🔥🔥' yanıtı gönderip DM kutuna düştü! (Görünüş +3)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 25,
+        "year": 2029,
+        "text": "🔥 Damla Kara ile romantik yakınlaşma: '🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış'! ❤️ Bu büyülü öpücükle birlikte resmen SEVGİLİ oldunuz! (İlişki +25, Sadakat +8, Stres -22)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "26 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +3,624,459 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "Boğaz'da harika bir kutlama yaptınız! Damla Kara sana bir kez daha aşık oldu! (İlişki %100)",
+        "category": "love",
+        "icon": "💝"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "Doktor tedavisiyle 'Mevsimsel Grip' rahatsızlığından tamamen kurtuldun!",
+        "category": "health",
+        "icon": "🩺"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "👔✨ Yeni Tarzın: '💎 Ultra Lüks İtalyan Tasarım & Saat'! Aynadaki görüntüne hayran kaldın! (Görünüş +22, Hitabet +22)",
+        "category": "general",
+        "icon": "👔"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "💼❤️‍🔥 PLAZA & OFİS AŞKI! Şirketteki üst düzey yönetici Gamze Yıldırım ile aranızda tutkulu bir aşk başladı! Sana özel %28 zam ve terfi onayladı! (Yeni Maaş: 4,917,665 TL)",
+        "category": "love",
+        "icon": "💼"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "🌹 RANDEVU RAPORU: ✨ 🏕️ Doğa & Yıldızlar Altında Glamping ortamında baş başa harika bir masa seçtiniz. Piste çıkıp romantik müzik eşliğinde birbirinize sarılarak dans ettiniz; etraftaki herkes size baktı! Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı! (İlişki +48, Mutluluk +22, Stres -15)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "👶 Müjde! Dünyalar tatlısı bir oğlunuz doğdu! Adını Yiğit Tekin koydunuz! (İstersen Baby Shower / Hoşgeldin Bebek partisi düzenleyebilirsin!)",
+        "category": "love",
+        "icon": "🍼"
+      },
+      {
+        "age": 26,
+        "year": 2030,
+        "text": "🧬✅ DNA TEST SONUCU: %99.99 Biyolojik Uyum! Damla Kara ile genetik bağınız resmi laboratuvar raporuyla doğrulandı. İçindeki tüm şüpheler silindi!",
+        "category": "love",
+        "icon": "🧬"
+      },
+      {
+        "age": 27,
+        "year": 2031,
+        "text": "27 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +4,917,665 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 27,
+        "year": 2031,
+        "text": "Arkadaşın sözünde durdu ve borcunu fazlasıyla (18.000 TL) geri ödedi! Dostluğunuz perçinlendi.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 27,
+        "year": 2031,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 6,359,523 TL/yıl (Kademe 10)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 27,
+        "year": 2031,
+        "text": "📈 Terfi ve %22 Maaş Zammı aldın! Yeni Maaşın: 7,758,618 TL/yıl (Kademe 11)",
+        "category": "career",
+        "icon": "📈"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "28 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +7,758,618 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🛒 Yıllık yaşam, fatura ve mutfak giderleri: -185,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "Halı sahada 4 gol atıp maçın yıldızı oldun! Maç sonu baklavalar senden soruldu! ⚽",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "🎸🎤 't' (🎻 Akustik Pop & Caz Orkestrası) resmen kuruldu! Garajda ilk provalara başladınız!",
+        "category": "career",
+        "icon": "🎸"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 1. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+829,728 TL Telif, +87,814 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 2. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+707,263 TL Telif, +30,816 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 3. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+698,792 TL Telif, +54,179 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 4. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+546,332 TL Telif, +51,624 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 5. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,128,607 TL Telif, +49,520 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 6. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,100,674 TL Telif, +41,998 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 7. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+557,899 TL Telif, +42,360 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 8. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+873,422 TL Telif, +35,016 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 9. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+542,888 TL Telif, +33,017 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 10. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+859,169 TL Telif, +70,088 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 11. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,114,689 TL Telif, +75,362 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 12. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+526,962 TL Telif, +26,016 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 13. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+605,849 TL Telif, +30,622 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 14. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+673,054 TL Telif, +58,502 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 15. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+610,015 TL Telif, +67,283 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 16. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+760,794 TL Telif, +68,382 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 17. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+926,446 TL Telif, +55,859 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 18. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+772,648 TL Telif, +64,776 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 19. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+514,441 TL Telif, +26,911 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 20. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,023,716 TL Telif, +63,335 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 21. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+713,200 TL Telif, +88,450 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 22. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+855,929 TL Telif, +52,137 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 23. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,058,450 TL Telif, +59,841 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 24. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+802,614 TL Telif, +34,182 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 25. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+505,322 TL Telif, +77,491 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 26. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+549,545 TL Telif, +73,422 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 27. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+862,533 TL Telif, +88,183 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 28. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+896,697 TL Telif, +48,711 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 29. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+798,104 TL Telif, +73,741 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 30. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+564,780 TL Telif, +80,474 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 31. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+626,027 TL Telif, +40,143 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 32. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+843,180 TL Telif, +50,266 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 33. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+699,297 TL Telif, +31,881 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 34. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,149,417 TL Telif, +75,195 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 35. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+607,567 TL Telif, +31,828 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 36. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,148,917 TL Telif, +71,385 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 37. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+663,938 TL Telif, +67,811 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 38. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,016,255 TL Telif, +62,697 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 39. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+649,931 TL Telif, +75,666 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 40. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+802,439 TL Telif, +39,769 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 41. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+899,724 TL Telif, +29,587 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 42. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+511,113 TL Telif, +58,901 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 43. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+820,974 TL Telif, +72,155 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 44. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,135,969 TL Telif, +84,288 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 45. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+986,584 TL Telif, +61,918 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 46. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+706,108 TL Telif, +59,338 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 47. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+993,562 TL Telif, +28,486 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 48. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,131,672 TL Telif, +25,943 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 49. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+905,006 TL Telif, +75,318 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 50. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,065,220 TL Telif, +52,898 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 51. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+810,735 TL Telif, +61,660 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 52. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+834,065 TL Telif, +63,091 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 53. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+673,541 TL Telif, +62,114 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 54. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+706,586 TL Telif, +33,302 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 55. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,015,472 TL Telif, +84,708 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 56. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+848,477 TL Telif, +44,050 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 57. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,063,046 TL Telif, +43,588 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 58. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,103,192 TL Telif, +56,744 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 28,
+        "year": 2032,
+        "text": "💿🔥 't' 59. stüdyo albümünü yayınladı! Spotify ve listelerde 1 numaraya yerleşti! (+1,120,947 TL Telif, +68,705 Hayran)",
+        "category": "career",
+        "icon": "💿"
+      },
+      {
+        "age": 29,
+        "year": 2033,
+        "text": "29 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +8,224,135 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🎸 't' telif ve konser geliri: +10,665,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 29,
+        "year": 2033,
+        "text": "Miras hesabına geçti! Tam 1,003,322 TL servetine eklendi!",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 29,
+        "year": 2033,
+        "text": "👑🏟️ KULÜP BAŞKANI OLDUN! 20.000.000 TL ödeyerek 'Antalya SK' kulübünü satın aldın! Artık protokol tribününde oturuyor ve yıldız transferleri yönetiyorsun (Yıllık Yayın/Gişe Geliri: +3.200.000 TL)!",
+        "category": "career",
+        "icon": "👑"
+      },
+      {
+        "age": 29,
+        "year": 2033,
+        "text": "🏆⚽ ŞAMPİYONLUK & ALTIN TOP! 'Antalya SK' formasıyla sezonda 13 gol/sayı katkısı verdin, 90. dakikada kupayı getiren golü atıp +855,695 TL şampiyonluk primi ve Milli Takım daveti kazandın!",
+        "category": "career",
+        "icon": "🏆"
+      },
+      {
+        "age": 30,
+        "year": 2034,
+        "text": "30 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +8,717,583 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🎸 't' telif ve konser geliri: +10,665,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 31,
+        "year": 2035,
+        "text": "31 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +9,240,637 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🎸 't' telif ve konser geliri: +10,665,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "32 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +9,795,075 TL. | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL. | 🎸 't' telif ve konser geliri: +10,665,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "Gönlünü aldın ve aranızdaki buzlar eridi. Damla Kara sana sıkıca sarıldı. (İlişki +12)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🌟💘 YILIN MAGAZİN AŞKI! Süpermodel Ceyda Kara (Görünüş: %96, Servet: %91) ile VIP Galada tanışıp sevgili oldunuz!",
+        "category": "love",
+        "icon": "🌟"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "💍 EVET DEDİ! Ceyda Kara, '👑 3 Karat Kraliyet Safir & Pırlantası' ile yaptığın teklifi gözyaşlarıyla kabul etti! Artık NİŞANLISINIZ! Şimdi düğün organize edebilirsin.",
         "category": "love",
         "icon": "💍"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "👰🤵 DÜĞÜN! Seda Koç ile '💃 Geleneksel Salon Düğünü & Takı Merasimi' töreninde dünyaevine girdiniz! (Mal ayrılığı sözleşmesi imzalandı) Takı merasiminde 188,837 TL altın ve nakit toplandı!",
+        "age": 32,
+        "year": 2036,
+        "text": "☕💍 KIZ İSTEME & TUZLU KAHVE! Aile büyükleriyle Ceyda Kara'i istemeye gittiniz! Bol tuzlu kahveyi yüzünü bile buruşturmadan içtin, 'Allah'ın emri peygamberin kavliyle' söz ve nişan yüzükleri takıldı! (Aile Onayı: %87)",
+        "category": "love",
+        "icon": "☕"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "👰🤵 DÜĞÜN! Damla Kara ile '🏰 Boğaz'da Tarihi Yalı & Saray Düğünü' töreninde dünyaevine girdiniz! (Tüm Akrabalar & Dostlar katıldı!) Takı merasiminde 695,487 TL altın ve nakit toplandı!",
         "category": "love",
         "icon": "👰"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "🍼 Sosyal Hizmetler başvurunu onayladı! 2 yaşındaki Güneş Demir'i evlat edinip sıcak bir yuva verdin! (Karma +25)",
+        "age": 32,
+        "year": 2036,
+        "text": "👰🤵 DÜĞÜN! Gamze Yıldırım ile '🌿 Bohem Kır & Sahil Düğünü' töreninde dünyaevine girdiniz! (Tüm Akrabalar & Dostlar katıldı!) Takı merasiminde 177,653 TL altın ve nakit toplandı!",
         "category": "love",
-        "icon": "👶"
+        "icon": "👰"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "💔 Seda Koç ile boşandınız! Evlilik sözleşmen (Prenup) sayesinde tek kuruş nafaka/tazminat ödemedin!",
+        "age": 32,
+        "year": 2036,
+        "text": "👰🤵 DÜĞÜN! Ceyda Kara ile '🌿 Bohem Kır & Sahil Düğünü' töreninde dünyaevine girdiniz! (Tüm Akrabalar & Dostlar katıldı!) Takı merasiminde 328,309 TL altın ve nakit toplandı!",
         "category": "love",
-        "icon": "💔"
+        "icon": "👰"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "🎁 Seda Koç aldığın '🚗 Kurdeleli Spor Otomobil Sürprizi' hediyesine bayıldı ve boynuna sarıldı! (İlişki +65)",
+        "age": 32,
+        "year": 2036,
+        "text": "💋 Damla Kara ile romantik yakınlaşma: '💋 Dudağına Masum ve Zarif Bir Öpücük Kondur'! (İlişki +18, Sadakat +6, Stres -16)",
         "category": "love",
-        "icon": "🎁"
+        "icon": "💋"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "❤️‍🔥 AŞK YENİDEN! Gece yarısı attığın 'Seni çok özledim' mesajına Seda Koç anında cevap verdi ve buluşup barıştınız!",
-        "category": "love",
-        "icon": "❤️‍🔥"
-      },
-      {
-        "age": 25,
-        "year": 2028,
-        "text": "💘 EŞLEŞME! Yasemin Özdemir (25, Moda İkonu / Manken - Sadık & Aileci) seninle eşleşti ve ilk buluşmanız harika geçti! (Flört)",
+        "age": 32,
+        "year": 2036,
+        "text": "💘 EŞLEŞME! Derin Duran (30, Müzisyen - Çapkın & Özgür Ruhlu) seninle eşleşti ve ilk buluşmanız harika geçti! (Flört)",
         "category": "love",
         "icon": "💘"
       },
       {
-        "age": 25,
-        "year": 2028,
-        "text": "🌹 Seda Koç ile '🎬 Sinema & Kahve Randevusu' randevunuz büyüleyici geçti! (Romantik ruhuna tam hitap etti! 🔥) (İlişki +20)",
+        "age": 32,
+        "year": 2036,
+        "text": "🌹 RANDEVU RAPORU: ✨ ☕ Sahilde Çay, Simit ve Gün Batımı ortamında baş başa harika bir masa seçtiniz. Zekice ve flörtöz bir espriyle tansiyonu yükselttin; yanakları al al oldu. Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı! (İlişki +28, Mutluluk +22, Stres -15)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "⚖️🏆 MAHKEME ZAFERİ! '🦈 Cemiyetin Ünlü 'Köpekbalığı' Avukatı' savunması ve sunduğun delillerle hakimi ikna ettin! Tek kuruş nafaka ödemeden boşandın ve karşı taraftan +341,498 TL manevi tazminat kazandın!",
+        "category": "love",
+        "icon": "⚖️"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🪖💳 Bedelli askerlik ücretini (180,000 TL) yatırıp 28 günlük temel kışla eğitimini tamamladın ve tezkereni aldın!",
+        "category": "milestone",
+        "icon": "🪖"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "✨ 🥂 VIP İş & Sanat Müzayedesi ortamında Derin Güneş (30, Ünlü Müteahhit - Entelektüel) ile göz göze gelip tanıştın! (Flört)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🎁 Derin Güneş aldığın '💎 Pırlanta Kolye & Lüks Saat' hediyesine bayıldı ve boynuna sarıldı! (İlişki +40)",
+        "category": "love",
+        "icon": "🎁"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🗳️🏛️ SEÇİM ZAFERİ! Sandıklar açıldı ve halkın büyük desteğiyle '⚖️ Milletvekili & Parti Sözcüsü' seçildin! (Yıllık Makam Maaşı: 3,200,000 TL, Halk Desteği: %68)",
+        "category": "career",
+        "icon": "🏛️"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "📢🇹🇷 MEYDANLAR DOLDU TAŞTI! Coşkulu konuşmanla halkı selamladın! (Halk Desteği: %83, Karizma +6)",
+        "category": "career",
+        "icon": "📢"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %100, Karma +15)",
+        "category": "career",
+        "icon": "🏗️"
+      },
+      {
+        "age": 32,
+        "year": 2036,
+        "text": "🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %100, Karma +15)",
+        "category": "career",
+        "icon": "🏗️"
+      },
+      {
+        "age": 33,
+        "year": 2037,
+        "text": "33 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +10,382,779 TL. | 🏛️ ⚖️ Milletvekili & Parti Sözcüsü makam ödeneği: +3,200,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 33,
+        "year": 2037,
+        "text": "Gönlünü aldın ve aranızdaki buzlar eridi. Damla Kara sana sıkıca sarıldı. (İlişki +12)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 34,
+        "year": 2038,
+        "text": "'Yüksek Tansiyon' rahatsızlığı başladı.",
+        "category": "health",
+        "icon": "🤒"
+      },
+      {
+        "age": 34,
+        "year": 2038,
+        "text": "34 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +11,005,745 TL. | 🏛️ ⚖️ Milletvekili & Parti Sözcüsü makam ödeneği: +3,200,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 34,
+        "year": 2038,
+        "text": "Kayıt aldığını görünce saldırgan panikleyip kaçtı.",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "35 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +11,666,089 TL. | 🏛️ ⚖️ Milletvekili & Parti Sözcüsü makam ödeneği: +3,200,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "Gönlünü aldın ve aranızdaki buzlar eridi. Damla Kara sana sıkıca sarıldı. (İlişki +12)",
+        "category": "love",
+        "icon": "🔥"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "🗳️🏛️ SEÇİM ZAFERİ! Sandıklar açıldı ve halkın büyük desteğiyle '👑 Cumhurbaşkanı' seçildin! (Yıllık Makam Maaşı: 7,500,000 TL, Halk Desteği: %61)",
+        "category": "career",
+        "icon": "🏛️"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %79, Karma +15)",
+        "category": "career",
+        "icon": "🏗️"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "📢🇹🇷 MEYDANLAR DOLDU TAŞTI! Coşkulu konuşmanla halkı selamladın! (Halk Desteği: %94, Karizma +6)",
+        "category": "career",
+        "icon": "📢"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %100, Karma +15)",
+        "category": "career",
+        "icon": "🏗️"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "🏗️🌳 Yeni parklar, burslar ve altyapı projelerini hizmete açtın! Halk sana dua ediyor. (Halk Desteği: %100, Karma +15)",
+        "category": "career",
+        "icon": "🏗️"
+      },
+      {
+        "age": 35,
+        "year": 2039,
+        "text": "📢🇹🇷 MEYDANLAR DOLDU TAŞTI! Coşkulu konuşmanla halkı selamladın! (Halk Desteği: %100, Karizma +6)",
+        "category": "career",
+        "icon": "📢"
+      },
+      {
+        "age": 36,
+        "year": 2040,
+        "text": "36 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +12,366,054 TL. | 🏛️ 👑 Cumhurbaşkanı makam ödeneği: +7,500,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 36,
+        "year": 2040,
+        "text": "Telefonu karıştırdın; mesaj kuzenindenmiş! Ama Damla Kara uyandığında telefonunu karıştırdığını fark etti ve güveni sarsıldı! (İlişki -20)",
+        "category": "love",
+        "icon": "📱"
+      },
+      {
+        "age": 36,
+        "year": 2040,
+        "text": "🏠 'Boğaz Manzaralı Tarihi Yalı' tapusunu aldın! Yıllık 5,500,000 TL kira geliri sağlayacak.",
+        "category": "milestone",
+        "icon": "🏠"
+      },
+      {
+        "age": 37,
+        "year": 2041,
+        "text": "37 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +13,108,017 TL. | 🏛️ 👑 Cumhurbaşkanı makam ödeneği: +7,500,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 37,
+        "year": 2041,
+        "text": "Cüzdanı sahibine verdin. Sahibi minnettarlıktan sana 5.000 TL ödül verdi! (Karma +20)",
+        "category": "event",
+        "icon": "⚖️"
+      },
+      {
+        "age": 37,
+        "year": 2041,
+        "text": "🏎️ 'Porsche 911 Turbo S' satın aldın!",
+        "category": "milestone",
+        "icon": "🏎️"
+      },
+      {
+        "age": 37,
+        "year": 2041,
+        "text": "🏎️ 'Özel Süper Yat (35 Metre)' satın aldın!",
+        "category": "milestone",
+        "icon": "🏎️"
+      },
+      {
+        "age": 37,
+        "year": 2041,
+        "text": "🖼️🔨 SATILDI! Müzayedede en yüksek teklifi vererek '☄️ Nadir Mars Meteoriti & Elmas Küre' eserini koleksiyonuna kattın! (Her yıl yüksek değer kazanır, Şöhret +10)",
+        "category": "milestone",
+        "icon": "🖼️"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "38 Yaşına bastın. 💼 Yazılım Geliştirici maaşı: +13,894,498 TL. | 🏛️ 👑 Cumhurbaşkanı makam ödeneği: +7,500,000 TL (Halk Desteği: %100). | ⏱️ Freelance Web & Logo Tasarımcısı ek geliri: +160,000 TL.",
+        "category": "general",
+        "icon": "🎂"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "✨ 🪩 Popüler Gece Kulübü & Lounge ortamında Gökçe Yüksel (37, Pazarlama Uzmanı - Eğlenceli) ile göz göze gelip tanıştın! (Flört)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🍸✨ Gece kulübünden attığın story'ye yeni bir flört adayı '🔥' yanıtı bıraktı ve İlişkiler listene eklendi!",
+        "category": "love",
+        "icon": "🍸"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🫦 Derin Duran ile romantik yakınlaşma: '🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda'! ❤️ Bu büyülü öpücükle birlikte resmen SEVGİLİ oldunuz! (İlişki +22, Sadakat +5, Stres -20)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🫦 Derin Duran ile romantik yakınlaşma: '🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda'! (İlişki +22, Sadakat +5, Stres -20)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "💋 Derin Duran ile romantik yakınlaşma: '💋 Dudağına Masum ve Zarif Bir Öpücük Kondur'! (İlişki +18, Sadakat +6, Stres -16)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "😊 Derin Duran ile romantik yakınlaşma: '😊 Yanağından Masum Bir Buse Al'! (İlişki +10, Sadakat +4, Stres -8)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "😊 Derin Duran ile romantik yakınlaşma: '😊 Yanağından Masum Bir Buse Al'! (İlişki +10, Sadakat +4, Stres -8)",
+        "category": "love",
+        "icon": "💋"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🌹 RANDEVU RAPORU: 😍 Derin Güneş (Entelektüel) mekana bayıldı, gözleri parıldadı! Hesabı cömertçe ve sessizce tek başına ödedin; partnerin karizmandan çok etkilendi. Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı! (İlişki +32, Mutluluk +22, Stres -15)",
+        "category": "love",
+        "icon": "🌹"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🚪💥 KAPIYI ÇARPIP GİTTİ! Derin Güneş öfkene karşı dehşete düşüp çantasını aldı ve kapıyı çarpıp evi terk etti! (İlişki -32)",
+        "category": "love",
+        "icon": "💥"
+      },
+      {
+        "age": 38,
+        "year": 2042,
+        "text": "🌹 RANDEVU RAPORU: 😍 Derin Güneş (Entelektüel) mekana bayıldı, gözleri parıldadı! Hesabı cömertçe ve sessizce tek başına ödedin; partnerin karizmandan çok etkilendi. Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı! (İlişki +32, Mutluluk +22, Stres -15)",
         "category": "love",
         "icon": "🌹"
       }
@@ -982,15 +2431,194 @@
       "status": "playing"
     },
     "spouse_id": null,
-    "dating_partner_id": "person_lover_5_62",
+    "dating_partner_id": "person_lover_10_38",
+    "pregnancy_partner_id": "person_lover_6_95",
+    "pregnancy_baby_gender": "Erkek",
+    "political_office": "👑 Cumhurbaşkanı",
+    "political_salary": 7500000,
+    "approval_rating": 100,
+    "outfit_style": "💎 Ultra Lüks İtalyan Tasarım & Saat",
+    "housing_type": "Aile Evi",
+    "scholarship_annual": 0,
+    "yks_score": 0,
+    "kpss_score": 0,
+    "band": {
+      "name": "t",
+      "genre": "🎻 Akustik Pop & Caz Orkestrası",
+      "albums_count": 59,
+      "chemistry": 85,
+      "fans": 3326047,
+      "annual_royalties": 10665000
+    },
+    "offshore_balance": 0,
+    "wealth_history": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4811,
+      4811,
+      9811,
+      9811,
+      7811,
+      7811,
+      7811,
+      7811,
+      11111,
+      -173889,
+      -358889,
+      -358889,
+      -198889,
+      -38889,
+      -63889,
+      -88889,
+      2432446,
+      4724888,
+      7651544,
+      12634528,
+      73385486,
+      89957421,
+      104986535,
+      120380815,
+      139984316,
+      158399931,
+      177248647,
+      191312626,
+      223091520,
+      246042134
+    ],
+    "happiness_history": [
+      80,
+      88,
+      88,
+      88,
+      63,
+      38,
+      13,
+      0,
+      6,
+      27,
+      47,
+      40,
+      33,
+      50,
+      50,
+      72,
+      72,
+      100,
+      88,
+      88,
+      88,
+      70,
+      52,
+      44,
+      26,
+      100,
+      100,
+      100,
+      94,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "sports_career": {
+      "sport": "Futbol Kulüp Başkanlığı",
+      "team_name": "Antalya SK",
+      "league_tier": "Kulüp Başkanı & Sahibi",
+      "salary": 3200000,
+      "goals_or_points": 13,
+      "trophies": 1,
+      "national_caps": 5,
+      "owns_club": true,
+      "club_valuation": 20000000
+    },
+    "alimony_annual": 0,
+    "last_tax_paid": 16847987,
+    "difficulty_mode": "Gerçek Hayat (Zor)",
+    "last_annual_summary": {
+      "year": 2042,
+      "age": 38,
+      "total_income": 41017398,
+      "total_expense": 20365987,
+      "net": 20651411,
+      "incomes": [
+        {
+          "label": "💼 Yazılım Geliştirici Maaşı",
+          "amount": 13894498
+        },
+        {
+          "label": "🏛️ 👑 Cumhurbaşkanı Ödeneği",
+          "amount": 7500000
+        },
+        {
+          "label": "⏱️ Freelance Web & Logo Tasarımcısı Ek Geliri",
+          "amount": 160000
+        },
+        {
+          "label": "🎸 't' Telif & Konser",
+          "amount": 10665000
+        },
+        {
+          "label": "⚽ 'Antalya SK' Spor Maaşı",
+          "amount": 3200000
+        },
+        {
+          "label": "🏠 Mülk Kira Gelirleri",
+          "amount": 5500000
+        },
+        {
+          "label": "💑 Damla Kara Ev Katkısı",
+          "amount": 97900
+        }
+      ],
+      "expenses": [
+        {
+          "label": "🛠️ Gayrimenkul & Araç Bakım Masrafları",
+          "amount": 3368000
+        },
+        {
+          "label": "🛒 Yıllık Yaşam, Fatura & Mutfak Gideri",
+          "amount": 95000
+        },
+        {
+          "label": "👶 1 Çocuk Okul & Bakım",
+          "amount": 55000
+        },
+        {
+          "label": "🏛️ Gelir Vergisi, SGK & Emlak/MTV",
+          "amount": 16847987
+        }
+      ]
+    },
     "achievements": [
       "born",
       "first_love",
       "driver",
       "graduate",
-      "heartbreaker",
+      "millionaire",
+      "fashion_icon",
+      "child",
+      "multimillionaire",
+      "ballon_dor",
+      "billionaire",
       "married",
-      "child"
+      "heartbreaker",
+      "military_vet",
+      "politician",
+      "homeowner",
+      "collector"
     ]
   },
   "graveyard": []

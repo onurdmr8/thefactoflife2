@@ -859,6 +859,239 @@ SPORTS_CLUBS = [
     {"id": "euroleague_bask", "name": "🏀 İstanbul EuroLeague Basketbol", "sport": "Basketbol", "tier": "EuroLeague", "salary": 3800000, "req_ath": 70}
 ]
 
+RELATIONSHIP_CONFLICTS = [
+    {
+        "id": "bayram_family",
+        "title": "🍬 Bayramda Kimin Ailesine Gidilecek?",
+        "desc": "Kurban/Ramazan bayramı sabahı partnerin kaşlarını çattı: 'Her bayram senin ailene gidiyoruz, bu bayram kesinlikle önce benim annemlere gideceğiz!'",
+        "options": [
+            {"id": "compromise", "text": "🤝 'Önce senin ailene gidelim, akşam da benimkilere geçeriz' diyerek uzlaş.", "style": "Uyumlu"},
+            {"id": "fight_back", "text": "😤 'Benim ailem büyük, geleneklerimize saygı duy!' diyerek sesini yükselt.", "style": "Sert"},
+            {"id": "sweet_gift", "text": "🎁 'İki tarafa da gideceğiz ama önce sana bayram hediyesi alalım' de (10.000 TL).", "style": "Jest"}
+        ]
+    },
+    {
+        "id": "social_media_likes",
+        "title": "🔥 Sosyal Medya & Eski Sevgili Beğenisi",
+        "desc": "Partnerin telefonunu önüne koydu: 'Instagram'da eski sevgilinin/okul arkadaşının tatil fotoğrafına alev (🔥) atmışsın! Bu ne rezalet?!'",
+        "options": [
+            {"id": "apologize_block", "text": "🕊️ 'Haklısın düşüncesizlik ettim' deyip partnerinin önünde takipten çık.", "style": "Özür"},
+            {"id": "gaslight", "text": "📱 'Sadece arkadaşça bir beğeni, abartıyorsun ve bana güvenmiyorsun!' de.", "style": "Savunma"},
+            {"id": "counter_attack", "text": "🔥 'Senin geçen hafta beğendiğin fitness antrenörünü konuşalım istersen!' de.", "style": "Karşı Atak"}
+        ]
+    },
+    {
+        "id": "budget_spending",
+        "title": "💳 Kredi Kartı Ekstresi & Lüks Harcama Krizi",
+        "desc": "Aylık hesap ekstresi geldiğinde partnerin şok oldu: 'Bu ay bütçemizi aşmışsın! Sürekli dışarıda yemek ve lüks harcamalar yapıyoruz!'",
+        "options": [
+            {"id": "tighten_belt", "text": "📉 'Haklısın canım, gelecek ay tasarruf planı yapalım ve bütçeyi toparlayalım.'", "style": "Mali Disiplin"},
+            {"id": "my_money", "text": "💰 'Kendi kazandığım paranın hesabını sana mı vereceğim?!' diyerek çıkış.", "style": "Bireysel"},
+            {"id": "spa_treat", "text": "💆 'Stresliyiz, gel bu hafta sonu ikimize güzel bir masaj/tatil ayarlayayım.' (8.000 TL)", "style": "Kaçış"}
+        ]
+    },
+    {
+        "id": "night_out",
+        "title": "🌙 Arkadaşlarla Gece Gezmesi & Eve Geç Gelme",
+        "desc": "Arkadaşlarınla gece 02:30'a kadar dışarıda takıldın. Eve girdiğinde partnerin ayakta kollarını bağlamış seni bekliyordu!",
+        "options": [
+            {"id": "warm_hug", "text": "🤗 Çiçekle sarıl, 'Arkadaşlarla muhabbet uzadı ama aklım hep sendeydi' de.", "style": "Şefkat"},
+            {"id": "defend_space", "text": "🚶 'Beni bu kadar kısıtlama, bazen kafamı dağıtmaya ihtiyacım var!' de.", "style": "Özgürlük"},
+            {"id": "sleep_ignore", "text": "🥱 Tartışmaya girmeden 'Çok uykum var, sabah konuşuruz' deyip uyu.", "style": "Geçiştirme"}
+        ]
+    }
+]
+
+COMPANY_EXPANSION_ACTIONS = [
+    {"id": "marketing", "name": "📣 Viral Reklam & Influencer Kampanyası", "cost": 150000, "desc": "Yıllık kârı %35 sıçratır ve müşteri trafiğini patlatır."},
+    {"id": "rd_patent", "name": "💡 AR-GE & Yeni Nesil Ürün Lansmanı", "cost": 300000, "desc": "Şirket değerlemesini %40 artırır ve sektörel patent kazandırır."},
+    {"id": "employee_bonus", "name": "🎁 Çalışanlara Çift Maaş İkramiyesi & Moral Partisi", "cost": 85000, "desc": "Çalışan sadakatini ve şirket itibarını zirveye (%100) çıkarır."},
+    {"id": "open_branch", "name": "🏬 Büyükşehirde Yeni Şube Açma", "cost": 500000, "desc": "Yıllık kâra doğrudan +₺220.000/yıl kalıcı katkı sağlar."}
+]
+
+CAR_CARE_ACTIONS = [
+    {"id": "maintenance", "name": "🔧 Sanayi / Yetkili Servis Bakımı", "cost": 18000, "desc": "Aracın kondisyonunu %100 yapar, yolda kalma ve kaza riskini sıfırlar."},
+    {"id": "insurance", "name": "🛡️ Full Kasko & Genişletilmiş Sigorta", "cost": 25000, "desc": "Aracına 1 yıllık kasko güvencesi sağlar, olası kazalarda tek kuruş ödemezsin."},
+    {"id": "highway_speed", "name": "🏎️ Otobanda Gece Gazlama & Adrenalin", "cost": 2500, "desc": "Tüm stresi sıfırlar, mutluluk +25 kazandırır! (Radar veya kaza riski taşır)"}
+]
+
+TENANT_MANAGEMENT_ACTIONS = [
+    {"id": "demand_letter", "name": "📜 Noterden Resmi İhtarname Çek", "cost": 3500, "desc": "Gecikmiş kirayı yasal faiziyle tahsil eder, kiracıyı hizaya sokar."},
+    {"id": "friendly_talk", "name": "🤝 Yüz Yüze Görüş & Tatlıya Bağla", "cost": 0, "desc": "Ufak bir indirim veya vadeyle kiracının gönlünü alır, sorunları çözer."},
+    {"id": "eviction_lawsuit", "name": "⚖️ Tahliye Davası Aç & Tahliye Ettir", "cost": 15000, "desc": "Sorunlu kiracıyı polis/icra eşliğinde tahliye eder ve yeni güvenilir kiracı bulur."}
+]
+
+WELLNESS_SERVICES = [
+    {"id": "psychologist", "name": "🧠 Uzman Klinik Psikoloğu Terapi Seansı", "cost": 4500, "desc": "Tüm stresi ve tükenmişlik sendromunu sıfırlar, ruh halini tazeleyip mutluluk verir (+22)."},
+    {"id": "library", "name": "📚 Şehir Kütüphanesinde Kitap Okuma & Araştırma", "cost": 0, "desc": "Zihnini dinlendirir, genel kültür ve zekanı geliştirir (+6 Zeka)."},
+    {"id": "surgery", "name": "🏥 Özel Hastanede Uzman Cerrah Operasyonu", "cost": 85000, "desc": "Tedavi edilemeyen kronik ve ağır hastalıkları profesör hekimlerle ameliyat edip kalıcı iyileştirir."}
+]
+
+# ----------------- DETAYLI İLİŞKİ SİSTEMLERİ: ÖP, DATE, KAVGA -----------------
+
+KISS_STYLES = [
+    {
+        "id": "forehead",
+        "name": "🕊️ Alnından Şefkatle Öp",
+        "desc": "Güven, huzur ve koruyucu sevgi hissettirir. Sadık ve romantik partnerler bayılır.",
+        "rel_boost": 14,
+        "loyalty_boost": 8,
+        "stress_relief": 15,
+        "preferred_personalities": ["Sadık & Aileci", "Romantik"],
+        "icon": "🕊️"
+    },
+    {
+        "id": "cheek",
+        "name": "😊 Yanağından Masum Bir Buse Al",
+        "desc": "Kalp atışlarını hızlandıran tatlı ve samimi bir yakınlaşma.",
+        "rel_boost": 10,
+        "loyalty_boost": 4,
+        "stress_relief": 8,
+        "preferred_personalities": ["Romantik", "Entelektüel"],
+        "icon": "😊"
+    },
+    {
+        "id": "lips_gentle",
+        "name": "💋 Dudağına Masum ve Zarif Bir Öpücük Kondur",
+        "desc": "Göz göze gelip kalpleri titreten romantik bir kıvılcım.",
+        "rel_boost": 18,
+        "loyalty_boost": 6,
+        "stress_relief": 16,
+        "preferred_personalities": ["Romantik", "Sadık & Aileci", "Hırslı & Kariyerist"],
+        "icon": "💋"
+    },
+    {
+        "id": "lips_passionate",
+        "name": "🔥 Gözlerinin İçine Bakıp Tutkuyla Dudaklarına Yapış",
+        "desc": "Nefes kesici, derin ve ateşli bir öpüşme. Karizma ve çekicilik patlaması!",
+        "rel_boost": 25,
+        "loyalty_boost": 8,
+        "stress_relief": 22,
+        "preferred_personalities": ["Çılgın & Maceracı", "Romantik", "Materyalist"],
+        "icon": "🔥"
+    },
+    {
+        "id": "neck_whisper",
+        "name": "🫦 Belinden Kavrayıp Boynundan Öp & Kulağına Fısılda",
+        "desc": "Tensel çekimi ve heyecanı zirveye çıkaran cesur bir hamle.",
+        "rel_boost": 22,
+        "loyalty_boost": 5,
+        "stress_relief": 20,
+        "preferred_personalities": ["Çılgın & Maceracı", "Hırslı & Kariyerist"],
+        "icon": "🫦"
+    },
+    {
+        "id": "hand_gentleman",
+        "name": "✨ Elini Nazikçe Kaldırıp Avuç İçini Öp",
+        "desc": "Zarafet, saygı ve hayranlık dolu asil bir jest.",
+        "rel_boost": 15,
+        "loyalty_boost": 7,
+        "stress_relief": 12,
+        "preferred_personalities": ["Entelektüel", "Romantik", "Sadık & Aileci"],
+        "icon": "✨"
+    }
+]
+
+DETAILED_DATE_SCENARIOS = {
+    "mid_scenarios": [
+        {
+            "id": "bill_arrival",
+            "title": "🧾 Garson Hesabı Masaya Bıraktı",
+            "desc": "Mekanın şık garsonu hesabı deri sümen içinde masaya bıraktı ve hafifçe gülümsedi.",
+            "options": [
+                {"id": "pay_all", "name": "💳 Hesabın Tamamını Karizmatikçe Tek Başına Öde", "desc": "Cömertlik ve güç gösterisi."},
+                {"id": "split_bill", "name": "🤝 'Alman Usulü Kırışalım mı?' Teklifi Yap", "desc": "Modern ve eşitlikçi bir yaklaşım."},
+                {"id": "let_them_pay", "name": "😉 'Bu Seferlik Sıra Sendeydi' Diye Tatlıca Gülümse", "desc": "Flörtöz bir espriyle onun ödemesine izin ver."}
+            ]
+        },
+        {
+            "id": "romantic_music",
+            "title": "🎶 Arka Planda Büyüleyici Bir Romantik Şarkı Çalmaya Başladı",
+            "desc": "Işıklar hafifçe kısıldı, mekandaki herkes melodinin büyüsüne kapıldı.",
+            "options": [
+                {"id": "dance_slow", "name": "💃 Elinden Tutup Piste Yavaş Dansa Kaldır", "desc": "Gözlerinin içine bakarak yavaşça dans et."},
+                {"id": "sing_toast", "name": "🥂 Göz Göze Kadeh Kaldırıp Şarkıya Eşlik Et", "desc": "Gülümseyerek kadeh tokuşturun ve ambiyansı kutlayın."},
+                {"id": "hold_hands", "name": "🤲 Masanın Altından Elini Sıkıca Tutup Okşa", "desc": "Sessiz, samimi ve güven veren bir yakınlaşma."}
+            ]
+        },
+        {
+            "id": "deep_question",
+            "title": "❓ Partnerin Gözlerinin İçine Bakarak Derin Bir Soru Sordu",
+            "desc": "'Hayatta seni gerçekten en çok ne korkutur ve gelecekte kendini nerede görüyorsun?'",
+            "options": [
+                {"id": "vulnerable_truth", "name": "🥺 Tüm Kırılganlığınla En Büyük Hayalini Anlat", "desc": "Maskeleri indirip tüm dürüstlüğünle kalbini aç."},
+                {"id": "witty_flirt", "name": "😏 Zekice ve Flörtöz Bir Espriyle Konuyu Bize Getir", "desc": "'Sensiz kalmak korkutur' diyerek havayı romantikleştir."},
+                {"id": "listen_them", "name": "👂 'Asıl Sen Anlat, Senin Ruhunu Dinlemek İstiyorum' De", "desc": "İlgiyi tamamen ona vererek can kulağıyla dinle."}
+            ]
+        }
+    ],
+    "end_scenarios": [
+        {"id": "kiss_goodbye", "name": "💋 Kapısının Önünde Yanağına/Dudağına Unutulmaz Bir Veda Busesi Kondur", "desc": "Ayrılırken kalbini arkanda bırakacak büyüleyici bir kapanış."},
+        {"id": "invite_coffee", "name": "☕ 'Geceyi Bitirmeyelim, Yukarı Bir Kahve İçmeye Gelir Misin?' Daveti Yap", "desc": "Randevuyu daha samimi ve özel bir ortama taşıma teklifi."},
+        {"id": "warm_hug_walk", "name": "🫂 Sıkıca Sarılıp 'Bu Hayatımın En Güzel Gecesiydi' Deyip Ayrıl", "desc": "İçten, sıcacık ve güven veren bir kucaklaşma."}
+    ]
+}
+
+DETAILED_FIGHT_TOPICS = [
+    {
+        "id": "jealousy_dm",
+        "name": "📱 Sosyal Medyada Gizli Takipleşmeler & Şüpheli Beğeniler",
+        "desc": "Gece yarıları gelen bildirimler, hikaye stalklamaları ve eski flörtlerin fotoğraflarına bırakılan alev emojileri!"
+    },
+    {
+        "id": "money_waste",
+        "name": "💸 Sorumsuz Para Harcama & Geleceğe Dair Bütçe Kaygısı",
+        "desc": "Gereksiz lüks harcamalar, birikim yapmama ve evin ortak bütçesine gereken önemi vermeme krizi!"
+    },
+    {
+        "id": "commitment_fear",
+        "name": "💍 Gelecekten Kaçma & İlişkinin Adını / Evliliği Erteleme",
+        "desc": "Aylardır/yıllardır süren belirsizlik; ne zaman evlenileceğine veya nereye varacağına dair söz vermekten kaçış!"
+    },
+    {
+        "id": "family_interference",
+        "name": "👵 Eşin/Partnerin Ailesinin İlişkiye Haddinden Fazla Karışması",
+        "desc": "Kayınvalide baskısı, her karara akrabaların burnunu sokması ve partnerin ailesine sınır çizememesi!"
+    },
+    {
+        "id": "cold_neglect",
+        "name": "❄️ Son Zamanlardaki Ruhsuz, İlgisiz ve Soğuk Davranışlar",
+        "desc": "Eve geldiğinde telefondan kafasını kaldırmaması, sarılmaması ve sevgiyi hissettirmemesi!"
+    },
+    {
+        "id": "secret_ex",
+        "name": "💔 Eski Sevgiliyle Gizli Görüşme / Bitmeyen İletişim",
+        "desc": "'Biz sadece medeni iki insanız' bahanesiyle eski sevgiliyle mesajlaşılması veya karşılaşılması!"
+    }
+]
+
+DETAILED_FIGHT_ATTITUDES = [
+    {
+        "id": "rage_explosion",
+        "name": "🤬 Kapıları Çarp & Avazın Çıktığı Kadar Bağır (Öfke Patlaması)",
+        "desc": "Tüm bastırılmış duygularını bağırarak dışa vur! (Çok yüksek kavga ve ayrılık riski)",
+        "intensity": 90
+    },
+    {
+        "id": "cold_sarcasm",
+        "name": "🧊 Buz Gibi İğnelemelerle Canını Acıt (Pasif Agresif)",
+        "desc": "Sesini hiç yükseltmeden en hassas yerlerinden laf sokarak gururunu incit.",
+        "intensity": 65
+    },
+    {
+        "id": "emotional_tears",
+        "name": "🥺 Gözyaşlarıyla Ne Kadar Çok Kırıldığını ve Tükendiğini Anlat",
+        "desc": "Öfke yerine hüznü seçip dökülen gözyaşlarıyla onun vicdanına ve sevgisine hitap et.",
+        "intensity": 45
+    },
+    {
+        "id": "calm_ultimatum",
+        "name": "⚖️ Masaya Oturup Somut Kanıtlarla Net Bir Rest Çek",
+        "desc": "'Ya bu durumu hemen düzeltirsin ya da bavulunu topla!' ciddiyetiyle konuş.",
+        "intensity": 80
+    }
+]
+
 ACHIEVEMENT_DEFINITIONS = [
     {"id": "born", "icon": "🍼", "title": "Hayata Merhaba", "desc": "Dünyaya gözlerini açtın."},
     {"id": "first_love", "icon": "💘", "title": "İlk Kıvılcım", "desc": "İlk kez aşık oldun ve sevgili edindin."},

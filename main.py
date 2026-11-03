@@ -33,7 +33,10 @@ from game.data import (
     ENGAGEMENT_RINGS, WEDDING_VENUES,
     LOVE_LANGUAGES, COUPLE_VACATIONS, SOCIAL_HANGOUTS, DM_TOPICS,
     POLITICAL_OFFICES, AUCTION_ITEMS, OUTFIT_STYLES, EXAM_QUESTIONS,
-    BAND_GENRES, COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS
+    BAND_GENRES, COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS,
+    RELATIONSHIP_CONFLICTS, COMPANY_EXPANSION_ACTIONS, CAR_CARE_ACTIONS,
+    TENANT_MANAGEMENT_ACTIONS, WELLNESS_SERVICES,
+    KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -52,6 +55,9 @@ from game.activities import (
     change_student_housing, change_outfit_style,
     do_drama_intrigue_action, create_music_band, do_band_action, do_bank_offshore_action,
     do_couple_business, do_divorce_court, do_pro_sports_action,
+    do_relationship_conflict, do_company_management_action,
+    do_tenant_action, do_car_care_action, do_wellness_action,
+    do_detailed_kiss, do_detailed_date, do_detailed_fight,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -293,6 +299,22 @@ def handle_activity(req: ActivityRequest):
         res = do_divorce_court(current_character, p.get("person_id", ""), p.get("lawyer_id", "baro"))
     elif act == "pro_sports":
         res = do_pro_sports_action(current_character, p.get("sub_action", "join_academy"), p.get("club_id", "anadolu_fk"))
+    elif act == "rel_conflict":
+        res = do_relationship_conflict(current_character, p.get("person_id", ""), p.get("conflict_id", ""), p.get("choice_id", ""))
+    elif act == "company_manage":
+        res = do_company_management_action(current_character, p.get("action_id", "marketing"))
+    elif act == "tenant_manage":
+        res = do_tenant_action(current_character, p.get("asset_id", ""), p.get("action_id", "demand_letter"))
+    elif act == "car_care":
+        res = do_car_care_action(current_character, p.get("asset_id", ""), p.get("action_id", "maintenance"))
+    elif act == "wellness_action":
+        res = do_wellness_action(current_character, p.get("action_id") or p.get("service_id", "psychologist"))
+    elif act == "detailed_kiss":
+        res = do_detailed_kiss(current_character, p.get("person_id", ""), p.get("kiss_id", "lips_gentle"))
+    elif act == "detailed_date":
+        res = do_detailed_date(current_character, p.get("person_id", ""), p.get("venue_id", "tea_simit"), p.get("mid_choice", ""), p.get("end_choice", ""))
+    elif act == "detailed_fight":
+        res = do_detailed_fight(current_character, p.get("person_id", ""), p.get("topic_id", "jealousy_dm"), p.get("attitude_id", "calm_ultimatum"))
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -366,7 +388,16 @@ def get_market_data():
         "band_genres": BAND_GENRES,
         "couple_businesses": COUPLE_BUSINESS_TYPES,
         "divorce_lawyers": DIVORCE_LAWYERS,
-        "sports_clubs": SPORTS_CLUBS
+        "sports_clubs": SPORTS_CLUBS,
+        "relationship_conflicts": RELATIONSHIP_CONFLICTS,
+        "company_expansion_actions": COMPANY_EXPANSION_ACTIONS,
+        "car_care_actions": CAR_CARE_ACTIONS,
+        "tenant_management_actions": TENANT_MANAGEMENT_ACTIONS,
+        "wellness_services": WELLNESS_SERVICES,
+        "kiss_styles": KISS_STYLES,
+        "detailed_date_scenarios": DETAILED_DATE_SCENARIOS,
+        "detailed_fight_topics": DETAILED_FIGHT_TOPICS,
+        "detailed_fight_attitudes": DETAILED_FIGHT_ATTITUDES
     }
 
 @app.get("/api/graveyard")

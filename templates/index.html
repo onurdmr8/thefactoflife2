@@ -32,6 +32,9 @@
                 <button type="button" class="btn-icon-pill" onclick="openStatsChartModal()" title="Yaşam & Servet Grafikleri">
                     📊 Grafik
                 </button>
+                <button type="button" class="btn-icon-pill" onclick="openAnnualBudgetModal()" title="Yıllık Finansal Bütçe Karnesi">
+                    📑 Bütçe
+                </button>
                 <button type="button" id="btnSoundToggle" class="btn-icon-pill" onclick="toggleSound()" title="Sesi Aç/Kapat">
                     🔊
                 </button>
@@ -256,6 +259,18 @@
                 <button type="button" class="activity-btn" onclick="performActivity('meditation')">
                     <span>🧘</span>
                     <div>Meditasyon</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openWellnessModal('psychologist')">
+                    <span>🧠</span>
+                    <div>Klinik Psikolog</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openWellnessModal('library')">
+                    <span>📚</span>
+                    <div>Kütüphane & Kitap</div>
+                </button>
+                <button type="button" class="activity-btn" onclick="openWellnessModal('surgery')">
+                    <span>🏥</span>
+                    <div>Uzman Cerrahi</div>
                 </button>
                 <button type="button" class="activity-btn" onclick="openPlasticSurgeryModal()">
                     <span>💉</span>

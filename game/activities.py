@@ -19,7 +19,10 @@ from .data import (
     LOVE_LANGUAGES, COUPLE_VACATIONS, SOCIAL_HANGOUTS, DM_TOPICS,
     PET_BREEDS, PET_NAMES, POLITICAL_OFFICES, AUCTION_ITEMS,
     OUTFIT_STYLES, EXAM_QUESTIONS, BAND_GENRES,
-    COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS
+    COUPLE_BUSINESS_TYPES, DIVORCE_LAWYERS, SPORTS_CLUBS,
+    RELATIONSHIP_CONFLICTS, COMPANY_EXPANSION_ACTIONS, CAR_CARE_ACTIONS,
+    TENANT_MANAGEMENT_ACTIONS, WELLNESS_SERVICES,
+    KISS_STYLES, DETAILED_DATE_SCENARIOS, DETAILED_FIGHT_TOPICS, DETAILED_FIGHT_ATTITUDES
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -2799,6 +2802,475 @@ def do_pro_sports_action(char: Character, sub_action: str, club_id: str = "anado
         return {"success": True, "message": msg}
 
     return {"success": False, "message": "Geçersiz spor kariyeri eylemi."}
+
+# ----------------- MEVCUT ALANLARI GELİŞTİRME & DERİNLEŞTİRME -----------------
+
+def do_relationship_conflict(char: Character, person_id: str, conflict_id: str, choice_id: str) -> Dict[str, Any]:
+    """Çiftler arası interaktif kriz yönetimi ve diyalog çözümü."""
+    if not person_id:
+        person = next((p for p in char.relationships if (p.relation in ["Sevgili", "Eş", "Nişanlı"] or p.id == char.dating_partner_id) and p.is_alive), None)
+    else:
+        person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Partner veya kişi bulunamadı."}
+    conflict = next((c for c in RELATIONSHIP_CONFLICTS if c["id"] == conflict_id), RELATIONSHIP_CONFLICTS[0])
+    chosen = next((opt for opt in conflict["options"] if opt["id"] == choice_id), conflict["options"][0])
+
+    if chosen["id"] in ["compromise", "apologize_block", "tighten_belt", "warm_hug"]:
+        person.relationship_level = min(100, person.relationship_level + 16)
+        person.loyalty = min(100, person.loyalty + 6)
+        char.happiness = min(100, char.happiness + 12)
+        char.karma = min(100, char.karma + 6)
+        person.memories.append(f"'{conflict['title']}' tartışmasını olgunluk ve sevgiyle tatlıya bağladınız.")
+        msg = f"🕊️ KRİZ ÇÖZÜLDÜ! {person.name} uzlaşmacı ve sevgi dolu tavrına hayran kaldı, boynuna sarılıp barıştınız! (İlişki +16, Mutluluk +12)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🕊️"))
+        return {"success": True, "message": msg}
+
+    elif chosen["id"] in ["fight_back", "gaslight", "my_money", "defend_space"]:
+        person.relationship_level = max(5, person.relationship_level - 22)
+        char.stress = min(100, char.stress + 15)
+        char.happiness = max(5, char.happiness - 16)
+        person.memories.append(f"'{conflict['title']}' konusunda sertçe tartıştınız ve kırgınlık oluştu.")
+        msg = f"💥 ŞİDDETLİ KAVGA! {person.name} kapıyı çarpıp odayı terk etti! Aranızda buz gibi rüzgarlar esiyor! (İlişki -22, Stres +15)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💥"))
+        return {"success": True, "message": msg}
+
+    else:
+        # Hediye, kaçış veya jest
+        cost = 10000 if chosen["id"] == "sweet_gift" else (8000 if chosen["id"] == "spa_treat" else 0)
+        if char.money >= cost:
+            char.money -= cost
+        person.relationship_level = min(100, person.relationship_level + 10)
+        char.happiness = min(100, char.happiness + 8)
+        person.memories.append(f"'{conflict['title']}' krizinde gerginliği yumuşattın.")
+        msg = f"🥂 TARTIŞMA YATIŞTI: {person.name} biraz sakinleşti ama konunun üstü şimdilik tatlıya bağlandı. (İlişki +10)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🥂"))
+        return {"success": True, "message": msg}
+
+def do_company_management_action(char: Character, action_id: str) -> Dict[str, Any]:
+    """Şirket Patronu Karar Odası: Pazarlama, AR-GE, Çalışan Primi ve Yeni Şube."""
+    if not char.business:
+        return {"success": False, "message": "Aktif bir şirketin bulunmuyor!"}
+    b = char.business
+    act = next((a for a in COMPANY_EXPANSION_ACTIONS if a["id"] == action_id), None)
+    if not act:
+        return {"success": False, "message": "Geçersiz şirket kararı."}
+    if char.money < act["cost"]:
+        return {"success": False, "message": f"'{act['name']}' kararı için {act['cost']:,} TL şirket bütçesi gerekli."}
+
+    char.money -= act["cost"]
+
+    if action_id == "marketing":
+        b.annual_profit = int(b.annual_profit * 1.35)
+        b.reputation = min(100, b.reputation + 10)
+        msg = f"📣🚀 VİRAL KAMPANYA PATLADI! '{b.name}' reklamları sosyal medyada viral oldu! Yıllık şirket kârın {b.annual_profit:,} TL'ye yükseldi!"
+    elif action_id == "rd_patent":
+        b.valuation = int(b.valuation * 1.40)
+        char.smarts = min(100, char.smarts + 6)
+        msg = f"💡🔬 AR-GE ZAFERİ! '{b.name}' yeni nesil tescilli ürününü duyurdu! Şirket değerlemesi {b.valuation:,} TL'ye fırladı!"
+    elif action_id == "employee_bonus":
+        b.reputation = 100
+        char.happiness = min(100, char.happiness + 16)
+        char.karma = min(100, char.karma + 10)
+        msg = f"🎁🎉 ÇİFTE MAAŞ & MORAL PARTİSİ! Tüm çalışanlarına ikramiye dağıttın! Şirket itibarı ve çalışan sadakati tavan yaptı (%100)!"
+    elif action_id == "open_branch":
+        b.annual_profit += 220000
+        b.employees += 8
+        b.valuation += 450000
+        msg = f"🏬✨ YENİ ŞUBE AÇILDI! '{b.name}' metropolde görkemli bir şube daha açtı! Yıllık kârına kalıcı +220.000 TL eklendi!"
+    else:
+        msg = "Karar uygulandı."
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏢"))
+    return {"success": True, "message": msg}
+
+def do_tenant_action(char: Character, asset_id: str, action_id: str) -> Dict[str, Any]:
+    """Emlak & Kiracı Kriz Yönetimi: Noter ihtarnamesi, görüşme ve tahliye davası."""
+    asset = next((a for a in char.assets if a.id == asset_id and a.asset_type == "Ev"), None)
+    if not asset:
+        return {"success": False, "message": "Ev bulunamadı."}
+
+    act = next((a for a in TENANT_MANAGEMENT_ACTIONS if a["id"] == action_id), None)
+    if not act:
+        return {"success": False, "message": "Geçersiz kiracı işlemi."}
+    if act["cost"] > 0 and char.money < act["cost"]:
+        return {"success": False, "message": f"'{act['name']}' için {act['cost']:,} TL gerekli."}
+
+    if act["cost"] > 0:
+        char.money -= act["cost"]
+
+    if action_id == "demand_letter":
+        asset.tenant_issue = None
+        asset.tenant_reliability = min(100, asset.tenant_reliability + 15)
+        msg = f"📜⚖️ NOTER İHTARNAMESİ ÇEKİLDİ! Kiracın {asset.tenant_name} ihtarı görünce hemen gecikmiş kirasını ödedi ve kurallara uyacağını taahhüt etti!"
+    elif action_id == "friendly_talk":
+        asset.tenant_issue = None
+        char.happiness = min(100, char.happiness + 6)
+        char.karma = min(100, char.karma + 5)
+        msg = f"🤝☕ TATLI DİLLE ÇÖZÜLDÜ: Kiracın {asset.tenant_name} ile çay içip dertleştin, aranızdaki pürüzler çözüldü."
+    elif action_id == "eviction_lawsuit":
+        old_t = asset.tenant_name or "Eski Kiracı"
+        target_gender = random.choice(["Erkek", "Kadın"])
+        pool = FIRST_NAMES_FEMALE if target_gender == "Kadın" else FIRST_NAMES_MALE
+        new_t = f"{random.choice(pool)} {random.choice(LAST_NAMES)}"
+        asset.tenant_name = new_t
+        asset.tenant_reliability = 92
+        asset.tenant_issue = None
+        msg = f"⚖️📦 TAHLİYE BAŞARILI! Mahkeme kararıyla {old_t} tahliye edildi ve ev yüksek puanlı güvenilir yeni kiracı '{new_t}'ye kiralandı!"
+    else:
+        msg = "İşlem yapıldı."
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🏠"))
+    return {"success": True, "message": msg}
+
+def do_car_care_action(char: Character, asset_id: str, action_id: str) -> Dict[str, Any]:
+    """Araba Servisi, Full Kasko ve Otobanda Gece Gazlama."""
+    asset = next((a for a in char.assets if a.id == asset_id and a.asset_type == "Araba"), None)
+    if not asset:
+        return {"success": False, "message": "Araba bulunamadı."}
+
+    act = next((a for a in CAR_CARE_ACTIONS if a["id"] == action_id), None)
+    if not act:
+        return {"success": False, "message": "Geçersiz araç işlemi."}
+    if char.money < act["cost"]:
+        return {"success": False, "message": f"'{act['name']}' için {act['cost']:,} TL gerekli."}
+
+    char.money -= act["cost"]
+
+    if action_id == "maintenance":
+        asset.condition = 100
+        asset.annual_cost = max(10000, int(asset.annual_cost * 0.82))
+        char.happiness = min(100, char.happiness + 8)
+        msg = f"🔧✨ SANAYİ & YETKİLİ SERVİS BAKIMI YAPILDI! '{asset.name}' aracının yağı, filtreleri ve frenleri yenilendi! (Kondisyon: %100)"
+    elif action_id == "insurance":
+        asset.has_insurance = True
+        char.happiness = min(100, char.happiness + 5)
+        msg = f"🛡️📋 FULL KASKO POLİÇESİ YAPILDI! '{asset.name}' 1 yıl boyunca tüm kaza ve hasarlara karşı %100 sigorta altına alındı!"
+    elif action_id == "highway_speed":
+        char.stress = 0
+        char.happiness = min(100, char.happiness + 25)
+        roll = random.random()
+        if roll < 0.20:
+            radar_fine = 8500
+            char.money -= radar_fine
+            msg = f"🏎️💨 OTOBANDA GECE GAZLANDI! Hız kadranını zorladın, tüm stresin uçup gitti! Ancak EDS radarından 8.500 TL hız cezası yedin!"
+        elif roll < 0.25:
+            if asset.has_insurance:
+                msg = f"🏎️💥 BARİYERE UFAK TEMAS: Virajda spin attın ancak kaskon olduğu için sigorta şirketi tüm masrafı karşıladı!"
+            else:
+                asset.condition = max(20, asset.condition - 25)
+                repair_cost = 45000
+                char.money -= repair_cost
+                msg = f"🏎️💥 KAZA GEÇİRDİN! Kaskon olmadığı için sanayide 45.000 TL tamir parası ödedin! (Araba Kondisyonu: %{asset.condition})"
+        else:
+            msg = f"🏎️🌙 EFSANE GECE SÜRÜŞÜ! Gece otobanda gaza yüklendin, müzik son ses ve rüzgar yüzünde! Tüm dertlerini unuttun! (Stres: %0, Mutluluk +25)"
+    else:
+        msg = "İşlem yapıldı."
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="🏎️"))
+    return {"success": True, "message": msg}
+
+def do_wellness_action(char: Character, action_id: str) -> Dict[str, Any]:
+    """Kişisel gelişim & Sağlık: Klinik Psikoloğu, Kütüphane Kitap Okuma ve Uzman Cerrahi."""
+    act = next((a for a in WELLNESS_SERVICES if a["id"] == action_id), None)
+    if not act:
+        return {"success": False, "message": "Geçersiz hizmet."}
+    if act["cost"] > 0 and char.money < act["cost"]:
+        return {"success": False, "message": f"'{act['name']}' için {act['cost']:,} TL gerekli."}
+
+    if act["cost"] > 0:
+        char.money -= act["cost"]
+
+    if action_id == "psychologist":
+        char.stress = 0
+        char.happiness = min(100, char.happiness + 24)
+        char.health = min(100, char.health + 8)
+        msg = "🧠🛋️ KLİNİK PSİKOLOG SEANSI: Terapistinle çocukluk travmalarını ve iş stresini konuştun. Kuş gibi hafifledin! (Stres: %0, Mutluluk +24)"
+    elif action_id == "library":
+        char.smarts = min(100, char.smarts + 6)
+        char.happiness = min(100, char.happiness + 8)
+        msg = "📚📖 KÜTÜPHANEDE BİLİM & KİTAP GÜNÜ: Gün boyu felsefe ve tarih kitapları okuyarak zihnini tazeledin! (Zeka +6, Mutluluk +8)"
+    elif action_id == "surgery":
+        char.health = min(100, char.health + 35)
+        char.happiness = min(100, char.happiness + 25)
+        if char.illnesses:
+            cured = char.illnesses.pop(0)
+            msg = f"🏥🩺 BAŞARILI AMELİYAT! Özel hastanede profesör cerrahlar tarafından ameliyat edildin ve '{cured}' rahatsızlığından tamamen kurtuldun! (Sağlık: %{char.health})"
+        else:
+            msg = f"🏥🩺 KAPSAMLI CHECK-UP & SAĞLIK DESTEĞİ: Özel klinikte tüm organların incelendi ve vitamin/ozon kürü uygulandı! (Sağlık: %{char.health})"
+    else:
+        msg = "İşlem yapıldı."
+
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="🩺"))
+    return {"success": True, "message": msg}
+
+# ----------------- DETAYLI İLİŞKİ SİSTEMLERİ: ÖP, DATE, KAVGA -----------------
+
+def do_detailed_kiss(char: Character, person_id: str, kiss_id: str) -> Dict[str, Any]:
+    """Detaylı öpüşme ve romantik yakınlaşma sistemi."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı veya hayatta değil."}
+    
+    kiss = next((k for k in KISS_STYLES if k["id"] == kiss_id), KISS_STYLES[1])
+    is_partner = person.relation in ["Flört", "Sevgili", "Nişanlı", "Eş"]
+    is_ex = person.relation in ["Eski Sevgili", "Eski Eş"]
+    is_friend = person.relation == "Arkadaş"
+    
+    # Arkadaş durumunda öpücük
+    if is_friend:
+        if kiss_id in ["lips_gentle", "lips_passionate", "neck_whisper"]:
+            if person.relationship_level >= 78 and random.random() < 0.70:
+                person.relation = "Flört"
+                person.relationship_level = min(100, person.relationship_level + 18)
+                char.happiness = min(100, char.happiness + 20)
+                msg = f"💘 BEKLENMEDİK AŞK KIVILCIMI! {person.name} dudaklarının dokunuşuyla donakaldı, gözleri parlayarak 'Ben de uzun zamandır bunu bekliyordum...' dedi! (Artık FLÖRT oldunuz!)"
+                person.memories.append("Arkadaşlığınız tutkulu bir öpücükle aşka dönüştü!")
+                char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💋"))
+                return {"success": True, "message": msg}
+            else:
+                person.relationship_level = max(10, person.relationship_level - 18)
+                char.happiness = max(5, char.happiness - 10)
+                msg = f"😳 TERS TEPKİ: {person.name} geri çekilip kızardı: 'Biz sadece arkadaşız, ne yapıyorsun?!' Aranızdaki hava buz gibi oldu. (İlişki -18)"
+                person.memories.append("Uygunsuz bir anda onu öpmeye kalkıştın.")
+                return {"success": False, "message": msg}
+        else:
+            # Masum veya şefkatli öpücük (alın, yanak, el)
+            person.relationship_level = min(100, person.relationship_level + 8)
+            char.happiness = min(100, char.happiness + 6)
+            msg = f"😊 {person.name} bu tatlı ve samimi jestine sıcacık bir tebessümle karşılık verdi. (İlişki +8)"
+            return {"success": True, "message": msg}
+
+    # Eski Sevgili durumunda öpücük
+    if is_ex:
+        if person.relationship_level >= 60 and random.random() < 0.65:
+            person.relationship_level = min(100, person.relationship_level + 25)
+            char.happiness = min(100, char.happiness + 18)
+            msg = f"🔥 ESKİ AŞK YENİDEN ALEVLENDİ! {person.name} gözlerini kapatıp sana teslim oldu: 'Seni asla unutamamışım...' Kalpleriniz yeniden aynı ritimde atıyor! (İlişki +25)"
+            person.memories.append("Ayrılığın ardından aranızda yeniden ateşli bir öpüşme yaşandı.")
+            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🔥"))
+            return {"success": True, "message": msg}
+        else:
+            person.relationship_level = max(5, person.relationship_level - 15)
+            char.happiness = max(5, char.happiness - 8)
+            msg = f"💔 {person.name} seni hafifçe itti: 'Biz bittik, eski hataları tekrar yaşamayalım...' (İlişki -15)"
+            return {"success": False, "message": msg}
+
+    # Partner (Flört, Sevgili, Nişanlı, Eş)
+    if is_partner:
+        boost = kiss["rel_boost"]
+        loyalty_boost = kiss["loyalty_boost"]
+        stress_relief = kiss["stress_relief"]
+        
+        bonus_text = ""
+        if person.personality in kiss.get("preferred_personalities", []):
+            boost = int(boost * 1.35)
+            loyalty_boost += 3
+            bonus_text = f" ({person.personality} ruhunu adeta mest etti! ✨)"
+            
+        person.relationship_level = min(100, person.relationship_level + boost)
+        person.loyalty = min(100, person.loyalty + loyalty_boost)
+        char.stress = max(0, char.stress - stress_relief)
+        char.happiness = min(100, char.happiness + 16)
+        
+        # Eğer Flört aşamasında ise ve dudaktan öpücükle ilişki >= 70 olduysa Sevgili'ye terfi!
+        if person.relation == "Flört" and person.relationship_level >= 70 and kiss_id in ["lips_gentle", "lips_passionate", "neck_whisper"]:
+            for p in char.relationships:
+                if p.relation == "Sevgili" and p.id != person.id:
+                    p.relation = "Eski Sevgili"
+            person.relation = "Sevgili"
+            char.dating_partner_id = person.id
+            if "first_love" not in char.achievements:
+                char.achievements.append("first_love")
+            bonus_text += " ❤️ Bu büyülü öpücükle birlikte resmen SEVGİLİ oldunuz!"
+            
+        memory_desc = f"{kiss['name']} ile romantik ve unutulmaz bir an yaşadınız."
+        person.memories.append(memory_desc)
+        
+        msg = f"{kiss['icon']} {person.name} ile romantik yakınlaşma: '{kiss['name']}'!{bonus_text} (İlişki +{boost}, Sadakat +{loyalty_boost}, Stres -{stress_relief})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💋"))
+        return {"success": True, "message": msg}
+    
+    # Aile veya diğerleri
+    person.relationship_level = min(100, person.relationship_level + 8)
+    return {"success": True, "message": f"🙏 {person.name} bu sevecen jestine gülümsedi. (İlişki +8)"}
+
+def do_detailed_date(char: Character, person_id: str, venue_id: str, mid_choice: str = "", end_choice: str = "") -> Dict[str, Any]:
+    """Çok aşamalı interaktif randevu simülasyonu."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Partner bulunamadı."}
+    
+    venue = next((v for v in DATE_VENUES if v["id"] == venue_id), DATE_VENUES[0])
+    if char.money < venue["cost"]:
+        return {"success": False, "message": f"'{venue['name']}' randevusu için {venue['cost']:,} TL gerekli."}
+    
+    char.money -= venue["cost"]
+    
+    # 1. Aşama: Mekan Uyumu
+    base_boost = venue["rel_boost"]
+    venue_comment = ""
+    if person.personality in venue.get("disliked_by", []):
+        base_boost = max(4, base_boost - 10)
+        venue_comment = f"😒 {person.name} ({person.personality}) mekan seçimini pek beğenmedi ve hafifçe söylendi."
+    elif person.personality in venue.get("best_for", []):
+        base_boost = int(base_boost * 1.4)
+        venue_comment = f"😍 {person.name} ({person.personality}) mekana bayıldı, gözleri parıldadı!"
+    else:
+        venue_comment = f"✨ {venue['name']} ortamında baş başa harika bir masa seçtiniz."
+        
+    # 2. Aşama: Randevu Ortası Olayı (mid_choice)
+    mid_comment = ""
+    mid_score = 0
+    if mid_choice == "pay_all":
+        mid_score += 8
+        char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + 3)
+        mid_comment = "Hesabı cömertçe ve sessizce tek başına ödedin; partnerin karizmandan çok etkilendi."
+    elif mid_choice == "split_bill":
+        if person.personality == "Materyalist":
+            mid_score -= 8
+            mid_comment = "Hesabı kırışmayı teklif edince partnerin yüzünü astı ve burun kıvırdı."
+        else:
+            mid_score += 4
+            mid_comment = "Hesabı adilce paylaştınız; eşitlikçi ve modern tavrını takdir etti."
+    elif mid_choice == "let_them_pay":
+        if person.wealth >= 60:
+            mid_score += 5
+            mid_comment = "Gülümseyerek hesabı ödemesine izin verdin; partnerin kendini güçlü ve önemsenmiş hissetti."
+        else:
+            mid_score -= 5
+            mid_comment = "Hesabı ona ödetince biraz mahcup oldu ve cüzdanını zorladı."
+    elif mid_choice == "dance_slow":
+        mid_score += 12
+        mid_comment = "Piste çıkıp romantik müzik eşliğinde birbirinize sarılarak dans ettiniz; etraftaki herkes size baktı!"
+    elif mid_choice == "sing_toast":
+        mid_score += 7
+        mid_comment = "Göz göze kadeh kaldırıp şarkıya neşeyle eşlik ettiniz, kahkahalar havada uçuştu."
+    elif mid_choice == "hold_hands":
+        mid_score += 9
+        mid_comment = "Masanın altından elini sımsıkı tuttun; parmakları parmaklarına kenetlendi ve sıcacık baktı."
+    elif mid_choice == "vulnerable_truth":
+        mid_score += 12
+        person.loyalty = min(100, person.loyalty + 8)
+        mid_comment = "Tüm samimiyetinle iç dünyanı açtın; partnerin sana olan güvenini ve hayranlığını dile getirdi."
+    elif mid_choice == "witty_flirt":
+        mid_score += 8
+        mid_comment = "Zekice ve flörtöz bir espriyle tansiyonu yükselttin; yanakları al al oldu."
+    elif mid_choice == "listen_them":
+        mid_score += 10
+        mid_comment = "Onun hayallerini ve geçmişini pürdikkat dinledin; 'Beni gerçekten anlayan tek insansın' dedi."
+        
+    # 3. Aşama: Gece Sonu Kapanışı (end_choice)
+    end_comment = ""
+    end_score = 0
+    if end_choice == "kiss_goodbye":
+        end_score += 10
+        end_comment = "Ayrılırken kapısının önünde yanağına/dudağına büyüleyici bir veda busesi kondurdun; kalbi deli gibi çarptı!"
+    elif end_choice == "invite_coffee":
+        if person.relationship_level >= 65:
+            end_score += 16
+            char.stress = 0
+            end_comment = "Davetini heyecanla kabul etti; gece boyu kahve içip sabahın ilk ışıklarına kadar baş başa kaldınız! 🔥"
+        else:
+            end_score += 2
+            end_comment = "Gülümseyerek 'Biraz daha birbirimizi tanıyalım' dedi ama yanağından öpüp içeri girdi."
+    elif end_choice == "warm_hug_walk":
+        end_score += 8
+        end_comment = "Birbirinize sımsıkı sarılıp 'Bu hayatımın en güzel gecesiydi' diyerek ayrıldınız."
+        
+    total_boost = base_boost + mid_score + end_score
+    person.relationship_level = min(100, person.relationship_level + total_boost)
+    char.happiness = min(100, char.happiness + 22)
+    char.stress = max(0, char.stress - 15)
+    
+    # Flört Terfisi Kontrolü
+    promo_note = ""
+    if person.relation == "Flört" and person.relationship_level >= 75:
+        existing_partner = next((p for p in char.relationships if p.relation in ["Sevgili", "Nişanlı", "Eş"] and p.id != person.id and p.is_alive), None)
+        if not existing_partner:
+            person.relation = "Sevgili"
+            char.dating_partner_id = person.id
+            promo_note = " ❤️ Randevu o kadar büyüleyici geçti ki artık resmen SEVGİLİSİNİZ!"
+            
+    memory_text = f"'{venue['name']}' randevusunda unutulmaz bir gece geçirdiniz."
+    person.memories.append(memory_text)
+    
+    summary_msg = f"🌹 RANDEVU RAPORU: {venue_comment} {mid_comment} {end_comment}{promo_note} (İlişki +{total_boost}, Mutluluk +22, Stres -15)"
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=summary_msg, category="love", icon="🌹"))
+    return {
+        "success": True,
+        "message": summary_msg,
+        "rel_boost": total_boost
+    }
+
+def do_detailed_fight(char: Character, person_id: str, topic_id: str, attitude_id: str) -> Dict[str, Any]:
+    """Detaylı kavga, hesaplaşma ve ilişki krizi motoru."""
+    person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
+    if not person:
+        return {"success": False, "message": "Kişi bulunamadı."}
+        
+    topic = next((t for t in DETAILED_FIGHT_TOPICS if t["id"] == topic_id), DETAILED_FIGHT_TOPICS[0])
+    attitude = next((a for a in DETAILED_FIGHT_ATTITUDES if a["id"] == attitude_id), DETAILED_FIGHT_ATTITUDES[0])
+    
+    craziness = getattr(person, "craziness", 50)
+    loyalty = getattr(person, "loyalty", 70)
+    rel_level = person.relationship_level
+    
+    char.stress = min(100, char.stress + 18)
+    char.happiness = max(5, char.happiness - 16)
+    
+    if attitude_id == "emotional_tears":
+        if loyalty >= 55:
+            person.relationship_level = max(20, person.relationship_level - 6)
+            person.loyalty = min(100, person.loyalty + 8)
+            msg = f"🥺 KAVGA YATIŞTI: {person.name} gözyaşlarını görünce dayanamayıp sana sımsıkı sarıldı: 'Özür dilerim, seni bu kadar incittiğimi fark etmemiştim...' '{topic['name']}' konusundaki hatasını telafi etmeye söz verdi."
+            person.memories.append(f"'{topic['name']}' krizinde döktüğün gözyaşları buzları eritti.")
+        else:
+            person.relationship_level = max(10, person.relationship_level - 16)
+            msg = f"😒 SOĞUK TEPKİ: {person.name} ağlamana kayıtsız kaldı: 'Dram yapmayı bırak, her şeye ağlamak zorunda mısın?!' diyerek odayı terk etti."
+            person.memories.append(f"'{topic['name']}' krizinde sana karşı son derece duyarsız davrandı.")
+            
+    elif attitude_id == "calm_ultimatum":
+        if loyalty >= 70 and craziness < 65:
+            person.relationship_level = max(25, person.relationship_level - 10)
+            person.loyalty = min(100, person.loyalty + 12)
+            msg = f"⚖️ RESTİNİ KABUL ETTİ: {person.name} masadaki ciddiyetini ve kararlılığını görünce sarsıldı: 'Haklısın, seni kaybetmek istemiyorum...' '{topic['name']}' konusunda kendini düzelteceğine yemin etti."
+            person.memories.append(f"'{topic['name']}' konusunda ona açık bir ültimatom verdin ve geri adım attı.")
+        else:
+            if rel_level < 45 or craziness >= 70:
+                if person.relation in ["Sevgili", "Flört"]:
+                    person.relation = "Eski Sevgili"
+                    char.dating_partner_id = None
+                    msg = f"💔 RESTLEŞME VE AYRILIK! {person.name} 'Bana şart koşamazsın! Madem öyle bitti bu iş!' diyerek yüzüğü/eşyalarını fırlattı ve AYRILDINIZ!"
+                    person.memories.append(f"'{topic['name']}' kavgası sonucu yollarınızı tamamen ayırdınız.")
+                    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💔"))
+                    return {"success": True, "message": msg, "breakup": True}
+                else:
+                    person.relationship_level = max(5, person.relationship_level - 35)
+                    msg = f"💥 ŞİDDETLİ GERGİNLİK: {person.name} restine restle karşılık verdi: 'Ben buyum, işine gelirse!' Günlerce tek kelime konuşmadınız."
+                    person.memories.append(f"'{topic['name']}' krizinde birbirinize rest çektiniz.")
+            else:
+                person.relationship_level = max(10, person.relationship_level - 20)
+                msg = f"😤 TARTIŞMA SÜRÜYOR: {person.name} savunmaya geçip lafı çevirdi ama taviz vermedi. (İlişki -20)"
+                person.memories.append(f"'{topic['name']}' konusunda sert bir tartışma yaşadınız.")
+                
+    elif attitude_id == "rage_explosion":
+        person.relationship_level = max(5, person.relationship_level - 32)
+        if craziness >= 55:
+            msg = f"🔥🤬 KIYAMET KOPTU! Sesler yükseldi, {person.name} sehpadaki bardağı fırlatıp 'Yeter artık senden çektiğim!' diye haykırdı! Komşular kapıya dayandı! (İlişki -32, Stres +25)"
+            person.memories.append(f"'{topic['name']}' krizinde karşılıklı bardaklar kırıldı ve şiddetli bir kavga yaşandı.")
+        else:
+            msg = f"🚪💥 KAPIYI ÇARPIP GİTTİ! {person.name} öfkene karşı dehşete düşüp çantasını aldı ve kapıyı çarpıp evi terk etti! (İlişki -32)"
+            person.memories.append(f"'{topic['name']}' tartışmasında bağırıp çağırdığın için evi terk etti.")
+            
+    else:  # cold_sarcasm
+        person.relationship_level = max(10, person.relationship_level - 22)
+        msg = f"🧊 BUZ GİBİ SOĞUK SAVAŞ: İğneleyici laflarınla {person.name}'in canını yaktın. Hiçbir şey demeden telefonunu sessize aldı ve sana 'Silent Treatment' (sessiz ceza) uyguladı. (İlişki -22)"
+        person.memories.append(f"'{topic['name']}' konusunda pasif-agresif iğnelemelerle birbirinizi kırdınız.")
+        
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="💥"))
+    return {"success": True, "message": msg}
+
 
 
 

@@ -389,8 +389,9 @@ function renderPersonCard(person) {
         if (isPartner) {
             quickActionsHtml = `
                 <footer class="person-card-footer">
-                    <button type="button" class="btn-quick-rel" onclick="quickSendDmFromCard('${person.id}', 'flirt_msg')">📱 Flört Mesajı</button>
-                    <button type="button" class="btn-quick-rel" onclick="openDateVenueModal('${person.id}')">🌹 Randevu</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedKissModal('${person.id}')">💋 Öp</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedDateModal('${person.id}')">🌹 Randevu</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedFightModal('${person.id}')">💥 Kavga</button>
                     <button type="button" class="btn-quick-rel" onclick="openCustomGiftModal('${person.id}')">🎁 Hediye</button>
                 </footer>
             `;
@@ -412,16 +413,17 @@ function renderPersonCard(person) {
         } else if (["Eski Sevgili", "Eski Eş"].includes(person.relation)) {
             quickActionsHtml = `
                 <footer class="person-card-footer">
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'text_ex'})">📱 Barışma Mesajı At</button>
-                    <button type="button" class="btn-quick-rel" onclick="openCustomGiftModal('${person.id}')">🎁 Hediye Gönder</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedKissModal('${person.id}')">💋 Öp</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedFightModal('${person.id}')">🤬 Kavga Et</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'text_ex'})">📱 Barışma Mesajı</button>
                 </footer>
             `;
         } else {
             quickActionsHtml = `
                 <footer class="person-card-footer">
-                    <button type="button" class="btn-quick-rel" onclick="quickSendDmFromCard('${person.id}', 'funny_meme')">📱 Caps At</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedKissModal('${person.id}')">💋 Öp</button>
                     <button type="button" class="btn-quick-rel" onclick="openSocialHangoutModal('${person.id}')">🎉 Dışarı Çıkar</button>
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('interact_person', {person_id: '${person.id}', person_action: 'ask_matchmake'})">💘 Çöpçatanlık</button>
+                    <button type="button" class="btn-quick-rel" onclick="openDetailedFightModal('${person.id}')">🤬 Tartış</button>
                 </footer>
             `;
         }
@@ -626,8 +628,9 @@ function renderCareerTab() {
             <p class="card-desc">
                 Sektör: ${b.sector} • Yıllık Kâr: <b>+₺ ${b.annual_profit.toLocaleString("tr-TR")}</b> • Çalışan: ${b.employees} Kişi • İtibar: %${b.reputation}
             </p>
-            <div style="margin-top: 10px; display: flex; gap: 8px;">
-                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('invest_business')">🚀 Büyüt & Yatırım Yap</button>
+            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <button type="button" class="btn-primary" style="flex:2;" onclick="openCompanyDecisionsModal()">🏬 Patron Karar Odası (Pazarlama, AR-GE, Şube)</button>
+                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('invest_business')">🚀 Hızlı Yatırım</button>
                 <button type="button" class="btn-action-outline" style="flex:1; border-color: var(--accent-green); color: var(--accent-green);" onclick="performActivity('sell_business')">💰 Şirketi Sat (Exit)</button>
             </div>
         `;
@@ -796,25 +799,34 @@ function renderAssetsTab() {
             let extraControlsHtml = "";
             if (asset.asset_type === "Ev") {
                 const renCost = Math.round(asset.current_value * 0.15);
+                const issueBanner = asset.tenant_issue
+                    ? `<div class="person-chip" style="background:rgba(239,68,68,0.22); color:#fca5a5; width:100%; margin:4px 0;">⚠️ Kiracı Sorunu: ${asset.tenant_issue}</div>`
+                    : "";
                 extraControlsHtml = `
-                    <div class="person-chip-row" style="margin:6px 0;">
-                        <span class="person-chip">🔑 Kiracı: ${asset.tenant_name || "Atanmadı"}</span>
+                    <div class="person-chip-row" style="margin:6px 0; flex-wrap:wrap;">
+                        <span class="person-chip">🔑 Kiracı: ${asset.tenant_name || "Atanmadı"} (%${asset.tenant_reliability || 85} Güven)</span>
                         <span class="person-chip">🛠️ Dekorasyon: Lvl ${asset.upgrade_level || 0}/3</span>
+                        ${issueBanner}
                     </div>
                     <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
                         <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'renovate_house')">🛠️ Tadilat (₺${renCost.toLocaleString("tr-TR")})</button>
                         <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'raise_rent')">📈 Kira Zammı (%25)</button>
-                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'find_tenant')">🔑 Yeni Kiracı</button>
+                        <button type="button" class="btn-quick-rel" onclick="openTenantManageModal('${asset.id}')">🔑 Kiracı Kriz Masası</button>
                     </div>
                 `;
             } else if (asset.asset_type === "Araba") {
                 const tuneCost = Math.round(asset.current_value * 0.15);
                 extraControlsHtml = `
-                    <div class="person-chip-row" style="margin:6px 0;">
+                    <div class="person-chip-row" style="margin:6px 0; flex-wrap:wrap;">
                         <span class="person-chip">🔧 Modifiye: Stage-${asset.upgrade_level || 0}/3</span>
+                        <span class="person-chip" style="background:${asset.has_insurance ? 'rgba(16,185,129,0.18)' : 'rgba(239,68,68,0.18)'}; color:${asset.has_insurance ? '#6ee7b7' : '#fca5a5'};">🛡️ Kasko: ${asset.has_insurance ? 'Aktif ✅' : 'Yok ❌'}</span>
+                        <span class="person-chip">⚙️ Kondisyon: %${asset.condition || 100}</span>
                     </div>
-                    <div style="display:flex; gap:6px; margin-top:8px;">
-                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'tune_car')">🔧 Stage Modifiye Et (₺${tuneCost.toLocaleString("tr-TR")})</button>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+                        <button type="button" class="btn-quick-rel" onclick="manageAssetExtra('${asset.id}', 'tune_car')">🔧 Stage Modifiye (₺${tuneCost.toLocaleString("tr-TR")})</button>
+                        <button type="button" class="btn-quick-rel" onclick="performActivity('car_care', {asset_id: '${asset.id}', action_id: 'maintenance'})">🔧 Sanayi Bakımı</button>
+                        <button type="button" class="btn-quick-rel" onclick="performActivity('car_care', {asset_id: '${asset.id}', action_id: 'insurance'})">🛡️ Kasko Yaptır</button>
+                        <button type="button" class="btn-quick-rel" onclick="performActivity('car_care', {asset_id: '${asset.id}', action_id: 'highway_speed'})">🏎️ Gece Gazla</button>
                     </div>
                 `;
             } else if (asset.asset_type === "Koleksiyon") {
@@ -1066,7 +1078,9 @@ function openPersonModal(personId) {
         const actions = [];
 
         if (isPartner) {
-            actions.push({ id: "modal_date_venue", text: "🌹 Özel Randevuya Çıkar (Mekan Seç)", primary: true });
+            actions.push({ id: "modal_detailed_kiss", text: "💋 Romantik Öp & Yakınlaş (Öpüşme Stili Seç)", primary: true });
+            actions.push({ id: "modal_detailed_date", text: "🌹 Çok Aşamalı Özel Randevuya Çık (Mekan & Diyalog)", primary: true });
+            actions.push({ id: "modal_detailed_fight", text: "💥 Şiddetli Kavga Et & Hesap Sor (Rest Çek)" });
             actions.push({ id: "modal_couple_vacation", text: "✈️ Baş Başa Romantik Tatile / Balayına Çık" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Romantik Hediye Al (Çiçek, Mücevher, Araba...)" });
 
@@ -1100,6 +1114,7 @@ function openPersonModal(personId) {
                 actions.push({ id: "couples_therapy", text: "🛋️ Çift Terapisine Git (4.000 TL)" });
             }
             actions.push({ id: "compliment", text: "✨ İltifat Et & Gururunu Okşa" });
+            actions.push({ id: "modal_rel_conflict", text: "🗣️ Çift Tartışması & Kriz Yönetimi (Diyalog Seç)" });
             actions.push({ id: "deep_talk", text: "🌙 Gece Boyu Derin Sohbet Et" });
             actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
             actions.push({ id: "check_loyalty", text: "🕵️‍♂️ Sadakatini & Telefonunu Gizlice Kontrol Et" });
@@ -1113,11 +1128,12 @@ function openPersonModal(personId) {
             actions.push({ id: "breakup", text: breakupLabel });
         } else if (isEx) {
             actions.push({ id: "text_ex", text: "📱 Gece Yarısı 'Seni Özledim' Mesajı At & Barışmayı Dene", primary: true });
+            actions.push({ id: "modal_detailed_kiss", text: "💋 Dudaktan Ateşli Öp & Aşkı Alevlendir" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Eski Defterleri Aç & Hesaplaş (Kavga Et)" });
             actions.push({ id: "fake_stalk", text: "🕵️‍♀️ Fake Hesaptan Profilini Gizlice Stalkla" });
             actions.push({ id: "apologize", text: "🕊️ Geçmiş İçin Özür Dile & Buzları Erit" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Gönlünü Almak İçin Hediye Gönder" });
             actions.push({ id: "chat", text: "💬 Halini Hatırını Sor" });
-            actions.push({ id: "argue", text: "🤬 Eski Defterleri Açıp Tartış" });
             actions.push({ id: "ghost_block", text: "🚫 Her Yerden Engelle (Hayatından Çıkar)" });
         } else if (isParent) {
             actions.push({ id: "parent_blessing", text: "🙏 Elini Öp & Hayır Duası Al", primary: true });
@@ -1136,13 +1152,15 @@ function openPersonModal(personId) {
         } else {
             actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)", primary: true });
             if (isFriend) {
+                actions.push({ id: "modal_detailed_kiss", text: "💋 Beklenmedik Bir Şekilde Öp (Aşka Çevirmeyi Dene)" });
+                actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
                 actions.push({ id: "ask_matchmake", text: "💘 'Bana Birini Ayarla!' (Çöpçatanlık İste)" });
             }
             actions.push({ id: "deep_talk", text: "🌙 Derin Sohbet Et & Dertleş" });
             actions.push({ id: "compliment", text: "✨ İltifat Et" });
             actions.push({ id: "apologize", text: "🕊️ Özür Dile & Gönlünü Al" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Özel Hediye Al" });
-            actions.push({ id: "argue", text: "🤬 Tartış ve Hesap Sor" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
         }
 
         actions.forEach(act => {
@@ -1168,9 +1186,19 @@ async function handlePersonAction(actId) {
     if (!activePersonId) return;
     const pid = activePersonId;
 
-    if (actId === "modal_date_venue") {
+    if (actId === "modal_detailed_kiss") {
         await closeTopLayer(document.getElementById("personModal"));
-        openDateVenueModal(pid);
+        openDetailedKissModal(pid);
+        return;
+    }
+    if (actId === "modal_detailed_date" || actId === "modal_date_venue") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openDetailedDateModal(pid);
+        return;
+    }
+    if (actId === "modal_detailed_fight" || actId === "argue") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openDetailedFightModal(pid);
         return;
     }
     if (actId === "modal_couple_vacation") {
@@ -1201,6 +1229,11 @@ async function handlePersonAction(actId) {
     if (actId === "modal_couple_business") {
         await closeTopLayer(document.getElementById("personModal"));
         openCoupleBusinessModal(pid);
+        return;
+    }
+    if (actId === "modal_rel_conflict") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openRelConflictModal(pid);
         return;
     }
     if (actId === "modal_divorce_court") {
@@ -3044,6 +3077,387 @@ async function triggerProSports(subAction, clubId = "anadolu_fk") {
     await performActivity("pro_sports", { sub_action: subAction, club_id: clubId });
     openProSportsModal();
 }
+
+// ----------------- MEVCUT ALANLARI GELİŞTİRME & DERİNLEŞTİRME MODALLARI -----------------
+
+function openAnnualBudgetModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = `📑 Yıllık Finansal Bütçe Karnesi (${gameState.age} Yaş)`;
+    const body = document.getElementById("genericModalBody");
+
+    const summary = gameState.last_annual_summary || {};
+    const incomes = summary.incomes || [];
+    const expenses = summary.expenses || [];
+    const totalInc = summary.total_income || gameState.annual_income_last || 0;
+    const totalExp = summary.total_expense || gameState.annual_expense_last || 0;
+    const net = summary.net !== undefined ? summary.net : (totalInc - totalExp);
+
+    let incomeRows = incomes.length > 0
+        ? incomes.map(i => `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:12.5px;"><span>${i.label}</span><b style="color:var(--accent-green);">+₺ ${i.amount.toLocaleString("tr-TR")}</b></div>`).join("")
+        : `<div style="font-size:12px; color:var(--text-secondary);">Aktif gelir kalemi bulunmuyor.</div>`;
+
+    let expenseRows = expenses.length > 0
+        ? expenses.map(e => `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:12.5px;"><span>${e.label}</span><b style="color:var(--accent-red);">-₺ ${e.amount.toLocaleString("tr-TR")}</b></div>`).join("")
+        : `<div style="font-size:12px; color:var(--text-secondary);">Aktif gider kalemi bulunmuyor.</div>`;
+
+    body.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div class="panel-card" style="border-color:var(--accent-green); text-align:center; padding:10px;">
+                <div style="font-size:11px; color:#a7f3d0; font-weight:700;">TOPLAM GELİR</div>
+                <div style="font-size:16px; font-weight:800; color:var(--accent-green);">+₺ ${totalInc.toLocaleString("tr-TR")}</div>
+            </div>
+            <div class="panel-card" style="border-color:var(--accent-red); text-align:center; padding:10px;">
+                <div style="font-size:11px; color:#fca5a5; font-weight:700;">TOPLAM GİDER</div>
+                <div style="font-size:16px; font-weight:800; color:var(--accent-red);">-₺ ${totalExp.toLocaleString("tr-TR")}</div>
+            </div>
+        </div>
+
+        <div class="panel-card" style="margin-bottom:10px;">
+            <div class="card-title-row">
+                <span class="card-title">💰 Yıllık Gelir Kalemleri</span>
+                <span class="card-badge badge-green">Nakit Girişi</span>
+            </div>
+            <div style="margin-top:6px;">${incomeRows}</div>
+        </div>
+
+        <div class="panel-card" style="margin-bottom:10px;">
+            <div class="card-title-row">
+                <span class="card-title">🛒 Yıllık Gider & Vergi Kalemleri</span>
+                <span class="card-badge badge-red">Nakit Çıkışı</span>
+            </div>
+            <div style="margin-top:6px;">${expenseRows}</div>
+        </div>
+
+        <div class="panel-card" style="border-color:${net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; text-align:center;">
+            <div style="font-size:12px; color:var(--text-secondary);">Yıllık Net Bütçe Dengesi</div>
+            <div style="font-size:20px; font-weight:900; color:${net >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}; margin:4px 0;">
+                ${net >= 0 ? '+₺ ' + net.toLocaleString("tr-TR") : '-₺ ' + Math.abs(net).toLocaleString("tr-TR")}
+            </div>
+            <div style="font-size:11.5px; color:#cbd5e1;">Güncel Nakit: <b>₺ ${gameState.money.toLocaleString("tr-TR")}</b> • Net Servet: <b>₺ ${gameState.net_worth.toLocaleString("tr-TR")}</b></div>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+function openRelConflictModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+    const conflicts = (marketData && marketData.relationship_conflicts) || [];
+    if (conflicts.length === 0) return;
+    const conflict = conflicts[Math.floor(Math.random() * conflicts.length)];
+
+    document.getElementById("genericModalTitle").textContent = `${conflict.title}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:var(--accent-red); margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">🔥 ${person.name} ile Kriz Yaşanıyor!</span>
+                <span class="card-badge badge-red">Gerginlik</span>
+            </div>
+            <p class="card-desc" style="font-size:13.5px; line-height:1.5; color:#f1f5f9; margin-top:6px;">
+                ${conflict.desc}
+            </p>
+        </div>
+        <div class="person-action-group-title" style="margin-bottom:8px;">Nasıl tepki vereceksin?</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${conflict.options.map(opt => `
+                <button type="button" class="btn-choice" style="text-align:left; padding:10px 12px;" onclick="submitRelConflict('${person.id}', '${conflict.id}', '${opt.id}')">
+                    <div style="font-weight:700; color:#fff;">${opt.text}</div>
+                    <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Taktik: <b>${opt.style}</b></div>
+                </button>
+            `).join("")}
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitRelConflict(personId, conflictId, choiceId) {
+    await performActivity("rel_conflict", { person_id: personId, conflict_id: conflictId, choice_id: choiceId });
+    closeModal("genericModal");
+}
+
+function openCompanyDecisionsModal() {
+    sound.playClick();
+    if (!gameState.business) return;
+    const b = gameState.business;
+    const actions = (marketData && marketData.company_expansion_actions) || [];
+
+    document.getElementById("genericModalTitle").textContent = `🏬 Patron Karar Odası: ${b.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:var(--accent-blue); margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">🏢 ${b.name} (${b.sector})</span>
+                <span class="card-badge badge-yellow">Değer: ₺ ${b.valuation.toLocaleString("tr-TR")}</span>
+            </div>
+            <p class="card-desc">
+                Yıllık Kâr: <b>₺ ${b.annual_profit.toLocaleString("tr-TR")}</b> • Çalışan: <b>${b.employees} Kişi</b> • İtibar: <b>%${b.reputation}</b>
+            </p>
+        </div>
+        <div class="person-action-group-title" style="margin-bottom:8px;">Stratejik Yönetim Hamleleri:</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${actions.map(act => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${act.name}</span>
+                        <span class="card-badge badge-green">Maliyet: ₺ ${act.cost.toLocaleString("tr-TR")}</span>
+                    </div>
+                    <p class="card-desc">${act.desc}</p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitCompanyDecision('${act.id}')">Bu Kararı Uygula 🚀</button>
+                </div>
+            `).join("")}
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCompanyDecision(actionId) {
+    await performActivity("company_manage", { action_id: actionId });
+    openCompanyDecisionsModal();
+}
+
+function openTenantManageModal(assetId) {
+    sound.playClick();
+    const asset = (gameState.assets || []).find(a => a.id === assetId);
+    if (!asset) return;
+    const actions = (marketData && marketData.tenant_management_actions) || [];
+
+    document.getElementById("genericModalTitle").textContent = `🔑 Kiracı Kriz Masası: ${asset.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:${asset.tenant_issue ? 'var(--accent-red)' : 'var(--accent-green)'}; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">👤 Kiracı: ${asset.tenant_name || "Atanmadı"}</span>
+                <span class="card-badge ${asset.tenant_issue ? 'badge-red' : 'badge-green'}">Güven: %${asset.tenant_reliability || 85}</span>
+            </div>
+            <p class="card-desc">
+                ${asset.tenant_issue
+                    ? `<b style="color:#fca5a5;">⚠️ Aktif Sorun:</b> ${asset.tenant_issue}`
+                    : `Kiracın kiralarını düzenli ödüyor ve apartmanda huzur hakim.`}
+            </p>
+        </div>
+        <div class="person-action-group-title" style="margin-bottom:8px;">Müdahale Seçenekleri:</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${actions.map(act => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${act.name}</span>
+                        <span class="card-badge badge-yellow">${act.cost > 0 ? '₺ ' + act.cost.toLocaleString("tr-TR") : 'Ücretsiz'}</span>
+                    </div>
+                    <p class="card-desc">${act.desc}</p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitTenantAction('${asset.id}', '${act.id}')">Uygula ⚖️</button>
+                </div>
+            `).join("")}
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitTenantAction(assetId, actionId) {
+    await performActivity("tenant_manage", { asset_id: assetId, action_id: actionId });
+    openTenantManageModal(assetId);
+}
+
+function openWellnessModal(serviceId) {
+    sound.playClick();
+    const services = (marketData && marketData.wellness_services) || [];
+    const serv = services.find(s => s.id === serviceId) || services[0];
+    if (!serv) return;
+
+    document.getElementById("genericModalTitle").textContent = serv.name;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">${serv.name}</span>
+                <span class="card-badge badge-green">${serv.cost > 0 ? '₺ ' + serv.cost.toLocaleString("tr-TR") : 'Ücretsiz'}</span>
+            </div>
+            <p class="card-desc" style="font-size:13px; line-height:1.5; margin:8px 0;">${serv.desc}</p>
+            <button type="button" class="btn-primary" style="width:100%; margin-top:8px;" onclick="submitWellnessAction('${serv.id}')">Hizmetten Yararlan ✨</button>
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitWellnessAction(serviceId) {
+    await performActivity("wellness_action", { action_id: serviceId });
+    closeModal("genericModal");
+}
+
+// ----------------- DETAYLI İLİŞKİ SİSTEMLERİ: ÖP, DATE, KAVGA -----------------
+
+function openDetailedKissModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+    const styles = (marketData && marketData.kiss_styles) || [];
+
+    document.getElementById("genericModalTitle").textContent = `💋 Romantik Yakınlaşma: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">💑 ${person.name} (${person.relation})</span>
+                <span class="card-badge badge-purple">İlişki: %${person.relationship_level}</span>
+            </div>
+            <p class="card-desc" style="margin-top:4px;">
+                Sevgi Dili: <b>${person.love_language || "Fiziksel Temas"}</b> • Kişilik: <b>${getPersonalityLabel(person.personality)}</b>
+            </p>
+        </div>
+        <div class="person-action-group-title" style="margin-bottom:8px;">Nasıl bir yakınlaşma seçeceksin?</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${styles.map(k => {
+                const isFav = (k.preferred_personalities || []).includes(person.personality);
+                return `
+                    <button type="button" class="btn-choice" style="text-align:left; padding:10px 12px; ${isFav ? 'border-color:#f472b6; background:rgba(244,114,182,0.1);' : ''}" onclick="submitDetailedKiss('${person.id}', '${k.id}')">
+                        <div style="font-weight:700; color:#fff; font-size:14px;">${k.name}</div>
+                        <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">${k.desc}</div>
+                        <div style="font-size:11px; color:#6ee7b7; margin-top:4px;">İlişki +${k.rel_boost} • Sadakat +${k.loyalty_boost} • Stres -${k.stress_relief}${isFav ? ' • <b style="color:#f472b6;">Tam Kişiliğine Uygun! 🔥</b>' : ''}</div>
+                    </button>
+                `;
+            }).join("")}
+        </div>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitDetailedKiss(personId, kissId) {
+    await performActivity("detailed_kiss", { person_id: personId, kiss_id: kissId });
+    closeModal("genericModal");
+}
+
+function openDetailedDateModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+    const venues = (marketData && marketData.date_venues) || [];
+
+    document.getElementById("genericModalTitle").textContent = `🌹 Özel Randevu Simülasyonu: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#f472b6; margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">✨ ${person.name} ile Büyüleyici Bir Akşam</span>
+                <span class="card-badge badge-green">Nakit: ₺ ${gameState.money.toLocaleString('tr-TR')}</span>
+            </div>
+            <p class="card-desc" style="font-size:12.5px; margin-top:4px;">
+                Partnerinin kişiliği: <b>${getPersonalityLabel(person.personality)}</b>. Randevuyu adım adım tasarla!
+            </p>
+        </div>
+
+        <form id="detailedDateForm" onsubmit="event.preventDefault(); submitDetailedDateForm('${person.id}');">
+            <div class="person-action-group-title">1. Adım: Randevu Mekanı Seç</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="dateVenueSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${venues.map(v => {
+                        const isFav = (v.best_for || []).includes(person.personality);
+                        return `<option value="${v.id}">${v.name} (${v.cost === 0 ? 'Ücretsiz' : '₺ ' + v.cost.toLocaleString('tr-TR')}) ${isFav ? '★ Uyumlu' : ''}</option>`;
+                    }).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">2. Adım: Randevu Ortasında Tavrın & Anı</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="dateMidSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    <option value="pay_all">💳 Hesabın Tamamını Karizmatikçe Tek Başına Öde</option>
+                    <option value="dance_slow">💃 Elinden Tutup Piste Yavaş Dansa Kaldır (Göz Göze)</option>
+                    <option value="vulnerable_truth">🥺 Tüm Kırılganlığınla En Büyük Hayalini & Kalbini Aç</option>
+                    <option value="sing_toast">🥂 Kadeh Kaldırıp Şarkıya Neşeyle Eşlik Et</option>
+                    <option value="hold_hands">🤲 Masanın Altından Elini Sıkıca Tutup Okşa</option>
+                    <option value="witty_flirt">😏 Zekice ve Flörtöz Bir Espriyle Tansiyonu Yükselt</option>
+                    <option value="split_bill">🤝 'Alman Usulü Kırışalım mı?' Teklifi Yap</option>
+                    <option value="listen_them">👂 İlgiyi Ona Verip Tüm Hayallerini Pürdikkat Dinle</option>
+                </select>
+            </div>
+
+            <div class="person-action-group-title">3. Adım: Geceyi Noktalama & Veda</div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <select id="dateEndSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    <option value="kiss_goodbye">💋 Kapısının Önünde Yanağına/Dudağına Unutulmaz Bir Veda Busesi Kondur</option>
+                    <option value="invite_coffee">☕ 'Geceyi Bitirmeyelim, Yukarı Bir Kahve İçmeye Gelir Misin?' Daveti Yap</option>
+                    <option value="warm_hug_walk">🫂 Sımsıkı Sarılıp 'Bu Hayatımın En Güzel Gecesiydi' Deyip Ayrıl</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="font-size:15px; padding:12px; margin-top:6px;">🌹 Randevuyu Yaşa & Başlat</button>
+        </form>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitDetailedDateForm(personId) {
+    const venueId = document.getElementById("dateVenueSelect")?.value || "tea_simit";
+    const midChoice = document.getElementById("dateMidSelect")?.value || "dance_slow";
+    const endChoice = document.getElementById("dateEndSelect")?.value || "kiss_goodbye";
+    await performActivity("detailed_date", {
+        person_id: personId,
+        venue_id: venueId,
+        mid_choice: midChoice,
+        end_choice: endChoice
+    });
+    closeModal("genericModal");
+}
+
+function openDetailedFightModal(personId) {
+    sound.playClick();
+    const person = (gameState.relationships || []).find(p => p.id === personId);
+    if (!person) return;
+    const topics = (marketData && marketData.detailed_fight_topics) || [];
+    const attitudes = (marketData && marketData.detailed_fight_attitudes) || [];
+
+    document.getElementById("genericModalTitle").textContent = `💥 Şiddetli Kavga & Hesaplaşma: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:var(--accent-red); margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">🤬 ${person.name} ile Kriz & Hesaplaşma Masası</span>
+                <span class="card-badge badge-red">Gerginlik Tavan</span>
+            </div>
+            <p class="card-desc" style="font-size:12.5px; margin-top:4px;">
+                İçinde birikenleri masaya yatıracaksın. Partnerinin çılgınlığı ve sadakati sonucun boyutunu belirleyecek!
+            </p>
+        </div>
+
+        <form id="detailedFightForm" onsubmit="event.preventDefault(); submitDetailedFightForm('${person.id}');">
+            <div class="person-action-group-title">1. Adım: Hesap Sorma Nedeni & Konu</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="fightTopicSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${topics.map(t => `<option value="${t.id}">${t.name}</option>`).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">2. Adım: Senin Kavga Yaklaşımın & Tavrın</div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <select id="fightAttitudeSelect" class="form-select" style="font-size:13px; padding:10px;">
+                    ${attitudes.map(a => `<option value="${a.id}">${a.name}</option>`).join("")}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background:var(--accent-red); border-color:#dc2626; font-size:15px; padding:12px; margin-top:6px;">💥 Yüzleşmeyi Başlat & Hesap Sor</button>
+        </form>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitDetailedFightForm(personId) {
+    const topicId = document.getElementById("fightTopicSelect")?.value || "jealousy_dm";
+    const attitudeId = document.getElementById("fightAttitudeSelect")?.value || "calm_ultimatum";
+    await performActivity("detailed_fight", {
+        person_id: personId,
+        topic_id: topicId,
+        attitude_id: attitudeId
+    });
+    closeModal("genericModal");
+}
+
 
 
 
