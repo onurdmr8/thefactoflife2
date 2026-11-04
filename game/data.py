@@ -1711,6 +1711,345 @@ INTIMACY_VENUES = [
         "comfort_score": 98,
         "romance_score": 98,
         "icon": "🏨"
+    },
+    {
+        "id": "chalet_fireplace",
+        "name": "🪵 Dağ Evinde Kar Manzarası, Şömine & Ayı Postu",
+        "desc": "Dışarıda lapa lapa kar yağarken şöminenin önünde sıcacık ve tutkulu bir kış kaçamağı.",
+        "cost": 3200,
+        "comfort_score": 96,
+        "romance_score": 97,
+        "icon": "🪵"
+    },
+    {
+        "id": "beach_cabana",
+        "name": "🏖️ Sahilde Özel Balayı Locası & Dalga Sesleri",
+        "desc": "Gecenin ılık esintisi, mumlarla süslenmiş kumsal ve denizin huzur veren dalgaları.",
+        "cost": 2200,
+        "comfort_score": 90,
+        "romance_score": 94,
+        "icon": "🏖️"
+    }
+]
+
+INTIMACY_OUTFITS = [
+    {
+        "id": "silk_lingerie",
+        "name": "👙 Siyah Dantelli & İpek Şık İç Giyim",
+        "desc": "Nefes kesici zarafet, vücut hatlarını vurgulayan baştan çıkarıcı tasarım.",
+        "cost": 1200,
+        "charm_boost": 16,
+        "passion_boost": 14,
+        "icon": "👙"
+    },
+    {
+        "id": "aphrodisiac_scent",
+        "name": "🌺 Afrodizyak Parfüm, Vanilya & Vücut Işıltısı",
+        "desc": "Tenine yayılan büyüleyici vanilya ve amber kokusuyla aklı baştan alır.",
+        "cost": 650,
+        "charm_boost": 12,
+        "passion_boost": 10,
+        "icon": "🌺"
+    },
+    {
+        "id": "satin_robe",
+        "name": "👘 İpeksi Saten Sabahlık & Gecelik",
+        "desc": "Yumuşacık dokunuşuyla hem asil hem de gizemli bir cazibe sunar.",
+        "cost": 850,
+        "charm_boost": 14,
+        "passion_boost": 8,
+        "icon": "👘"
+    },
+    {
+        "id": "natural_cozy",
+        "name": "👕 Sade, Doğal & Rahat Hâl",
+        "desc": "Hiçbir yapaylığa gerek duymayan, sıcacık ve samimi doğallık.",
+        "cost": 0,
+        "charm_boost": 6,
+        "passion_boost": 6,
+        "icon": "👕"
+    }
+]
+
+INTIMACY_FOREPLAY_ACTIONS = [
+    {
+        "id": "massage_oil",
+        "name": "💆 Sıcak Aromaterapi Yağı ile Sırt & Omuz Masajı",
+        "desc": "Isıtılmış lavanta yağıyla omuzlardan bele kadar yavaşça masaj yaparak tüm kasları gevşetir.",
+        "sensory_log": "Ellerine döktüğün ılık masaj yağıyla omuzlarını ve sırtını usulca ovmaya başladın. Teni sıcacık parladı, derin bir nefes vererek kollarında tamamen gevşedi.",
+        "partner_reply": "'İnanılmaz rahatladım... Bütün günün yorgunluğunu ellerinle sildin aldın' diye mırıldandı.",
+        "boost": 22,
+        "preferred_personalities": ["Romantik", "Sadık & Aileci", "Uyumlu", "Hırslı & Kariyerist"]
+    },
+    {
+        "id": "strawberry_champagne",
+        "name": "🍓 Dudaklara Çilek & Şampanya İkramı",
+        "desc": "Gözlerinin içine bakarak dudaklarına çikolatalı çilek uzatıp kadeh tokuşturursun.",
+        "sensory_log": "Çileği usulca dudaklarına uzattın. Gözlerini gözlerinden ayırmadan çileği ısırdı, dudaklarındaki çikolatayı zarifçe öperek aldın.",
+        "partner_reply": "'Çok tehlikeli ve tatlı bir başlangıç bu...' diyerek boynuna sarıldı.",
+        "boost": 20,
+        "preferred_personalities": ["Çılgın & Maceracı", "Romantik", "Materyalist"]
+    },
+    {
+        "id": "neck_ear_whispers",
+        "name": "🫦 Kulağa Tutkulu Fısıltılar & Boyun Öpücükleri",
+        "desc": "Arkasından sarılıp kulağına ne kadar arzulandığını fısıldarken boynuna sıcak öpücükler kondurursun.",
+        "sensory_log": "Belinden sımsıkı sarılıp saçlarını omzunun bir yanına topladın. Sıcak nefesini tenine bırakıp kulağına fısıldarken boyun kıvrımına ıslak ve ateşli öpücükler bıraktın. Titrediğini hissettin.",
+        "partner_reply": "Nefesi kesildi, başını geriye yaslayıp parmaklarını saçlarının arasına geçirdi: 'Beni deli ediyorsun...' dedi.",
+        "boost": 24,
+        "preferred_personalities": ["Kıskanç & Tutkulu", "Çapkın & Özgür Ruhlu", "Romantik"]
+    },
+    {
+        "id": "slow_dance_undress",
+        "name": "🎶 Loş Işıkta Müzikle Yavaş Dans & Usulca Soyunma",
+        "desc": "Loş ışıkta çalan şarkının ritmine kapılıp birbirinizi yavaş yavaş baştan çıkarırsınız.",
+        "sensory_log": "Odanın loşluğunda çalan şarkıya kapılıp birbirinize kenetlendiniz. Dans ederken partnerinin düğmelerini ve fermuarını usulca çözdün, gözlerindeki arzu ateşi parladı.",
+        "partner_reply": "Gözlerinin içine bakıp gülümsedi: 'Seninle dans ederken zaman duruyor sanki...' diye fısıldadı.",
+        "boost": 18,
+        "preferred_personalities": ["Romantik", "Entelektüel", "Uyumlu"]
+    },
+    {
+        "id": "feather_touch",
+        "name": "🪶 Kuştüyü & İpek Şal ile Duyusal Ten Teması",
+        "desc": "İpek şal ve kuştüyünün yumuşacık dokunuşunu partnerinin teninde gezdirerek ürpertici bir heyecan yaratırsın.",
+        "sensory_log": "İpek şalın hafif dokunuşunu boynundan omuzlarına ve beline doğru yavaşça gezdirdin. Teni baştan aşağı ürperdi, tüyleri diken diken oldu.",
+        "partner_reply": "Derin bir nefes alarak gözlerini kapattı: 'Kalbim göğüs kafesimden fırlayacak gibi, dokunuşların büyüleyici...' dedi.",
+        "boost": 22,
+        "preferred_personalities": ["Kıskanç & Tutkulu", "Çılgın & Maceracı", "Entelektüel"]
+    }
+]
+
+INTIMACY_STYLES = [
+    {
+        "id": "tender_sensual",
+        "name": "💕 Yavaş, Şefkatli & Derin Göz Teması",
+        "desc": "Her saniyesini hissederek, gözleri gözlerinden ayırmadan ruhunuzun birleştiği derin bir aşk.",
+        "narrative": "Yatağın yumuşak çarşafları arasında elleriniz birbirine kenetlendi. Birbirinizin göz bebeklerinde kaybolarak, en ince ayrıntısına kadar sevgi dolu ve şefkatli bir yakınlaşma yaşadınız. Kalpleriniz tek bir ritimde atıyordu.",
+        "satisfaction_base": 88,
+        "rel_boost": 22,
+        "stress_relief": 28,
+        "preferred_personalities": ["Romantik", "Sadık & Aileci", "Entelektüel"]
+    },
+    {
+        "id": "wild_passionate",
+        "name": "🔥 Ateşli, Nefes Nefese & Çılgın Bir Tutku Fırtınası",
+        "desc": "Engellenemez bir arzu patlaması; tırnak izleri, yatak başlığının gıcırdaması ve doruk noktası.",
+        "narrative": "Tutku bir anda alev aldı! Karşılıklı nefesler hızlandı, kontrolü tamamen arzuya bıraktınız. Yatak başlığı duvara vururken sabaha kadar süren çılgın bir tempo ve enerji patlaması yaşandı.",
+        "satisfaction_base": 92,
+        "rel_boost": 20,
+        "stress_relief": 34,
+        "preferred_personalities": ["Kıskanç & Tutkulu", "Çapkın & Özgür Ruhlu", "Çılgın & Maceracı"]
+    },
+    {
+        "id": "playful_tease",
+        "name": "😏 Cilveli, Yaramaz & Gülüşmelerle Dolu Yakınlaşma",
+        "desc": "Yastık savaşıyla başlayan, şakalaşmalar ve hafif cilvelerle süslenen eğlenceli bir gece.",
+        "narrative": "Tatlı bir yastık savaşı ve gülüşmelerle başlayan anlar bir anda tatlı bir cilveleşmeye dönüştü. Hem kahkaha attınız hem de aranızdaki kimyanın en yaramaz halini doyasıya yaşadınız.",
+        "satisfaction_base": 84,
+        "rel_boost": 24,
+        "stress_relief": 26,
+        "preferred_personalities": ["Eğlenceli", "Uyumlu", "Çılgın & Maceracı"]
+    },
+    {
+        "id": "power_surrender",
+        "name": "👑 Kontrolü Partnerine Bırak (Şımartma & Teslimiyet)",
+        "desc": "Kontrolü tamamen partnerinin yönetimine bırakıp onu gecenin tek hükümdarı yaparsın.",
+        "narrative": "Gözlerinin içine bakarak kontrolü tamamen ona bıraktın. Partnerin bu teslimiyetten büyük bir heyecan ve özgüven duydu; seni dilediğince şımartıp aranızdaki tutkuyu zirveye taşıdı.",
+        "satisfaction_base": 86,
+        "rel_boost": 25,
+        "stress_relief": 25,
+        "preferred_personalities": ["Hırslı & Kariyerist", "Kıskanç & Tutkulu", "Materyalist"]
+    }
+]
+
+INTIMACY_MUSICS = [
+    {
+        "id": "acoustic_jazz",
+        "name": "🎷 Loş Işıkta Akustik Caz & Piyano",
+        "desc": "Zarif piyano tınıları ve kontrbas ezgileriyle dinlendirici, sofistike ve romantik bir hava.",
+        "icon": "🎷",
+        "romance_boost": 14
+    },
+    {
+        "id": "rnb_passion",
+        "name": "🎵 R&B, Soul & Gece Ritimleri",
+        "desc": "Kalp atışlarını hızlandıran, teni ısıtan ve baştan çıkarıcı modern gece melodileri.",
+        "icon": "🎵",
+        "romance_boost": 16
+    },
+    {
+        "id": "ambient_nature",
+        "name": "🌙 Gece Esintisi, Şömine Çıtırtısı & Doğal Sessizlik",
+        "desc": "Hiçbir müziğe gerek duymadan sadece gecenin esintisi, şömine çıtırtısı ve nefes sesleri.",
+        "icon": "🌙",
+        "romance_boost": 12
+    },
+    {
+        "id": "french_chanson",
+        "name": "🎻 Fransızca Nostaljik Aşk Şarkıları",
+        "desc": "Klasik Paris melodileriyle aşkı ve romantizmi doruklara çıkaran büyüleyici bir ambiyans.",
+        "icon": "🎻",
+        "romance_boost": 15
+    }
+]
+
+INTIMACY_TWISTS = [
+    {
+        "id": "pet_intrudes",
+        "title": "🐱 Evcil Hayvanın Odaya Dalması",
+        "text": "Tam tutkunun zirvesine yaklaşırken kedi/köpek kapıyı itip yatağın ortasına zıpladı ve meraklı gözlerle size baktı! İkiniz de kahkahalara boğulup yastıkları çektiniz.",
+        "bonus_hap": 10,
+        "bonus_rel": 8,
+        "options": [
+            {
+                "id": "pet_laugh_hug",
+                "text": "Gülümseyerek hayvanı şefkatle yere bırak ve partnerine sımsıkı sarılıp öpücüklere boğ.",
+                "reaction": "Partnerin kahkaha atarak boynuna sarıldı: 'Çok tatlısın, resmen film gibi an!' dedi.",
+                "boost": 14
+            },
+            {
+                "id": "pet_cuddle_all",
+                "text": "Battaniyeyi üstünüze çekip 'Oda kapısını kapatmayı unuttuk' diyerek gülüşmeye devam edin.",
+                "reaction": "Gülmekten karnınız ağrıdı, aranızdaki resmiyet ve stres tamamen eridi.",
+                "boost": 12
+            }
+        ]
+    },
+    {
+        "id": "bed_creak",
+        "title": "💥 Yatak Çıtırtısı & Tahtanın Ayrılması",
+        "text": "Aşırı heyecan ve hareketten yatak tahtası büyük bir gürültüyle 'ÇAAAT' diye ayrıldı! Kendinizi yerde minderlerin üzerinde buldunuz, gülmekten dakikalarca kendinize gelemediniz.",
+        "bonus_hap": 12,
+        "bonus_rel": 10,
+        "options": [
+            {
+                "id": "floor_passion",
+                "text": "Hiç duraksamadan yerde yumuşak minderlerin üzerinde tutkuyla devam et.",
+                "reaction": "Gözleri parlayarak sana karşılık verdi: 'Vahşisin... Bu geceyi asla unutmayacağım!' dedi.",
+                "boost": 18
+            },
+            {
+                "id": "bed_laugh_rest",
+                "text": "Nefes nefese yatağın kenarına oturup dakikalarca kahkahalarla birbirinize bakın.",
+                "reaction": "Gözlerinden yaş gelene kadar güldünüz; aranızdaki bağ bambaşka bir boyuta geçti.",
+                "boost": 15
+            }
+        ]
+    },
+    {
+        "id": "candle_magic",
+        "title": "🕯️ Mumların Büyüsü & Kusursuz Ambiyans",
+        "text": "Odada yanan mumların kokusu ve loş ışıklar ortamı adeta romantik bir sinema sahnesine çevirdi. Partnerin kulağına 'Bu gece ömrümün sonuna kadar aklımdan çıkmayacak' dedi.",
+        "bonus_hap": 15,
+        "bonus_rel": 14,
+        "options": [
+            {
+                "id": "whisper_praise",
+                "text": "Gözlerinin içine bakıp 'Sen gördüğüm en büyüleyici ve zarif insansın' de.",
+                "reaction": "Gözleri nemlendi, dudaklarını hafifçe aralayarak seni sımsıkı kendine çekti.",
+                "boost": 20
+            },
+            {
+                "id": "kiss_deep",
+                "text": "Hiç konuşmadan belinden kavrayıp dudaklarına derin ve tutkulu bir buse kondur.",
+                "reaction": "Nefesi nefesine karıştı, kalpleriniz deli gibi çarparak birbirinize kenetlendiniz.",
+                "boost": 18
+            }
+        ]
+    },
+    {
+        "id": "music_climax",
+        "title": "🎵 Sinematik Müzik Zamanlaması",
+        "text": "Arka planda çalan şarkı tam en tutkulu anda muhteşem bir melodiye geçti; aranızdaki çekim tavan yaptı ve tüylerinizi ürpertti.",
+        "bonus_hap": 14,
+        "bonus_rel": 12,
+        "options": [
+            {
+                "id": "rhythm_hold",
+                "text": "Şarkının ritmine uyup partnerini sımsıkı kendine çek ve teninin kokusunu içine çek.",
+                "reaction": "Kollarında tamamen teslim oldu, parmaklarını sırtında gezdirdi.",
+                "boost": 18
+            },
+            {
+                "id": "sing_ear",
+                "text": "Şarkının nakarat sözlerini usulca partnerinin kulağına fısılda.",
+                "reaction": "Yüzünde sıcacık bir gülümseme belirdi: 'Ruhumu eritiyorsun...' diye fısıldadı.",
+                "boost": 16
+            }
+        ]
+    },
+    {
+        "id": "cramp_laugh",
+        "title": "🦵 Anlık Bacak Krampı & Şefkat Molası",
+        "text": "Partnerinin bacağına aniden tatlı bir kramp girdi! Hemen durup gülümseyerek ayağına masaj yaptın, yüzünü öperek rahatlattın. Bu şefkatin onu sana bir kez daha aşık etti.",
+        "bonus_hap": 8,
+        "bonus_rel": 15,
+        "options": [
+            {
+                "id": "tender_rub",
+                "text": "Şefkatle ayağına ve bacağına masaj yapıp yanağına öpücük kondur.",
+                "reaction": "'Sen ne kadar ince ve düşüncelisin...' diyerek sana minnet ve aşkla sarıldı.",
+                "boost": 22
+            },
+            {
+                "id": "bring_water_hug",
+                "text": "Gülümseyerek ılık bir su getir ve göğsüne yaslayarak dinlendir.",
+                "reaction": "Göğsündeki kalp atışlarını dinleyerek huzurla gülümsedi.",
+                "boost": 16
+            }
+        ]
+    },
+    {
+        "id": "pure_telepathy",
+        "title": "✨ Kusursuz Ten Uyumu & Zamanın Durması",
+        "text": "Kelimelere dökülemeyecek kadar kusursuz bir ten uyumu yakaladınız. İkiniz de adeta başka bir boyuta geçtiniz; saf mutluluk ve elektrik dolu bir gece oldu.",
+        "bonus_hap": 20,
+        "bonus_rel": 18,
+        "options": [
+            {
+                "id": "eternal_gaze",
+                "text": "Gözlerinin en derinine bakarak birbirinize kenetlenin ve zamanın durmasını izleyin.",
+                "reaction": "Gözlerinden bir damla mutluluk yaşı süzüldü; aranızda ölümsüz bir bağ oluştu.",
+                "boost": 25
+            },
+            {
+                "id": "passionate_climax",
+                "text": "Tutkunun doruk noktasını tüm hücrelerinizde yaşayarak sabaha kadar sarılın.",
+                "reaction": "Nefes nefese birbirinize sarılıp dünyadaki her şeyi unuttunuz.",
+                "boost": 24
+            }
+        ]
+    }
+]
+
+INTIMACY_MORNING_ACTIONS = [
+    {
+        "id": "breakfast_in_bed",
+        "name": "☕ Yatağa Taze Kahve, Kruvasan & Çilek Tepsisi Getir",
+        "text": "Sabah erkenden parmak uçlarında mutfağa süzülüp taze kahve demledin, fırından sıcak kruvasan ve çileklerle yatağa döndün. Gözlerini açıp tepsiyi görünce gözleri parladı: 'Sen bu dünyadaki en harika sevgilisin!' diyerek boynuna sarıldı.",
+        "rel_boost": 18,
+        "hap_boost": 16
+    },
+    {
+        "id": "pillow_talk",
+        "name": "💬 Sarmaş Dolaş Gelecek Hayalleri ve Çocukluk Üzerine Konuş",
+        "text": "Yataktan hiç çıkmadan saatlerce sarmaş dolaş kaldınız. Çocukluk anılarınızı, hayattaki en büyük hayallerinizi ve birlikte kuracağınız geleceği konuştunuz. Aranızdaki güven ve ruhsal bağ kenetlendi.",
+        "rel_boost": 16,
+        "hap_boost": 14
+    },
+    {
+        "id": "morning_shower",
+        "name": "🚿 Birlikte Sıcak Duşa Girip Gülüşerek Sabunlan",
+        "text": "Birlikte buharlı ve sıcacık bir duşa girdiniz. Şampuan kokuları arasında saçlarını yıkayıp sırtını sabunladın, güne tazelenmiş ve enerjik bir tebessümle başladınız.",
+        "rel_boost": 15,
+        "hap_boost": 18
+    },
+    {
+        "id": "lazy_cuddle",
+        "name": "🛌 Alarmları Kapatıp Öğlene Kadar Sımsıkı Sarılıp Uyu",
+        "text": "Tüm alarmları ve telefonları sessize aldınız. Dışarıdaki dünyayı tamamen unutup battaniyenin altında sıcacık öğlene kadar uyudunuz, haftanın tüm yorgunluğunu üzerinizden attınız.",
+        "rel_boost": 14,
+        "hap_boost": 20
     }
 ]
 
@@ -1771,4 +2110,194 @@ INTIMACY_AFTERGLOWS = [
     "Göğsüne yaslanıp kalp atışlarını dinledi ve 'Kendimi yanında hiç olmadığım kadar huzurlu ve güvende hissediyorum' dedi.",
     "Gözlerini açtığında başucuna bir gül ve sıcacık bir tebessüm bırakmıştı; aranızdaki çekim tavan yaptı.",
     "Gece boyunca süren tatlı fısıldaşmalar ve şakalaşmalar sabah kahvaltısına kadar neşeyle devam etti."
+]
+
+# ==================== OFİS & İŞ YERİ DİNAMİKLERİ (İŞ ARKADAŞI & PATRON) ====================
+
+COWORKER_PROJECT_OPTIONS = [
+    {
+        "id": "hardcarry",
+        "name": "⚡ Gece Mesaisine Kalıp Sunumu Tek Başına Sırtla",
+        "desc": "Tüm slaytları, veri analizlerini ve sunum provasını uykusuz kalarak sen hazırlarsın. Şirket projesi zirveye çıkar, büyük başarı primi kazanırsın.",
+        "perf_boost": 22,
+        "stress_cost": 14,
+        "rel_boost": 16,
+        "bonus_money": 15000,
+        "summary": "Tüm projeyi tek başına sırtladın! Müşteri ve yönetim büyülendi. İş arkadaşın sana minnettar kaldı!"
+    },
+    {
+        "id": "synergy",
+        "name": "🤝 Görevi Eşit Bölüş & Harika Bir Takım Ruhu Yakala",
+        "desc": "İş bölümünü adilce yaparsınız, birbirinizin eksiğini tamamlarsınız. Uyumlu ve dengeli bir çalışma ortamı oluşur.",
+        "perf_boost": 15,
+        "stress_cost": -5,
+        "rel_boost": 22,
+        "bonus_money": 8000,
+        "summary": "Kusursuz bir sinerji yakaladınız! Proje zamanında teslim edildi ve dostluğunuz pekişti."
+    },
+    {
+        "id": "slack",
+        "name": "🛋️ İşi İş Arkadaşına Yık & Arka Planda Dinlen",
+        "desc": "Zor ve yorucu angarya kısımları ona bırakır, toplantıda sadece başını sallarsın. Sıfır stres ama yüksek risk!",
+        "perf_boost": 2,
+        "stress_cost": -18,
+        "rel_boost": -28,
+        "bonus_money": 0,
+        "summary": "İşleri tamamen ona yıktın. Sen rahat bir nefes aldın ama iş arkadaşın öfkeden köpürdü!"
+    }
+]
+
+COWORKER_GOSSIP_STORIES = [
+    {
+        "id": "gossip_takeover",
+        "title": "🏢 Şirkete Gizli Yabancı Ortak Geliyor!",
+        "text": "Kahve makinesinde fısıldadı: 'Duyduğuma göre şirketimize dev bir yabancı fon ortak olmak üzereymiş! Çalışanlara büyük prim ve hisse opsiyonu dağıtılabilir!'",
+        "rumor_type": "company_news"
+    },
+    {
+        "id": "gossip_layoff",
+        "title": "✂️ Departmanda Küçülme & Performans Tasfiyesi",
+        "text": "Teras molasında etrafı kolaçan edip söyledi: 'İK direktörü bu ay performans notu düşük olan 3 kişiyi sessiz sedasız tazminatla gönderecekmiş!'",
+        "rumor_type": "hr_warning"
+    },
+    {
+        "id": "gossip_romance",
+        "title": "🤫 Üst Düzey Yöneticiler Arasında Yasak Aşk!",
+        "text": "Kulağına eğildi: 'Pazarlama Direktörü ile Finans Müdürü geçen hafta lüks bir restoranda baş başa görülmüş! Şirkette yer yerinden oynayabilir!'",
+        "rumor_type": "scandal"
+    },
+    {
+        "id": "gossip_nepotism",
+        "title": "🕵️ Yeni Stajyer Meğer Yönetim Kurulu Başkanının Yeğeniymiş!",
+        "text": "Bardağını doldururken güldü: 'Ofise yeni başlayan o sessiz stajyer var ya... Aslında ana hissedarın yeğeniymiş! Herkes ona çok dikkatli davransın!'",
+        "rumor_type": "insider_info"
+    },
+    {
+        "id": "gossip_raise",
+        "title": "💰 Yıl Sonu %45 Enflasyon Zammı & Çift İkramiye Müjdesi!",
+        "text": "Gözleri parlayarak anlattı: 'Muhasebedeki tanıdığımdan öğrendim, bu yıl kâr rekoru kırılmış! Herkese %45 zam ve çift maaş ikramiye kesinleşmiş!'",
+        "rumor_type": "good_news"
+    }
+]
+
+COWORKER_GOSSIP_REACTIONS = [
+    {
+        "id": "keep_confidential",
+        "name": "🤐 Sırrı Sakla & Dostluğunu Pekiştir",
+        "desc": "Dedikoduyu aranızda tutarsın, kimseye anlatmazsın. İş arkadaşın sana koşulsuz güvenir.",
+        "rel_boost": 18,
+        "loyalty_boost": 14,
+        "stress_relief": 5
+    },
+    {
+        "id": "spread_plaza",
+        "name": "📢 Dedikoduyu Departmana Yay (Plaza Çalkalansın!)",
+        "desc": "Tüm katlara ve WhatsApp gruplarına haberi uçurursun. Ofis kaynar, dedikodu kazanı patlar!",
+        "rel_boost": 5,
+        "loyalty_boost": -10,
+        "stress_relief": 12,
+        "chaos": True
+    },
+    {
+        "id": "whistleblow_boss",
+        "name": "🕵️ Patrona Yetiştir (İspiyonculuk & Göz Boyama)",
+        "desc": "Hemen patronun odasına gidip departmanda konuşulanları fısıldarsın. Patron seni sadık bulur ama arkadaşın duysa düşman kesilir!",
+        "rel_boost": -35,
+        "loyalty_boost": -25,
+        "boss_rel_boost": 20,
+        "perf_boost": 10
+    }
+]
+
+COWORKER_HANGOUT_OPTIONS = [
+    {
+        "id": "coffee_break",
+        "name": "☕ 3. Dalga Kahvecide Dertleşme & Filtre Kahve",
+        "desc": "Plazanın altındaki butik kahvecide oturup iş stresinden, projelerden ve hayattan samimice konuşursunuz.",
+        "cost": 400,
+        "rel_boost": 14,
+        "stress_relief": 16,
+        "hap_boost": 12
+    },
+    {
+        "id": "plaza_dinner",
+        "name": "🍽️ Plaza Restoranında Gurme Akşam Yemeği",
+        "desc": "Şık bir bistroda lezzetli yemekler yer, ofis yorgunluğunu kaliteli sohbetle unutursunuz.",
+        "cost": 1200,
+        "rel_boost": 20,
+        "stress_relief": 22,
+        "hap_boost": 18
+    },
+    {
+        "id": "happy_hour_pub",
+        "name": "🍻 Cuma Akşamı Happy Hour & Pub Eğlencesi",
+        "desc": "Haftanın tüm ağırlığını atmak için bara gidip canlı müzik, soğuk içecekler ve kahkahalarla eğlenirsiniz.",
+        "cost": 2500,
+        "rel_boost": 28,
+        "stress_relief": 30,
+        "hap_boost": 25
+    }
+]
+
+BOSS_MENTORSHIP_TOPICS = [
+    {
+        "id": "industry_secrets",
+        "name": "🔮 Sektör Sırları & Gelecek Vizyonu",
+        "desc": "Patronundan sektörün perde arkasını, piyasa dengelerini ve önümüzdeki 5 yılın kritik trendlerini öğrenirsin.",
+        "smarts_boost": 3,
+        "perf_boost": 14,
+        "rel_boost": 15,
+        "dialogue": "Patronun arkasına yaslandı: 'Bu piyasada ayakta kalmak için sadece çalışmak yetmez, dalgaları önceden sezmelisin...' diyerek sana paha biçilmez vizyon kazandırdı."
+    },
+    {
+        "id": "leadership_skills",
+        "name": "👑 Kriz Yönetimi & Plaza Liderliği",
+        "desc": "Zor durumlarda ekipleri nasıl yöneteceğini, stres altında soğukkanlı kalmanın formüllerini dinlersin.",
+        "charisma_boost": 3,
+        "perf_boost": 16,
+        "rel_boost": 16,
+        "dialogue": "Patronun kahvesinden bir yudum aldı: 'Lider fırtınada dümeni bırakmayan kişidir. Sende bu potansiyeli görüyorum' diyerek seni motive etti."
+    },
+    {
+        "id": "financial_mindset",
+        "name": "📈 Şirket Finansalları & Bütçe Yönetimi",
+        "desc": "Büyük paraların nasıl yönetildiğini, kârlılık optimizasyonunu ve şirket sermayesinin nasıl büyütüldüğünü öğrenirsin.",
+        "smarts_boost": 3,
+        "perf_boost": 15,
+        "rel_boost": 14,
+        "dialogue": "Patronun sana şirketin gizli bilanço tablolarını açtı: 'Kâr etmek zanaattır, sermayeyi büyütmek sanattır' diyerek finansal ufkunu açtı."
+    }
+]
+
+BOSS_NEGOTIATION_TACTICS = [
+    {
+        "id": "rational_metrics",
+        "name": "📊 Metrikleri, KPI'ları & Şirket Kârına Katkımı Sun (Rasyonel)",
+        "desc": "Verilerle konuşursun: Yıl boyunca teslim ettiğin projeler, kazandırdığın müşteriler ve tasarruf ettirdiğin bütçeyi dosya halinde sunarsın.",
+        "primary_stat": "smarts_performance",
+        "success_rate": 0.75,
+        "raise_pct": 25,
+        "success_msg": "Patronun sunum dosyasını hayranlıkla inceledi: 'Rakamlar yalan söylemez. Bu şirketin omurgası sensin!' diyerek %25 MAAŞ ZAMMI ve ÜNVAN TERFİSİ verdi!",
+        "fail_msg": "Patronun rakamları inceledi: 'Çaban güzel ama mevcut piyasa koşullarında bütçemiz kısıtlı. Bir sonraki çeyrekte tekrar bakalım' dedi."
+    },
+    {
+        "id": "loyalty_dedication",
+        "name": "🤝 Şirkete Sadakatimi & Gece-Gündüz Özverimi Vurgula (Duygusal)",
+        "desc": "Yıllardır şirkete verdiğin emeği, fazla mesaileri ve kuruma olan bağlılığını samimi bir dille aktarırsın.",
+        "primary_stat": "relationship_loyalty",
+        "success_rate": 0.70,
+        "raise_pct": 18,
+        "success_msg": "Patronun duygulandı ve omzuna dokundu: 'Sen bu kurumun bir çalışanı değil, bu ailenin has evladısın!' diyerek maaşına %18 ZAM ve ÖZEL PRİM bağladı!",
+        "fail_msg": "Patronun tebessüm etti: 'Sadakatini takdir ediyorum ama burası bir şirket, duygusal değil ticari dengelerle hareket etmek zorundayız' diyerek zam yapmadı."
+    },
+    {
+        "id": "bluff_counteroffer",
+        "name": "💼🔥 Rakip Firmadan Baş Döndürücü Teklif Aldığımı İma Et (Rest & Blöf)",
+        "desc": "Yüksek risk, yüksek getiri! Masaya elini vurup rakip şirketin sana transfer teklifinde bulunduğunu ima edersin.",
+        "primary_stat": "charisma_fame",
+        "success_rate": 0.50,
+        "raise_pct": 40,
+        "success_msg": "Patronun panikledi ve ter döktü: 'Sakın rakibe gitmeyi aklından geçirme! Seni kaybetmeyi göze alamayız!' diyerek anında %40 REKOR ZAM ve ŞİRKET ARABASI tahsis etti!",
+        "fail_msg": "Patronun soğuk bir ses tonuyla kapıyı işaret etti: 'Kimse bu şirketten büyük değildir! Madem öyle, istifanı hemen masama bırakabilirsin!' (İlişki ve itibar çöktü!)"
+    }
 ]

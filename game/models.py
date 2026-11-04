@@ -44,6 +44,8 @@ class Person(BaseModel):
     green_flags: List[str] = Field(default_factory=list)
     memories: List[str] = Field(default_factory=list)
     chat_history: List[Dict[str, str]] = Field(default_factory=list)
+    intimacy_count: int = 0             # Karakterle bu kişi arasındaki toplam birliktelik sayısı
+    intimacy_chemistry: int = 50        # Ten uyumu ve tecrübe seviyesi (50-100)
 
 class DatingCandidate(BaseModel):
     id: str
@@ -281,6 +283,7 @@ class Character(BaseModel):
     alimony_annual: int = 0
     last_tax_paid: int = 0
     hookup_count: int = 0
+    intimacy_count: int = 0  # Toplam yatak odası birliktelik sayısı
     difficulty_mode: str = "Gerçek Hayat (Zor)"
     last_annual_summary: Dict[str, Any] = Field(default_factory=dict)
     

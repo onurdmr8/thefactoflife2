@@ -437,17 +437,17 @@ function renderPersonCard(person) {
         } else if (person.relation === "İş Arkadaşı") {
             quickActionsHtml = `
                 <footer class="person-card-footer">
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'happy_hour'})">🍻 Pub'a Git</button>
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'office_romance'})">💌 Kahveye Çağır</button>
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('coworker_action', {person_id: '${person.id}', action_id: 'office_hookup'})">🔥 Kaçamak</button>
+                    <button type="button" class="btn-quick-rel" onclick="openCoworkerProjectModal('${person.id}')">💼 Proje</button>
+                    <button type="button" class="btn-quick-rel" onclick="openCoworkerGossipModal('${person.id}')">☕ Dedikodu</button>
+                    <button type="button" class="btn-quick-rel" onclick="openCoworkerHangoutModal('${person.id}')">🍻 Çıkış</button>
                 </footer>
             `;
         } else if (person.relation === "Patron") {
             quickActionsHtml = `
                 <footer class="person-card-footer">
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'suck_up_boss'})">☕ Kahve Götür</button>
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'flirt_with_boss'})">💼 Flört Et</button>
-                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'ask_raise'})">📈 Zam İste</button>
+                    <button type="button" class="btn-quick-rel" onclick="openBossMentorshipModal('${person.id}')">👑 Mentorluk</button>
+                    <button type="button" class="btn-quick-rel" onclick="openBossNegotiationModal('${person.id}')">📈 Zam & Terfi</button>
+                    <button type="button" class="btn-quick-rel" onclick="performActivity('boss_action', {person_id: '${person.id}', action_id: 'annual_bonus'})">💰 Prim İste</button>
                 </footer>
             `;
         } else if (person.relation === "Arkadaş") {
@@ -1224,16 +1224,19 @@ function openPersonModal(personId) {
             actions.push({ id: "prank_teacher", text: "🤪 Sırasına Tebeşir / Raptiye Koy (Muziplik Yap)" });
             actions.push({ id: "consolidated_chat", text: "💬 Odasına Gidip Dersler Hakkında Akıl Danış" });
         } else if (isCoworker) {
-            actions.push({ id: "office_romance", text: "💌 Mesai Sonrası Kahveye Davet Et (Ofis Aşkı Başlat)", primary: true });
-            actions.push({ id: "office_hookup", text: "🔥🏢 Cuma Mesai Bitimi Ofiste Gizli Kaçamak Yap" });
-            actions.push({ id: "happy_hour", text: "🍻 İş Çıkışı Pub'a Git & Patronu Çekiştir (600 TL)" });
+            actions.push({ id: "modal_coworker_project", text: "💼📊 Ortak Projede Birlikte Çalış & Sunum Hazırla", primary: true });
+            actions.push({ id: "modal_coworker_gossip", text: "☕🤫 Kahve Makinesinde Plaza Dedikodusu Yap", primary: true });
+            actions.push({ id: "modal_coworker_hangout", text: "🎉🍻 Mesai Sonrası Sosyalleş & Dertleş (Kahve/Yemek/Pub)" });
+            actions.push({ id: "office_romance", text: "☕🌹 Mesai Sonrası Kahveye Davet Et (Ofis Aşkı Başlat)" });
             actions.push({ id: "steal_credit", text: "😈 Sunumda Emeğini Çal & Patronun Gözüne Gir (+Performans, -Dostluk)" });
             actions.push({ id: "consolidated_chat", text: "💬 Kahve Molasında Sohbet Et & Dertleş" });
-            actions.push({ id: "modal_detailed_fight", text: "🤬 Toplantıda Sert Tartış & Hesap Sor" });
+            actions.push({ id: "modal_detailed_fight", text: "🤬 Toplantıda Sert Tartış & Fikir Ayrılığı" });
         } else if (isBoss) {
-            actions.push({ id: "suck_up_boss", text: "☕ Özel Filtre Kahve Götür & Stratejisini Öv (+Performans)", primary: true });
-            actions.push({ id: "flirt_with_boss", text: "💼🔥 Lüks Akşam Yemeğinde Yakınlaş (Patronla Yasak Aşk / Zam Riski)", primary: true });
-            actions.push({ id: "ask_raise", text: "📈 Yüz Yüze Görüşüp Zam Talep Et" });
+            actions.push({ id: "modal_boss_mentorship", text: "👑🎓 Patrondan Mentorluk & Kariyer Koçluğu Al (1-e-1 Görüşme)", primary: true });
+            actions.push({ id: "modal_boss_negotiation", text: "📈💼 Stratejik Maaş Zammı & Terfi Pazarlığı Yap", primary: true });
+            actions.push({ id: "boss_annual_bonus", text: "💰🎉 Yıl Sonu Başarı Primi / İkramiye Talep Et (Yüksek Performans)" });
+            actions.push({ id: "suck_up_boss", text: "☕ Özel Filtre Kahve Götür & Stratejisini Öv (+Performans)" });
+            actions.push({ id: "flirt_with_boss", text: "💼🌹 Lüks Akşam Yemeğinde Yakınlaş (Patronla Flört / Zam Riski)" });
             actions.push({ id: "consolidated_chat", text: "💬 Odasında Şirket Vizyonu Hakkında Konuş" });
         } else {
             actions.push({ id: "modal_social_hangout", text: "🎉 Sosyal Etkinliğe Çıkar (Kahve, Maç, Konser...)", primary: true });
@@ -1381,6 +1384,36 @@ async function handlePersonAction(actId) {
     }
     if (["school_crush", "cheat_homework", "hangout_canteen", "prom_invitation", "stand_up_bully", "suck_up_teacher", "prank_teacher"].includes(actId)) {
         await performActivity("classmate_action", { person_id: pid, action_id: actId });
+        closeModal("personModal");
+        return;
+    }
+    if (actId === "modal_coworker_project") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCoworkerProjectModal(pid);
+        return;
+    }
+    if (actId === "modal_coworker_gossip") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCoworkerGossipModal(pid);
+        return;
+    }
+    if (actId === "modal_coworker_hangout") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openCoworkerHangoutModal(pid);
+        return;
+    }
+    if (actId === "modal_boss_mentorship") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openBossMentorshipModal(pid);
+        return;
+    }
+    if (actId === "modal_boss_negotiation") {
+        await closeTopLayer(document.getElementById("personModal"));
+        openBossNegotiationModal(pid);
+        return;
+    }
+    if (actId === "boss_annual_bonus") {
+        await performActivity("boss_action", { person_id: pid, action_id: "annual_bonus" });
         closeModal("personModal");
         return;
     }
@@ -1544,6 +1577,229 @@ function openFriendActionModal(personId) {
 
 async function submitFriendAction(personId, actionId) {
     await performActivity("friend_action", { person_id: personId, action_id: actionId });
+    closeModal("genericModal");
+}
+
+// ==================== İŞ ARKADAŞI & PATRON DİNAMİKLERİ MODALLARI ====================
+
+function openCoworkerProjectModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.coworker_projects) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `💼📊 Ortak Proje Masası: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    const jobTitle = gameState.current_job ? gameState.current_job.title : "Şirket Projesi";
+    const perfVal = gameState.current_job ? gameState.current_job.performance : 70;
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">
+            <b>${jobTitle}</b> departmanında <b>${person.name}</b> ile büyük bir müşteri ihalesi ve sunum projesinde görevlendirildiniz. (Mevcut Performans: %${perfVal})<br>
+            Bu projeyi nasıl yürütmek istersin?
+        </p>
+        ${marketData.coworker_projects.map(opt => `
+            <div class="panel-card" style="margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">${opt.name}</span>
+                    <span class="card-badge ${opt.bonus_money > 0 ? 'badge-green' : 'badge-purple'}">
+                        ${opt.bonus_money > 0 ? '+₺ ' + opt.bonus_money.toLocaleString('tr-TR') + ' Prim' : 'Standart'}
+                    </span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${opt.desc}</p>
+                <div class="person-chip-row" style="margin:6px 0 10px;">
+                    <span class="person-chip" style="color:#6ee7b7;">📈 Performans: +${opt.perf_boost}</span>
+                    <span class="person-chip" style="color:${opt.stress_cost > 0 ? '#f87171' : '#6ee7b7'};">😰 Stres: ${opt.stress_cost > 0 ? '+' + opt.stress_cost : opt.stress_cost}</span>
+                    <span class="person-chip" style="color:${opt.rel_boost > 0 ? '#60a5fa' : '#f87171'};">🤝 İlişki: ${opt.rel_boost > 0 ? '+' + opt.rel_boost : opt.rel_boost}</span>
+                </div>
+                <button type="button" class="btn-primary" style="margin-top:4px;" onclick="submitCoworkerAction('${person.id}', 'joint_project', '${opt.id}')">
+                    Bu Stratejiyle Çalış 🚀
+                </button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+function openCoworkerGossipModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.coworker_gossips || !marketData.coworker_gossip_reactions) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    const stories = marketData.coworker_gossips;
+    const story = stories[Math.floor(Math.random() * stories.length)];
+
+    document.getElementById("genericModalTitle").textContent = `☕🤫 Plaza Kulisleri & Dedikodu: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:14px; background:rgba(30,41,59,0.7); border:1px solid rgba(245,158,11,0.3);">
+            <div style="font-size:11px; font-weight:700; color:#f59e0b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">
+                ☕ KAHVE MAKİNESİ BAŞINDA FISILTI
+            </div>
+            <div style="font-size:15px; font-weight:700; color:#f8fafc; margin-bottom:6px;">
+                ${story.title}
+            </div>
+            <p class="card-desc" style="color:#e2e8f0; font-size:13.5px; line-height:1.5; font-style:italic;">
+                ${story.text}
+            </p>
+        </div>
+
+        <p class="card-desc" style="margin-bottom:10px; font-weight:600; color:#cbd5e1;">
+            Bu sıcak bilgi karşısında tutumun ne olacak?
+        </p>
+
+        ${marketData.coworker_gossip_reactions.map(r => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${r.name}</span>
+                </div>
+                <p class="card-desc" style="margin:4px 0 8px;">${r.desc}</p>
+                <button type="button" class="btn-primary" onclick="submitCoworkerAction('${person.id}', 'office_gossip', '${r.id}', '${story.id}')">
+                    Tavrını Koy 🗣️
+                </button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+function openCoworkerHangoutModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.coworker_hangouts) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `🎉🍻 Mesai Sonrası Sosyalleşme: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">
+            Mesai bitti, laptoplar kapandı! <b>${person.name}</b> ile iş stresini geride bırakıp kafa dağıtmak için bir plan seç:
+        </p>
+        ${marketData.coworker_hangouts.map(h => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${h.name}</span>
+                    <span class="card-badge ${gameState.money >= h.cost ? 'badge-green' : 'badge-danger'}">
+                        ₺ ${h.cost.toLocaleString('tr-TR')}
+                    </span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${h.desc}</p>
+                <div class="person-chip-row" style="margin:4px 0 10px;">
+                    <span class="person-chip" style="color:#60a5fa;">🤝 İlişki: +${h.rel_boost}</span>
+                    <span class="person-chip" style="color:#6ee7b7;">🧘 Stres: -${h.stress_relief}</span>
+                    <span class="person-chip" style="color:#fcd34d;">😄 Mutluluk: +${h.hap_boost}</span>
+                </div>
+                <button type="button" class="btn-primary" style="margin-top:4px;" ${gameState.money < h.cost ? 'disabled style="opacity:0.5;"' : ''} onclick="submitCoworkerAction('${person.id}', 'afterwork_hangout', '${h.id}')">
+                    ${gameState.money >= h.cost ? 'Davet Et & Git 🍻' : 'Yetersiz Bakiye'}
+                </button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+function openBossMentorshipModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.boss_mentorships) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = `👑🎓 Patrondan Mentorluk & Koçluk: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">
+            Patronun <b>${person.name}</b>'in köşe ofisine girip kahve eşliğinde bire bir kariyer mentorluğu talep ediyorsun.<br>
+            Hangi alanda vizyon ve tecrübe kazanmak istersin?
+        </p>
+        ${marketData.boss_mentorships.map(topic => `
+            <div class="panel-card" style="margin-bottom:10px;">
+                <div class="card-title-row">
+                    <span class="card-title">${topic.name}</span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${topic.desc}</p>
+                <div class="person-chip-row" style="margin:4px 0 10px;">
+                    <span class="person-chip" style="color:#6ee7b7;">📈 Performans: +${topic.perf_boost}</span>
+                    <span class="person-chip" style="color:#93c5fd;">👔 Patron İlişkisi: +${topic.rel_boost}</span>
+                    <span class="person-chip" style="color:#fcd34d;">🧠 Zeka/Yetenek Artışı</span>
+                </div>
+                <button type="button" class="btn-primary" style="margin-top:4px;" onclick="submitBossAction('${person.id}', 'boss_mentorship', '${topic.id}')">
+                    Bu Konuda Akıl Danış 🎓
+                </button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+function openBossNegotiationModal(personId) {
+    sound.playClick();
+    if (!marketData || !marketData.boss_negotiations) return;
+    const person = gameState.relationships.find(p => p.id === personId);
+    if (!person) return;
+
+    const currentSal = gameState.current_job ? gameState.current_job.salary : 0;
+    const currentTitle = gameState.current_job ? gameState.current_job.title : "Çalışan";
+    const currentPerf = gameState.current_job ? gameState.current_job.performance : 70;
+
+    document.getElementById("genericModalTitle").textContent = `📈💼 Maaş Zammı & Terfi Masası: ${person.name}`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:12px; background:rgba(30,41,59,0.7);">
+            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">MEVCUT KARİYER DURUMUN:</div>
+            <div style="font-size:15px; font-weight:700; color:#f8fafc;">
+                ${currentTitle} — ₺ ${currentSal.toLocaleString('tr-TR')} / yıl
+            </div>
+            <div class="person-chip-row" style="margin-top:6px;">
+                <span class="person-chip" style="color:#6ee7b7;">📊 Performans: %${currentPerf}</span>
+                <span class="person-chip" style="color:#93c5fd;">👔 Patronla İlişki: %${person.relationship_level}</span>
+                <span class="person-chip" style="color:#fcd34d;">✨ Karizma: ${gameState.skills && gameState.skills.charisma ? gameState.skills.charisma : 25}</span>
+            </div>
+        </div>
+
+        <p class="card-desc" style="margin-bottom:10px;">
+            Patronun karşısına oturuyorsun. Masadaki kozunu ve ikna taktiğini seç:
+        </p>
+
+        ${marketData.boss_negotiations.map(tactic => `
+            <div class="panel-card" style="margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">${tactic.name}</span>
+                    <span class="card-badge badge-green">Hedef: +%${tactic.raise_pct} Zam</span>
+                </div>
+                <p class="card-desc" style="margin:6px 0;">${tactic.desc}</p>
+                <button type="button" class="btn-primary" style="margin-top:6px;" onclick="submitBossAction('${person.id}', 'boss_negotiation', '${tactic.id}')">
+                    Pazarlığa Başla 💼
+                </button>
+            </div>
+        `).join("")}
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCoworkerAction(personId, actionId, subId, storyId = "") {
+    sound.playClick();
+    await performActivity("coworker_action", {
+        person_id: personId,
+        action_id: actionId,
+        sub_id: subId,
+        story_id: storyId
+    });
+    closeModal("genericModal");
+}
+
+async function submitBossAction(personId, actionId, subId) {
+    sound.playClick();
+    await performActivity("boss_action", {
+        person_id: personId,
+        action_id: actionId,
+        sub_id: subId
+    });
     closeModal("genericModal");
 }
 
@@ -4388,72 +4644,304 @@ function openIntimacyPickerModal() {
     openDialogModal("genericModal");
 }
 
+let intimacySimState = {
+    personId: null,
+    step: 1,
+    venueId: "bedroom_candlelight",
+    musicId: "acoustic_jazz",
+    outfitId: "natural_cozy",
+    foreplayId: null,
+    styleId: null,
+    twistId: null,
+    twistChoiceId: null,
+    protectionId: "condom_safe",
+    morningId: "breakfast_in_bed",
+    passion: 60
+};
+
 function openIntimacyModal(personId) {
     sound.playClick();
     const person = (gameState.relationships || []).find(p => p.id === personId);
     if (!person) return;
 
+    const basePassion = Math.min(100, Math.max(40, Math.round((person.relationship_level || 50) * 0.35 + (gameState.looks || 50) * 0.3 + (gameState.health || 80) * 0.2)));
     const venues = (marketData && marketData.intimacy_venues) || [];
-    const moods = (marketData && marketData.intimacy_moods) || [];
-    const protections = (marketData && marketData.intimacy_protections) || [];
+    const musics = (marketData && marketData.intimacy_musics) || [];
+    const outfits = (marketData && marketData.intimacy_outfits) || [];
+    const foreplays = (marketData && marketData.intimacy_foreplays) || [];
+    const styles = (marketData && marketData.intimacy_styles) || [];
+    const twists = (marketData && marketData.intimacy_twists) || [];
 
-    document.getElementById("genericModalTitle").textContent = `🔥 Birlikte Ol & İntimite: ${person.name}`;
-    const body = document.getElementById("genericModalBody");
+    const randomTwist = twists[Math.floor(Math.random() * (twists.length || 1))] || twists[0];
 
-    body.innerHTML = `
-        <div class="panel-card" style="margin-bottom:14px; background:linear-gradient(135deg, rgba(244,63,94,0.12), rgba(168,85,247,0.12)); border:1px solid rgba(244,63,94,0.3);">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
+    intimacySimState = {
+        personId: personId,
+        step: 1,
+        venueId: venues[0]?.id || "bedroom_candlelight",
+        musicId: musics[0]?.id || "acoustic_jazz",
+        outfitId: outfits[3]?.id || "natural_cozy",
+        foreplayId: foreplays[0]?.id || "massage_oil",
+        styleId: styles[0]?.id || "tender_sensual",
+        twistId: randomTwist?.id || "candle_magic",
+        twistChoiceId: randomTwist?.options ? randomTwist.options[0]?.id : null,
+        protectionId: "condom_safe",
+        morningId: "breakfast_in_bed",
+        passion: basePassion
+    };
+
+    renderIntimacyStep1();
+    openDialogModal("genericModal");
+}
+
+function renderIntimacyHeader(person, stepTitle, stepNum) {
+    const chemVal = person.intimacy_chemistry || 50;
+    const countVal = person.intimacy_count || 0;
+    const tierLabel = countVal === 0 ? "🌱 İlk Birliktelik" : (countVal < 4 ? `🌿 Gelişen Uyum (${countVal}. Gece)` : `🔥 Kusursuz Uyum (${countVal}. Gece)`);
+    return `
+        <div class="panel-card" style="margin-bottom:12px; background:linear-gradient(135deg, rgba(244,63,94,0.14), rgba(168,85,247,0.14)); border:1px solid rgba(244,63,94,0.35); padding:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                 <div>
-                    <h3 style="font-size:15px; font-weight:700; margin:0 0 2px 0; color:#fda4af;">${getRelationEmoji(person.relation)} ${person.name}</h3>
-                    <div style="font-size:12px; color:var(--text-secondary);">${person.relation} • ${person.age} Yaşında • ${person.personality || 'Romantik'}</div>
+                    <h3 style="font-size:15px; font-weight:800; margin:0; color:#fda4af;">${getRelationEmoji(person.relation)} ${person.name}</h3>
+                    <div style="font-size:11.5px; color:var(--text-secondary);">${person.relation} • ${tierLabel}</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:11px; color:#fbcfe8;">İlişki Uyumu</div>
-                    <div style="font-size:16px; font-weight:800; color:#fb7185;">%${person.relationship_level}</div>
+                    <div style="font-size:11px; color:#fbcfe8;">Canlı Tutku & Arzu</div>
+                    <div style="font-size:16px; font-weight:900; color:#fb7185;">%${intimacySimState.passion}</div>
                 </div>
             </div>
+            <div class="stat-progress-bg" style="height:6px; background:rgba(0,0,0,0.3);">
+                <div class="stat-progress-bar" style="width:${intimacySimState.passion}%; background:linear-gradient(90deg, #ec4899, #f43f5e);"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:11.5px; color:#cbd5e1; font-weight:600;">
+                <span>Adım ${stepNum}/5: ${stepTitle}</span>
+                <span style="color:#f43f5e;">Ten Uyumu: %${chemVal}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderIntimacyStep1() {
+    const person = (gameState.relationships || []).find(p => p.id === intimacySimState.personId);
+    if (!person) return;
+
+    document.getElementById("genericModalTitle").textContent = "🔥 Yatak Odası & İntimite Simülasyonu";
+    const body = document.getElementById("genericModalBody");
+
+    const venues = (marketData && marketData.intimacy_venues) || [];
+    const musics = (marketData && marketData.intimacy_musics) || [];
+    const outfits = (marketData && marketData.intimacy_outfits) || [];
+
+    body.innerHTML = `
+        ${renderIntimacyHeader(person, "Ambiyans, Müzik & Hazırlık", 1)}
+
+        <form id="intimacyStep1Form" onsubmit="event.preventDefault(); proceedIntimacyStep2();">
+            <div class="person-action-group-title">1. Mekan & Atmosfer</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="simVenueSelect" class="form-select" style="font-size:12.5px; padding:9px;">
+                    ${venues.map(v => `<option value="${v.id}" ${v.id === intimacySimState.venueId ? 'selected' : ''}>${v.name} ${v.cost > 0 ? `(${v.cost.toLocaleString('tr-TR')} ₺)` : '(Ücretsiz)'}</option>`).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">2. Arka Plan Müziği & Ambiyans</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="simMusicSelect" class="form-select" style="font-size:12.5px; padding:9px;">
+                    ${musics.map(m => `<option value="${m.id}" ${m.id === intimacySimState.musicId ? 'selected' : ''}>${m.name}</option>`).join("")}
+                </select>
+            </div>
+
+            <div class="person-action-group-title">3. Kıyafet / İç Giyim & Cazibe</div>
+            <div class="form-group" style="margin-bottom:16px;">
+                <select id="simOutfitSelect" class="form-select" style="font-size:12.5px; padding:9px;">
+                    ${outfits.map(o => `<option value="${o.id}" ${o.id === intimacySimState.outfitId ? 'selected' : ''}>${o.name} ${o.cost > 0 ? `(${o.cost.toLocaleString('tr-TR')} ₺)` : '(Ücretsiz)'}</option>`).join("")}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="background:linear-gradient(135deg, #f43f5e, #e11d48); border:none; font-size:14.5px; padding:12px;">
+                Baştan Çıkarmaya Başla ➡️ (Ön Sevişme)
+            </button>
+        </form>
+    `;
+}
+
+function proceedIntimacyStep2() {
+    intimacySimState.venueId = document.getElementById("simVenueSelect")?.value || intimacySimState.venueId;
+    intimacySimState.musicId = document.getElementById("simMusicSelect")?.value || intimacySimState.musicId;
+    intimacySimState.outfitId = document.getElementById("simOutfitSelect")?.value || intimacySimState.outfitId;
+    intimacySimState.passion = Math.min(100, intimacySimState.passion + 8);
+    renderIntimacyStep2();
+}
+
+function renderIntimacyStep2() {
+    const person = (gameState.relationships || []).find(p => p.id === intimacySimState.personId);
+    if (!person) return;
+
+    const foreplays = (marketData && marketData.intimacy_foreplays) || [];
+    const activeForeplay = foreplays.find(f => f.id === intimacySimState.foreplayId) || foreplays[0];
+
+    const body = document.getElementById("genericModalBody");
+    body.innerHTML = `
+        ${renderIntimacyHeader(person, "Baştan Çıkarma & Ön Sevişme (Dokunsal Isınma)", 2)}
+
+        <p class="card-desc" style="margin-bottom:12px; font-size:12.5px;">
+            Partnerini nasıl baştan çıkarmak ve tenini ısıtmak istiyorsun? Bir hamle seçip canlı tepkisini hisset:
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+            ${foreplays.map(f => `
+                <button type="button" class="btn-choice ${f.id === intimacySimState.foreplayId ? 'selected-btn-choice' : ''}" style="text-align:left; padding:11px; border:1px solid ${f.id === intimacySimState.foreplayId ? '#f43f5e' : 'rgba(255,255,255,0.08)'}; background:${f.id === intimacySimState.foreplayId ? 'rgba(244,63,94,0.15)' : 'rgba(255,255,255,0.03)'};" onclick="chooseForeplayAction('${f.id}')">
+                    <div style="font-weight:700; font-size:13.5px; color:#fda4af;">${f.name}</div>
+                    <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">${f.desc}</div>
+                </button>
+            `).join("")}
         </div>
 
-        <form id="intimacySimForm" onsubmit="event.preventDefault(); submitIntimacyForm('${person.id}');">
-            <div class="person-action-group-title">1. Atmosfer & Mekan Tercihi</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <select id="intimacyVenueSelect" class="form-select" style="font-size:13px; padding:10px;">
-                    ${venues.map(v => `<option value="${v.id}">${v.name} ${v.cost > 0 ? `(${v.cost.toLocaleString('tr-TR')} ₺)` : '(Ücretsiz)'}</option>`).join("")}
-                </select>
-            </div>
+        <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:12px; margin-bottom:14px; border-left:3px solid #f43f5e;">
+            <div style="font-size:11px; color:#f43f5e; font-weight:700; text-transform:uppercase; margin-bottom:4px;">✨ Dokunuş & Nefesler</div>
+            <div style="font-size:12.5px; color:#f1f5f9; line-height:1.5;">${activeForeplay.sensory_log}</div>
+            <div style="font-size:12px; color:#fbcfe8; font-style:italic; margin-top:6px;">${activeForeplay.partner_reply}</div>
+        </div>
 
-            <div class="person-action-group-title">2. Yakınlaşma Tarzı & Tutku Seviyesi</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <select id="intimacyMoodSelect" class="form-select" style="font-size:13px; padding:10px;">
-                    ${moods.map(m => `<option value="${m.id}">${m.name}</option>`).join("")}
-                </select>
-            </div>
+        <button type="button" class="btn-primary" style="background:linear-gradient(135deg, #f43f5e, #e11d48); border:none; font-size:14.5px; padding:12px;" onclick="renderIntimacyStep3()">
+            Yakınlaşmayı Derinleştir ➡️ (Ritim & Dinamik)
+        </button>
+    `;
+}
 
-            <div class="person-action-group-title">3. Korunma Yöntemi & Niyet</div>
-            <div class="form-group" style="margin-bottom:16px;">
-                <select id="intimacyProtectionSelect" class="form-select" style="font-size:13px; padding:10px;">
+function chooseForeplayAction(foreplayId) {
+    intimacySimState.foreplayId = foreplayId;
+    intimacySimState.passion = Math.min(100, intimacySimState.passion + 10);
+    renderIntimacyStep2();
+}
+
+function renderIntimacyStep3() {
+    const person = (gameState.relationships || []).find(p => p.id === intimacySimState.personId);
+    if (!person) return;
+
+    const styles = (marketData && marketData.intimacy_styles) || [];
+    const activeStyle = styles.find(s => s.id === intimacySimState.styleId) || styles[0];
+
+    const body = document.getElementById("genericModalBody");
+    body.innerHTML = `
+        ${renderIntimacyHeader(person, "Yakınlaşma Ritmi & Ten Dinamiği", 3)}
+
+        <p class="card-desc" style="margin-bottom:12px; font-size:12.5px;">
+            Yatakta aranızdaki akışı hangi tempoda ve duyguda yönetmek istiyorsun?
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+            ${styles.map(s => `
+                <button type="button" class="btn-choice ${s.id === intimacySimState.styleId ? 'selected-btn-choice' : ''}" style="text-align:left; padding:11px; border:1px solid ${s.id === intimacySimState.styleId ? '#a855f7' : 'rgba(255,255,255,0.08)'}; background:${s.id === intimacySimState.styleId ? 'rgba(168,85,247,0.15)' : 'rgba(255,255,255,0.03)'};" onclick="chooseIntimacyStyle('${s.id}')">
+                    <div style="font-weight:700; font-size:13.5px; color:#d8b4fe;">${s.name}</div>
+                    <div style="font-size:11.5px; color:var(--text-secondary); margin-top:2px;">${s.desc}</div>
+                </button>
+            `).join("")}
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:12px; margin-bottom:14px; border-left:3px solid #a855f7;">
+            <div style="font-size:11px; color:#d8b4fe; font-weight:700; text-transform:uppercase; margin-bottom:4px;">🔥 Kalp Atışları & Ten Birleşimi</div>
+            <div style="font-size:12.5px; color:#f1f5f9; line-height:1.5;">${activeStyle.narrative}</div>
+        </div>
+
+        <button type="button" class="btn-primary" style="background:linear-gradient(135deg, #a855f7, #9333ea); border:none; font-size:14.5px; padding:12px;" onclick="renderIntimacyStep4()">
+            Gecenin Akışına Bırak ➡️ (Sürpriz An)
+        </button>
+    `;
+}
+
+function chooseIntimacyStyle(styleId) {
+    intimacySimState.styleId = styleId;
+    intimacySimState.passion = Math.min(100, intimacySimState.passion + 10);
+    renderIntimacyStep3();
+}
+
+function renderIntimacyStep4() {
+    const person = (gameState.relationships || []).find(p => p.id === intimacySimState.personId);
+    if (!person) return;
+
+    const twists = (marketData && marketData.intimacy_twists) || [];
+    const activeTwist = twists.find(t => t.id === intimacySimState.twistId) || twists[0];
+    const options = activeTwist.options || [];
+
+    const body = document.getElementById("genericModalBody");
+    body.innerHTML = `
+        ${renderIntimacyHeader(person, "Yatak Odası Sürprizi & Anlık Reaksiyon", 4)}
+
+        <div style="background:rgba(245,158,11,0.12); border-left:3px solid #f59e0b; border-radius:10px; padding:12px; margin-bottom:14px;">
+            <div style="font-size:13px; font-weight:800; color:#fcd34d; margin-bottom:4px;">${activeTwist.title}</div>
+            <div style="font-size:12.5px; color:#fef3c7; line-height:1.5;">${activeTwist.text}</div>
+        </div>
+
+        <p class="card-desc" style="margin-bottom:10px; font-size:12.5px;">Bu beklenmedik anda nasıl bir hamle yapıyorsun?</p>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+            ${options.map(opt => `
+                <button type="button" class="btn-choice ${opt.id === intimacySimState.twistChoiceId ? 'selected-btn-choice' : ''}" style="text-align:left; padding:11px; border:1px solid ${opt.id === intimacySimState.twistChoiceId ? '#f59e0b' : 'rgba(255,255,255,0.08)'}; background:${opt.id === intimacySimState.twistChoiceId ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.03)'};" onclick="chooseTwistChoice('${opt.id}')">
+                    <div style="font-weight:700; font-size:13px; color:#fef08a;">${opt.text}</div>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px; font-style:italic;">"${opt.reaction}"</div>
+                </button>
+            `).join("")}
+        </div>
+
+        <button type="button" class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706); border:none; font-size:14.5px; padding:12px;" onclick="renderIntimacyStep5()">
+            Gecenin Kapanışı & Sabah ➡️
+        </button>
+    `;
+}
+
+function chooseTwistChoice(choiceId) {
+    intimacySimState.twistChoiceId = choiceId;
+    intimacySimState.passion = Math.min(100, intimacySimState.passion + 8);
+    renderIntimacyStep4();
+}
+
+function renderIntimacyStep5() {
+    const person = (gameState.relationships || []).find(p => p.id === intimacySimState.personId);
+    if (!person) return;
+
+    const protections = (marketData && marketData.intimacy_protections) || [];
+    const mornings = (marketData && marketData.intimacy_mornings) || [];
+
+    const body = document.getElementById("genericModalBody");
+    body.innerHTML = `
+        ${renderIntimacyHeader(person, "Korunma & Sabah Uyanışı (Yastık Sohbeti)", 5)}
+
+        <form id="intimacyStep5Form" onsubmit="event.preventDefault(); submitIntimacySimulation();">
+            <div class="person-action-group-title">1. Korunma Yöntemi & Niyet</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <select id="simProtectionSelect" class="form-select" style="font-size:12.5px; padding:9px;">
                     ${protections.map(pr => `<option value="${pr.id}">${pr.name} - [${pr.safety_label}]</option>`).join("")}
                 </select>
             </div>
 
+            <div class="person-action-group-title">2. Sabah Uyanışı & Kapanış Jesti</div>
+            <div class="form-group" style="margin-bottom:16px;">
+                <select id="simMorningSelect" class="form-select" style="font-size:12.5px; padding:9px;">
+                    ${mornings.map(m => `<option value="${m.id}">${m.name}</option>`).join("")}
+                </select>
+            </div>
+
             <button type="submit" class="btn-primary" style="background:linear-gradient(135deg, #f43f5e, #e11d48); border:none; font-size:15px; padding:12px; box-shadow:0 4px 15px rgba(244,63,94,0.4);">
-                🔥 Aşkı Yaşa & Başla
+                🔥 Birlikteliği Tamamla & Karneni Gör
             </button>
         </form>
     `;
-    openDialogModal("genericModal");
 }
 
-async function submitIntimacyForm(personId) {
-    const venueId = document.getElementById("intimacyVenueSelect")?.value || "bedroom_candlelight";
-    const moodId = document.getElementById("intimacyMoodSelect")?.value || "tender_romantic";
-    const protectionId = document.getElementById("intimacyProtectionSelect")?.value || "condom_safe";
+async function submitIntimacySimulation() {
+    intimacySimState.protectionId = document.getElementById("simProtectionSelect")?.value || intimacySimState.protectionId;
+    intimacySimState.morningId = document.getElementById("simMorningSelect")?.value || intimacySimState.morningId;
 
     const res = await performActivity("do_intimacy", {
-        person_id: personId,
-        venue_id: venueId,
-        mood_id: moodId,
-        protection_id: protectionId
+        person_id: intimacySimState.personId,
+        venue_id: intimacySimState.venueId,
+        music_id: intimacySimState.musicId,
+        outfit_id: intimacySimState.outfitId,
+        foreplay_id: intimacySimState.foreplayId,
+        style_id: intimacySimState.styleId,
+        twist_id: intimacySimState.twistId,
+        twist_choice_id: intimacySimState.twistChoiceId,
+        protection_id: intimacySimState.protectionId,
+        morning_id: intimacySimState.morningId
     });
 
     if (res && res.success) {
@@ -4464,39 +4952,55 @@ async function submitIntimacyForm(personId) {
 }
 
 function showIntimacyResultModal(res) {
-    document.getElementById("genericModalTitle").textContent = "🔥 Birliktelik & Sabahın İlk Işıkları";
+    document.getElementById("genericModalTitle").textContent = "🔥 Birliktelik Karnesi & Sabahın İlk Işıkları";
     const body = document.getElementById("genericModalBody");
 
     const starIcons = "⭐".repeat(res.stars || 4);
     body.innerHTML = `
-        <div style="text-align:center; padding:10px 0;">
-            <div style="font-size:26px; margin-bottom:4px;">${starIcons}</div>
-            <h3 style="font-size:17px; font-weight:800; color:#fb7185; margin:0 0 10px 0;">${res.star_title || 'ÇOK TUTKULU BİR GECE!'}</h3>
+        <div style="text-align:center; padding:8px 0;">
+            <div style="font-size:24px; margin-bottom:2px;">${starIcons}</div>
+            <h3 style="font-size:16.5px; font-weight:800; color:#fb7185; margin:0 0 4px 0;">${res.star_title || 'ÇOK TUTKULU BİR GECE!'}</h3>
+            <div style="font-size:12px; color:#fbcfe8; font-weight:600; margin-bottom:12px;">${res.experience_tier || '🌿 Gelişen Ten Uyumu'} • ${res.venue}</div>
             
-            <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:14px; margin-bottom:14px; text-align:left; border:1px solid rgba(255,255,255,0.1);">
-                <div style="font-size:13px; color:#f1f5f9; line-height:1.6; margin-bottom:8px;">
-                    <b>${res.venue}</b> ortamında <b>${res.mood.toLowerCase()}</b> unutulmaz saatler geçirdiniz.
+            <div style="background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; margin-bottom:12px; text-align:left; border:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:11px; color:#f43f5e; font-weight:700; text-transform:uppercase; margin-bottom:3px;">1. Ön Sevişme & Baştan Çıkarma</div>
+                <div style="font-size:12px; color:#f1f5f9; line-height:1.45; margin-bottom:8px;">
+                    ${res.foreplay_log || ''}
                 </div>
-                <div style="font-size:12.5px; color:#cbd5e1; font-style:italic; border-left:3px solid #f43f5e; padding-left:10px; margin-top:8px;">
-                    "${res.afterglow}"
+
+                <div style="font-size:11px; color:#a855f7; font-weight:700; text-transform:uppercase; margin-bottom:3px;">2. Yakınlaşma & Tutku Doyumu</div>
+                <div style="font-size:12px; color:#cbd5e1; line-height:1.45; margin-bottom:8px;">
+                    ${res.narrative || ''}
+                </div>
+
+                ${res.twist_title ? `
+                    <div style="background:rgba(245,158,11,0.1); border-left:3px solid #f59e0b; padding:7px 10px; border-radius:6px; margin-bottom:8px;">
+                        <div style="font-size:11.5px; font-weight:700; color:#fcd34d;">${res.twist_title}</div>
+                        <div style="font-size:11.5px; color:#fef3c7; line-height:1.35;">${res.twist_log}</div>
+                    </div>
+                ` : ""}
+
+                <div style="font-size:11px; color:#38bdf8; font-weight:700; text-transform:uppercase; margin-bottom:3px;">3. Sabah Uyanışı & Yastık Sohbeti</div>
+                <div style="font-size:12px; color:#e0f2fe; line-height:1.45;">
+                    ${res.morning_log || ''}
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
-                <div class="person-stat-pill" style="padding:10px; text-align:center;">
-                    <div style="font-size:11px; color:var(--text-secondary);">Memnuniyet / Uyum</div>
-                    <div style="font-size:18px; font-weight:800; color:#f43f5e;">%${res.satisfaction || 85}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div class="person-stat-pill" style="padding:8px; text-align:center;">
+                    <div style="font-size:10.5px; color:var(--text-secondary);">Ten Uyumu / Memnuniyet</div>
+                    <div style="font-size:17px; font-weight:900; color:#f43f5e;">%${res.satisfaction || 85}</div>
                 </div>
-                <div class="person-stat-pill" style="padding:10px; text-align:center;">
-                    <div style="font-size:11px; color:var(--text-secondary);">Ruh Hali & Bağ</div>
-                    <div style="font-size:14px; font-weight:700; color:#4ade80;">İlişki +${res.rel_boost} • Stres -${res.stress_relief}</div>
+                <div class="person-stat-pill" style="padding:8px; text-align:center;">
+                    <div style="font-size:10.5px; color:var(--text-secondary);">Ruh Hali & Bağ</div>
+                    <div style="font-size:13px; font-weight:700; color:#4ade80;">İlişki +${res.rel_boost} • Stres -${res.stress_relief}</div>
                 </div>
             </div>
 
             ${res.pregnancy_occurred ? `
-                <div style="background:rgba(236,72,153,0.15); border:1px solid rgba(236,72,153,0.4); border-radius:12px; padding:12px; margin-bottom:14px; text-align:center;">
-                    <div style="font-size:24px; margin-bottom:4px;">🍼👶</div>
-                    <div style="font-size:13.5px; font-weight:700; color:#fbcfe8;">${res.pregnancy_msg}</div>
+                <div style="background:rgba(236,72,153,0.18); border:1px solid rgba(236,72,153,0.5); border-radius:12px; padding:10px; margin-bottom:12px; text-align:center;">
+                    <div style="font-size:22px; margin-bottom:2px;">🍼👶</div>
+                    <div style="font-size:13px; font-weight:700; color:#fbcfe8;">${res.pregnancy_msg}</div>
                 </div>
             ` : ""}
 

@@ -26,7 +26,11 @@ from .data import (
     PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
     HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL,
     DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_TACTILE_ACTIONS, DATE_MID_EVENTS, DATE_FINALES,
-    INTIMACY_VENUES, INTIMACY_MOODS, INTIMACY_PROTECTIONS, INTIMACY_AFTERGLOWS
+    INTIMACY_VENUES, INTIMACY_MOODS, INTIMACY_PROTECTIONS, INTIMACY_AFTERGLOWS,
+    INTIMACY_OUTFITS, INTIMACY_FOREPLAY_ACTIONS, INTIMACY_STYLES, INTIMACY_TWISTS, INTIMACY_MORNING_ACTIONS,
+    INTIMACY_MUSICS,
+    COWORKER_PROJECT_OPTIONS, COWORKER_GOSSIP_STORIES, COWORKER_GOSSIP_REACTIONS,
+    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -3410,12 +3414,20 @@ def do_intimacy(
     char: Character,
     person_id: str,
     venue_id: str = "bedroom_candlelight",
+    music_id: str = "acoustic_jazz",
+    outfit_id: str = "natural_cozy",
+    foreplay_id: str = "massage_oil",
+    style_id: str = "tender_sensual",
+    twist_id: str = None,
+    twist_choice_id: str = None,
     protection_id: str = "condom_safe",
-    mood_id: str = "tender_romantic"
+    morning_id: str = "breakfast_in_bed",
+    mood_id: str = None
 ) -> Dict[str, Any]:
     """
-    Yatak Odası, İntimite & Romantik Yakınlaşma (Make Love) Motoru.
-    Partnerle derin bağ kurma, tutku, rahatlama, memnuniyet ve gebelik simülasyonu.
+    Gelişmiş Çok Aşamalı Yatak Odası, İntimite & Romantik Yakınlaşma Motoru.
+    Ambiyans, müzik, ön sevişme, yakınlaşma stili, yatak odası kriz/sürpriz seçimi,
+    ten uyumu gelişimi ve sabah jestleriyle derin simülasyon.
     """
     person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
     if not person:
@@ -3428,12 +3440,26 @@ def do_intimacy(
     if person.relation in ["Anne", "Baba", "Kardeş", "Abla", "Ağabey", "Çocuk", "Torun", "Öğretmen", "Patron"]:
         return {"success": False, "message": "Bu kişiyle böyle bir yakınlaşma yaşayamazsın."}
 
-    venue = next((v for v in INTIMACY_VENUES if v["id"] == venue_id), INTIMACY_VENUES[0])
-    protection = next((p for p in INTIMACY_PROTECTIONS if p["id"] == protection_id), INTIMACY_PROTECTIONS[0])
-    mood = next((m for m in INTIMACY_MOODS if m["id"] == mood_id), INTIMACY_MOODS[0])
+    # Backward compatibility with mood_id
+    if mood_id:
+        if mood_id == "wild_passionate":
+            style_id = "wild_passionate"
+        elif mood_id == "relaxed_cuddle":
+            foreplay_id = "massage_oil"
+        elif mood_id == "tender_romantic":
+            style_id = "tender_sensual"
 
-    if char.money < venue["cost"]:
-        return {"success": False, "message": f"{venue['name']} ortamı için {venue['cost']:,} TL gerekli (Mevcut paran: {char.money:,} TL)."}
+    venue = next((v for v in INTIMACY_VENUES if v["id"] == venue_id), INTIMACY_VENUES[0])
+    music = next((m for m in INTIMACY_MUSICS if m["id"] == music_id), INTIMACY_MUSICS[0])
+    outfit = next((o for o in INTIMACY_OUTFITS if o["id"] == outfit_id), INTIMACY_OUTFITS[3])
+    foreplay = next((f for f in INTIMACY_FOREPLAY_ACTIONS if f["id"] == foreplay_id), INTIMACY_FOREPLAY_ACTIONS[0])
+    style = next((s for s in INTIMACY_STYLES if s["id"] == style_id), INTIMACY_STYLES[0])
+    protection = next((p for p in INTIMACY_PROTECTIONS if p["id"] == protection_id), INTIMACY_PROTECTIONS[0])
+    morning = next((m for m in INTIMACY_MORNING_ACTIONS if m["id"] == morning_id), INTIMACY_MORNING_ACTIONS[0])
+
+    total_cost = venue["cost"] + outfit["cost"]
+    if char.money < total_cost:
+        return {"success": False, "message": f"Bu özel gece için {total_cost:,} TL gerekli (Mevcut paran: {char.money:,} TL)."}
 
     # 1. Partnerin Rızası & İlişki Durumu Kontrolü
     is_committed = person.relation in ["Eş", "Nişanlı", "Sevgili"]
@@ -3468,57 +3494,109 @@ def do_intimacy(
             }
 
     # Ücreti tahsil et
-    char.money -= venue["cost"]
+    char.money -= total_cost
 
-    # 2. Memnuniyet & Uyum (Satisfaction) Skoru Hesabı (0-100)
-    base_satisfaction = int(person.relationship_level * 0.35 + char.looks * 0.25 + char.health * 0.25 + random.randint(5, 15))
+    # 2. Ten Uyumu ve Birliktelik Tecrübesi (Chemistry Progression)
+    person.intimacy_count = getattr(person, "intimacy_count", 0) + 1
+    char.intimacy_count = getattr(char, "intimacy_count", 0) + 1
 
-    # Mood & Kişilik Uyumu Bonusu
-    if person.personality in mood.get("preferred_personalities", []):
-        base_satisfaction += mood.get("satisfaction_boost", 20)
+    if person.intimacy_count == 1:
+        experience_tier = "🌱 İlk Birliktelik & Tatlı Heyecan"
+        experience_note = "İlk defa bu kadar mahrem bir şekilde yakınlaştınız. Aranızda kalpleri hızla çarptıran tatlı bir utangaçlık ve derin bir merak vardı."
+        person.intimacy_chemistry = min(100, getattr(person, "intimacy_chemistry", 50) + 10)
+    elif person.intimacy_count <= 4:
+        experience_tier = f"🌿 Gelişen Ten Uyumu ({person.intimacy_count}. Birliktelik)"
+        experience_note = "Birbirinizin zevklerini, dokunuşlarını ve vücut dilini artık çok daha iyi tanıyorsunuz. Çekim her defasında daha da alevleniyor."
+        person.intimacy_chemistry = min(100, getattr(person, "intimacy_chemistry", 50) + 8)
     else:
-        base_satisfaction += 10
+        experience_tier = f"🔥 Kusursuz & Tutkulu Birlik ({person.intimacy_count}. Birliktelik)"
+        experience_note = "Yılların getirdiği derin bağ ve kelimesiz anlaşma; tek bir bakışınız bile teninizi ateşe vermeye yetiyor."
+        person.intimacy_chemistry = min(100, getattr(person, "intimacy_chemistry", 50) + 5)
 
-    # Mekan Konfor & Romantizm Katkısı
+    # 3. Ön Sevişme & Isınma Uyumu
+    foreplay_bonus = foreplay["boost"]
+    if person.personality in foreplay.get("preferred_personalities", []):
+        foreplay_bonus += 10
+
+    # 4. Yakınlaşma Stili & Ritim Uyumu
+    style_bonus = 0
+    if person.personality in style.get("preferred_personalities", []):
+        style_bonus += 14
+
+    # 5. Beklenmedik Yatak Odası Olayı (Twist) ve Oyuncunun Seçimi
+    twist_obj = None
+    chosen_opt = None
+    if twist_id:
+        twist_obj = next((t for t in INTIMACY_TWISTS if t["id"] == twist_id), INTIMACY_TWISTS[0])
+    elif random.random() < 0.70:
+        twist_obj = random.choice(INTIMACY_TWISTS)
+
+    twist_bonus = 0
+    twist_reaction = ""
+    if twist_obj:
+        options = twist_obj.get("options", [])
+        if twist_choice_id:
+            chosen_opt = next((o for o in options if o["id"] == twist_choice_id), options[0] if options else None)
+        else:
+            chosen_opt = options[0] if options else None
+        
+        if chosen_opt:
+            twist_bonus = chosen_opt.get("boost", 15)
+            twist_reaction = chosen_opt.get("reaction", "")
+
+    # 6. Genel Memnuniyet Skoru Hesabı (0-100)
+    chem_val = getattr(person, "intimacy_chemistry", 50)
+    base_satisfaction = int(
+        person.relationship_level * 0.20 +
+        char.looks * 0.18 +
+        char.health * 0.18 +
+        outfit.get("charm_boost", 10) +
+        music.get("romance_boost", 12) +
+        foreplay_bonus * 0.35 +
+        style_bonus +
+        (twist_bonus * 0.3) +
+        (chem_val * 0.12) +
+        random.randint(6, 14)
+    )
+
     if venue["comfort_score"] >= 90:
         base_satisfaction += 8
 
-    satisfaction = max(40, min(100, base_satisfaction))
+    satisfaction = max(50, min(100, base_satisfaction))
 
-    # 3. İstatistik Güncellemeleri
-    hap_boost = int(satisfaction * 0.35)
-    stress_relief = int(satisfaction * 0.30)
-    rel_boost = int(satisfaction * 0.22)
-    loyalty_boost = 6 if satisfaction >= 75 else 2
+    # 7. İstatistik Güncellemeleri
+    hap_boost = int(satisfaction * 0.35) + morning.get("hap_boost", 15) + (twist_obj.get("bonus_hap", 0) if twist_obj else 0)
+    stress_relief = int(satisfaction * 0.34) + 6
+    rel_boost = int(satisfaction * 0.24) + morning.get("rel_boost", 15) + (twist_obj.get("bonus_rel", 0) if twist_obj else 0)
+    loyalty_boost = 9 if satisfaction >= 75 else 4
 
     char.happiness = min(100, char.happiness + hap_boost)
     char.stress = max(0, char.stress - stress_relief)
     person.relationship_level = min(100, person.relationship_level + rel_boost)
     person.loyalty = min(100, person.loyalty + loyalty_boost)
 
-    # 4. Sabah & Anı Notu
-    afterglow = random.choice(INTIMACY_AFTERGLOWS)
-    person.memories.append(f"{venue['name']} ortamında unutulmaz bir gece geçirdiniz (Memnuniyet: %{satisfaction}).")
-
-    # 5. Yıldız ve Derecelendirme
-    if satisfaction >= 85:
+    # 8. Yıldız ve Derecelendirme
+    if satisfaction >= 88:
         stars = 5
         star_title = "🌟🌟🌟🌟🌟 KUSURSUZ & BÜYÜLEYİCİ BİR GECE! (Tutku Tavan)"
-    elif satisfaction >= 70:
+    elif satisfaction >= 72:
         stars = 4
         star_title = "🌟🌟🌟🌟 ÇOK TUTKULU & ROMANTİK BİR YAKINLAŞMA"
-    elif satisfaction >= 55:
+    elif satisfaction >= 56:
         stars = 3
         star_title = "🌟🌟🌟 KEYİFLİ & HUZURLU BİR BİRLİKTELİK"
     else:
         stars = 2
         star_title = "🌟🌟 BİRAZ YORGUN AMA TATLI BİR AN"
 
-    # 6. Gebelik Simülasyonu
+    # 9. Kalıcı Anı ve Afterglow
+    afterglow = random.choice(INTIMACY_AFTERGLOWS)
+    person.memories.append(f"{venue['name']} ortamında {style['name']} tarzında unutulmaz bir gece geçirdiniz ({experience_tier} - Memnuniyet: %{satisfaction}).")
+
+    # 10. Gebelik Simülasyonu
     pregnancy_occurred = False
     pregnancy_msg = ""
 
-    # Biyolojik kontrol: Biri erkek, biri kadın ve doğurgan yaş
     is_fertile_pair = (
         (char.gender == "Erkek" and person.gender == "Kadın" and 16 <= person.age <= 48) or
         (char.gender == "Kadın" and person.gender == "Erkek" and 16 <= char.age <= 48)
@@ -3555,12 +3633,12 @@ def do_intimacy(
                 char.achievements.append("child")
 
             if protection["id"] == "try_baby":
-                pregnancy_msg = f"🎉 BEBEK MÜJDESİ! Birkaç hafta sonra yapılan hamilelik testi POZİTİF çıktı! Dünyalar tatlısı bir {'erkek' if b_gender == 'Erkek' else 'kız'} bebeğiniz doğdu ve adını {baby_name} koydunuz! 🍼👶"
+                pregnancy_msg = f"🎉 BEBEK MÜJDESİ! Yapılan test POZİTİF çıktı! Dünyalar tatlısı bir {'erkek' if b_gender == 'Erkek' else 'kız'} bebeğiniz doğdu: {baby_name}! 🍼👶"
             else:
                 pregnancy_msg = f"⚠️ SÜRPRİZ HAMİLELİK! Korunmasız birliktelik sonucunda bir bebek dünyaya geldi: {baby_name}! (Artık bir ebeveynsin!) 🍼👶"
 
     # Log kaydı
-    log_text = f"🔥 YATAK ODASI & İNTİMİTE ({person.name}): {star_title} | {venue['name']} | {mood['name']} (Memnuniyet: %{satisfaction}, Mutluluk +{hap_boost}, Stres -{stress_relief})"
+    log_text = f"🔥 YATAK ODASI ({person.name}): {star_title} | {venue['name']} | {music['name']} | {foreplay['name']} | {style['name']} (Memnuniyet: %{satisfaction}, Mutluluk +{hap_boost}, Stres -{stress_relief})"
     if pregnancy_occurred:
         log_text += f" | {pregnancy_msg}"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=log_text, category="love", icon="🔥"))
@@ -3568,9 +3646,22 @@ def do_intimacy(
     return {
         "success": True,
         "person_name": person.name,
+        "experience_tier": experience_tier,
+        "experience_note": experience_note,
+        "intimacy_count": person.intimacy_count,
+        "intimacy_chemistry": getattr(person, "intimacy_chemistry", 50),
         "venue": venue["name"],
-        "mood": mood["name"],
+        "music": music["name"],
+        "outfit": outfit["name"],
+        "foreplay": foreplay["name"],
+        "foreplay_log": f"{foreplay['sensory_log']} {foreplay['partner_reply']}",
+        "style": style["name"],
+        "narrative": style["narrative"],
         "protection": protection["name"],
+        "twist_title": twist_obj["title"] if twist_obj else None,
+        "twist_log": f"{twist_obj['text']} {twist_reaction}" if twist_obj else None,
+        "morning": morning["name"],
+        "morning_log": morning["text"],
         "satisfaction": satisfaction,
         "stars": stars,
         "star_title": star_title,
@@ -3580,7 +3671,7 @@ def do_intimacy(
         "rel_boost": rel_boost,
         "pregnancy_occurred": pregnancy_occurred,
         "pregnancy_msg": pregnancy_msg,
-        "message": f"{star_title}\n\n{venue['name']} ortamında {mood['name'].lower()} unutulmaz bir gece yaşadınız.\n\n✨ {afterglow}\n(Memnuniyet: %{satisfaction} | İlişki +{rel_boost} | Mutluluk +{hap_boost} | Stres -{stress_relief}){(' ' + pregnancy_msg) if pregnancy_occurred else ''}"
+        "message": f"{star_title}\n\n{venue['name']} ortamında, {music['name']} eşliğinde unutulmaz bir gece yaşadınız.\n\n✨ {foreplay['sensory_log']}\n\n🔥 {style['narrative']}\n\n{(twist_obj['text'] + ' ' + twist_reaction + chr(10) + chr(10)) if twist_obj else ''}☀️ {morning['text']}\n\n(Memnuniyet: %{satisfaction} | {experience_tier} | İlişki +{rel_boost} | Mutluluk +{hap_boost} | Stres -{stress_relief}){(' ' + pregnancy_msg) if pregnancy_occurred else ''}"
     }
 
 def do_detailed_fight(char: Character, person_id: str, topic_id: str, attitude_id: str) -> Dict[str, Any]:
@@ -4443,15 +4534,78 @@ def do_classmate_action(char: Character, person_id: str, action_id: str) -> Dict
     return {"success": False, "message": "Geçersiz işlem."}
 
 
-def do_coworker_action(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
-    """İş arkadaşı etkileşimleri: Ofis aşkı, Cuma kaçamağı, Happy hour ve ayak kaydırma."""
+def do_coworker_action(char: Character, person_id: str, action_id: str, sub_id: str = "", story_id: str = "") -> Dict[str, Any]:
+    """İş arkadaşı etkileşimleri: Ortak Proje, Plaza Dedikodusu, Mesai Sonrası Sosyalleşme, Ofis Aşkı ve Ayak Kaydırma."""
     person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
     if not person:
         return {"success": False, "message": "Kişi bulunamadı."}
     if person.relation != "İş Arkadaşı":
         return {"success": False, "message": "Bu eylem yalnızca iş arkadaşlarınız için geçerlidir."}
 
-    if action_id == "office_romance":
+    msg = ""
+    # 1. Ortak Proje & Sunum Hazırlığı
+    if action_id == "joint_project":
+        proj_opt = next((o for o in COWORKER_PROJECT_OPTIONS if o["id"] == sub_id), COWORKER_PROJECT_OPTIONS[1])
+        if char.current_job:
+            char.current_job.performance = min(100, char.current_job.performance + proj_opt["perf_boost"])
+        char.stress = max(0, min(100, char.stress + proj_opt["stress_cost"]))
+        person.relationship_level = max(0, min(100, person.relationship_level + proj_opt["rel_boost"]))
+        bonus = proj_opt.get("bonus_money", 0)
+        if bonus > 0:
+            char.money += bonus
+        
+        person.memories.append(f"{person.name} ile kritik şirket projesinde çalıştınız ({proj_opt['name']}).")
+        msg = f"💼📊 ORTAK PROJE BAŞARISI! {proj_opt['summary']} (Performans: +{proj_opt['perf_boost']}, Stres: {proj_opt['stress_cost']:+d}, İlişki: {proj_opt['rel_boost']:+d}{f', Başarı Primi: +{bonus:,} TL' if bonus > 0 else ''})"
+
+    # 2. Kahve Makinesi & Plaza Dedikoduları
+    elif action_id == "office_gossip":
+        story = next((s for s in COWORKER_GOSSIP_STORIES if s["id"] == story_id), random.choice(COWORKER_GOSSIP_STORIES))
+        reaction = next((r for r in COWORKER_GOSSIP_REACTIONS if r["id"] == sub_id), COWORKER_GOSSIP_REACTIONS[0])
+
+        person.relationship_level = max(0, min(100, person.relationship_level + reaction["rel_boost"]))
+        person.loyalty = max(0, min(100, person.loyalty + reaction.get("loyalty_boost", 0)))
+        char.stress = max(0, char.stress - reaction.get("stress_relief", 5))
+
+        if reaction["id"] == "keep_confidential":
+            person.memories.append(f"Mutfakta paylaşılan '{story['title']}' sırrını sadakatle sakladınız.")
+            msg = f"☕🤫 PLAZA KULİSİ: {story['text']}\n\n🤐 Bu kritik sırrı ikiniz arasında tuttun. {person.name} senin ketumluğuna ve dostluğuna hayran kaldı! (İlişki +{reaction['rel_boost']}, Sadakat +{reaction['loyalty_boost']}, Stres -{reaction['stress_relief']})"
+        elif reaction["id"] == "spread_plaza":
+            char.happiness = min(100, char.happiness + 15)
+            hr_warning = ""
+            if random.random() < 0.30:
+                char.stress = min(100, char.stress + 15)
+                if char.current_job:
+                    char.current_job.performance = max(10, char.current_job.performance - 12)
+                hr_warning = " ⚠️ Ancak dedikodunun kaynağı sen gösterilince İK'dan resmi ihtar aldın! (-12 Performans)"
+            person.memories.append(f"'{story['title']}' dedikodusunu tüm departmana yayarak plazada kaos yarattın.")
+            msg = f"📢🔥 PLAZA ÇALKALANDI! {story['title']}: {story['text']}\n\nHaberi tüm departmana yaydın! Mutfak ve WhatsApp grupları kaynadı!{hr_warning} (Mutluluk +15, Stres -{reaction['stress_relief']})"
+        else:  # whistleblow_boss
+            boss = next((p for p in char.relationships if p.relation == "Patron" and p.is_alive), None)
+            boss_note = ""
+            if boss:
+                boss.relationship_level = min(100, boss.relationship_level + 20)
+                if char.current_job:
+                    char.current_job.performance = min(100, char.current_job.performance + 10)
+                boss.memories.append(f"{char.first_name} ofiste dönen '{story['title']}' dedikodularını haber verdi.")
+                boss_note = f" Patronun {boss.name} seni sadık bir iç kaynak olarak gördü (+20 Patron İlişkisi, +10 Performans)!"
+            person.memories.append(f"Ofis dedikodusunu patrona yetiştirdiğini öğrenip sana düşman oldu.")
+            msg = f"🕵️ PATRONA İSPİYON! Hemen üst kata çıkıp patrona dedikoduyu fısıldadın.{boss_note} Ancak {person.name} durumu fark etti ve sana sırt çevirdi! (İş Arkadaşı İlişki -35, Sadakat -25)"
+
+    # 3. Mesai Sonrası Sosyalleşme
+    elif action_id == "afterwork_hangout":
+        hangout = next((h for h in COWORKER_HANGOUT_OPTIONS if h["id"] == sub_id), COWORKER_HANGOUT_OPTIONS[0])
+        cost = hangout["cost"]
+        if char.money < cost:
+            return {"success": False, "message": f"Bu buluşma için {cost:,} TL gerekli (Mevcut paran: {char.money:,} TL)."}
+        char.money -= cost
+        person.relationship_level = min(100, person.relationship_level + hangout["rel_boost"])
+        char.stress = max(0, char.stress - hangout["stress_relief"])
+        char.happiness = min(100, char.happiness + hangout["hap_boost"])
+        person.memories.append(f"İş çıkışı {hangout['name']} buluşması yaptınız, stres attınız.")
+        msg = f"🎉🍻 MESAİ SONRASI BULUŞMA: {hangout['name']}! {person.name} ile keyifli saatler geçirdiniz, ofis stresini geride bıraktınız. (İlişki +{hangout['rel_boost']}, Stres -{hangout['stress_relief']}, Mutluluk +{hangout['hap_boost']})"
+
+    # 4. Ofis Aşkı (Romantizm)
+    elif action_id == "office_romance":
         if person.relationship_level >= 58 and (person.looks <= char.looks + 22 or char.skills.get("charisma", 20) >= 35):
             person.relation = "Flört"
             person.relationship_level = min(100, person.relationship_level + 22)
@@ -4461,12 +4615,16 @@ def do_coworker_action(char: Character, person_id: str, action_id: str) -> Dict[
         else:
             person.relationship_level = max(20, person.relationship_level - 10)
             msg = f"😬 'İŞLE AŞKI KARIŞTIRMAYALIM...' {person.name} profesyonel kalmak istediğini söyleyerek kibarca geri adım attı."
+
+    # 5. Cuma Akşamı Kaçamağı
     elif action_id == "office_hookup":
         char.hookup_count += 1
         person.relationship_level = min(100, person.relationship_level + 18)
         char.happiness = min(100, char.happiness + 22)
         person.memories.append("Cuma mesai bitimi ofiste gizli ve heyecan dolu bir kaçamak yaşadınız.")
         msg = f"🔥🏢 OFİSTE KAÇAMAK! Cuma akşamı herkes çıktıktan sonra {person.name} ile arşiv odasında unutulmaz bir kaçamak yaşadınız! Pazartesi sabahı toplantılarda birbirinize kaçamak bakışlar atacaksınız! (Mutluluk +22)"
+
+    # 6. Happy Hour (Eski)
     elif action_id == "happy_hour":
         cost = 600
         if char.money < cost:
@@ -4477,6 +4635,8 @@ def do_coworker_action(char: Character, person_id: str, action_id: str) -> Dict[
         char.happiness = min(100, char.happiness + 14)
         person.memories.append("İş çıkışı bara gidip patronun arkasından dedikodu yaptınız.")
         msg = f"🍻 Cuma akşamı iş çıkışı {person.name} ile bara gidip birer soğuk bira içtiniz, haftanın tüm yorgunluğunu ve stresini attınız! (Stres -16, Mutluluk +14)"
+
+    # 7. Ayak Kaydırma (Emeğini Çalma)
     else:  # steal_credit
         if char.current_job:
             char.current_job.performance = min(100, char.current_job.performance + 18)
@@ -4488,20 +4648,92 @@ def do_coworker_action(char: Character, person_id: str, action_id: str) -> Dict[
     return {"success": True, "message": msg}
 
 
-def do_boss_action(char: Character, person_id: str, action_id: str) -> Dict[str, Any]:
-    """Patron / Müdür etkileşimleri: Yağ çekme, zam isteme ve patronla yasak flört."""
+def do_boss_action(char: Character, person_id: str, action_id: str, sub_id: str = "") -> Dict[str, Any]:
+    """Patron / Müdür etkileşimleri: Mentorluk, Zam Pazarlığı, Prim Talebi, Yağ Çekme ve Flört."""
     person = next((p for p in char.relationships if p.id == person_id and p.is_alive), None)
     if not person:
         return {"success": False, "message": "Kişi bulunamadı."}
     if person.relation != "Patron":
         return {"success": False, "message": "Bu eylem yalnızca patronunuz için geçerlidir."}
 
-    if action_id == "suck_up_boss":
+    msg = ""
+
+    # 1. Patrondan Bire Bir Mentorluk & Kariyer Koçluğu
+    if action_id == "boss_mentorship":
+        topic = next((t for t in BOSS_MENTORSHIP_TOPICS if t["id"] == sub_id), BOSS_MENTORSHIP_TOPICS[0])
+        char.smarts = min(100, char.smarts + topic.get("smarts_boost", 0))
+        if "charisma_boost" in topic:
+            char.skills["charisma"] = min(100, char.skills.get("charisma", 20) + topic["charisma_boost"])
+        if char.current_job:
+            char.current_job.performance = min(100, char.current_job.performance + topic["perf_boost"])
+        person.relationship_level = min(100, person.relationship_level + topic["rel_boost"])
+        char.stress = max(0, char.stress - 8)
+
+        person.memories.append(f"Patronun {person.name} ile bire bir kariyer koçluğu yaptın ({topic['name']}).")
+        msg = f"👑🎓 PATRON MENTORLUĞU: {topic['name']}!\n\n{topic['dialogue']}\n\n(Performans +{topic['perf_boost']}, Patronla İlişki +{topic['rel_boost']}, Zeka/Karizma Gelişimi!)"
+
+    # 2. İnteraktif Maaş Zammı & Terfi Pazarlığı
+    elif action_id == "boss_negotiation":
+        tactic = next((t for t in BOSS_NEGOTIATION_TACTICS if t["id"] == sub_id), BOSS_NEGOTIATION_TACTICS[0])
+        if not char.current_job:
+            return {"success": False, "message": "Aktif bir işiniz bulunmuyor."}
+
+        success = False
+        if tactic["id"] == "rational_metrics":
+            # Performans >= 70 veya Zeka >= 70
+            success = (char.current_job.performance >= 70 or char.smarts >= 70) and random.random() < 0.85
+        elif tactic["id"] == "loyalty_dedication":
+            # İlişki >= 65 veya Sadakat >= 65
+            success = (person.relationship_level >= 65 or person.loyalty >= 65) and random.random() < 0.80
+        else:  # bluff_counteroffer
+            # Karizma >= 40 veya Şöhret >= 20 veya 50% şans
+            success = (char.skills.get("charisma", 20) >= 40 or char.fame >= 20) and random.random() < 0.65
+
+        if success:
+            raise_multiplier = 1.0 + (tactic["raise_pct"] / 100.0)
+            old_sal = char.current_job.salary
+            char.current_job.salary = int(char.current_job.salary * raise_multiplier)
+            char.current_job.level += 1
+            if not char.current_job.title.startswith("Kıdemli"):
+                char.current_job.title = f"Kıdemli {char.current_job.title}"
+            char.happiness = min(100, char.happiness + 25)
+            person.relationship_level = min(100, person.relationship_level + 15)
+            person.memories.append(f"Stratejik zam pazarlığında maaşına %{tactic['raise_pct']} zam aldın ({char.current_job.title}).")
+            msg = f"📈🎉 {tactic['success_msg']}\n\nEski Maaş: {old_sal:,} TL ➔ YENİ MAAŞ: {char.current_job.salary:,} TL/yıl (Ünvan: {char.current_job.title}, Mutluluk +25)"
+        else:
+            if tactic["id"] == "bluff_counteroffer":
+                person.relationship_level = max(5, person.relationship_level - 35)
+                char.current_job.performance = max(10, char.current_job.performance - 25)
+                char.stress = min(100, char.stress + 30)
+                person.memories.append("Patrona karşı yaptığın blöf elinde patladı, aranız bozuldu.")
+                msg = f"💥😱 BLÖF PATLADI! {tactic['fail_msg']}\n\n(Patronla İlişki -35, Performans -25, Stres +30)"
+            else:
+                person.relationship_level = max(20, person.relationship_level - 8)
+                char.stress = min(100, char.stress + 10)
+                msg = f"📉 {tactic['fail_msg']}\n\n(Zam Talebi Şimdilik Onaylanmadı)"
+
+    # 3. Yıl Sonu Başarı Primi / İkramiye Talebi
+    elif action_id == "annual_bonus":
+        if not char.current_job:
+            return {"success": False, "message": "Aktif bir işiniz bulunmuyor."}
+        if char.current_job.performance >= 75 or person.relationship_level >= 75:
+            bonus = int(char.current_job.salary / 12 * 1.5)
+            char.money += bonus
+            char.happiness = min(100, char.happiness + 22)
+            person.memories.append(f"Patronundan {bonus:,} TL yıl sonu başarı primi aldın.")
+            msg = f"💰🎉 BAŞARI PRİMİ ONAYLANDI! Patronun {person.name} omzuna vurdu: 'Bu yıl şirkete kazandırdığın değer muazzam!' diyerek sana tek seferde {bonus:,} TL İKRAMİYE verdi! (Para +{bonus:,} TL, Mutluluk +22)"
+        else:
+            msg = f"📉 'PERFORMANS YETERSİZ...' Patronun {person.name}: 'Prim alabilmek için yıl boyunca performansının en az %75 olması gerekir (Şu an: %{char.current_job.performance})' diyerek talebini geri çevirdi."
+
+    # 4. Yağ Çekme & Kahve Götürme
+    elif action_id == "suck_up_boss":
         person.relationship_level = min(100, person.relationship_level + 15)
         if char.current_job:
             char.current_job.performance = min(100, char.current_job.performance + 12)
         person.memories.append("Patrona her fırsatta övgüler yağdırıp gözüne girdin.")
-        msg = f"☕ Patronun {person.name}'in odasına özel filtre kahve götürüp stratejilerini övdün: 'Gözümden kaçmıyorsun, çok çalışkansın' diyerek tebessüm etti! (+12 Performans)"
+        msg = f"☕ Patronun {person.name}'in odasına özel filtre kahve götürüp stratejilerini övdün: 'Gözümden kaçmıyorsun, çok çalışkansın' diyerek tebessüm etti! (+12 Performans, +15 İlişki)"
+
+    # 5. Patronla Flört & Yasak Aşk
     elif action_id == "flirt_with_boss":
         if person.relationship_level >= 62 and (char.looks >= 70 or char.skills.get("charisma", 20) >= 45):
             person.relation = "Flört"
@@ -4519,6 +4751,8 @@ def do_boss_action(char: Character, person_id: str, action_id: str) -> Dict[str,
             char.stress = min(100, char.stress + 25)
             person.memories.append("Patronuna asılmaya kalktın; seni odasından kovdu.")
             msg = f"🚪😬 'HADDİNİ BİL!' Patronun kaşlarını çattı: 'Burası ciddi bir kurum, laubaliliğe tahammülüm yok!' diyerek seni odasından kovdu! Performans notun dip yaptı! (Stres +25)"
+
+    # 6. Eski Zam İsteme
     else:  # ask_raise
         if person.relationship_level >= 65:
             if char.current_job:

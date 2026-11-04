@@ -40,7 +40,11 @@ from game.data import (
     PARENT_CARE_OPTIONS, SIBLING_INTERACTIONS, PARENTING_CRISES, FRIEND_INTERACTIONS,
     HOOKUP_VENUES, HOOKUP_PROTECTION_CHOICES, DATING_OPENING_LINES, RED_FLAGS_POOL, GREEN_FLAGS_POOL,
     DATE_OUTFITS, DATE_GREETINGS, DATE_CONVERSATION_TOPICS, DATE_TACTILE_ACTIONS, DATE_MID_EVENTS, DATE_FINALES,
-    INTIMACY_VENUES, INTIMACY_MOODS, INTIMACY_PROTECTIONS, INTIMACY_AFTERGLOWS
+    INTIMACY_VENUES, INTIMACY_MOODS, INTIMACY_PROTECTIONS, INTIMACY_AFTERGLOWS,
+    INTIMACY_OUTFITS, INTIMACY_FOREPLAY_ACTIONS, INTIMACY_STYLES, INTIMACY_TWISTS, INTIMACY_MORNING_ACTIONS,
+    INTIMACY_MUSICS,
+    COWORKER_PROJECT_OPTIONS, COWORKER_GOSSIP_STORIES, COWORKER_GOSSIP_REACTIONS,
+    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -339,8 +343,15 @@ def handle_activity(req: ActivityRequest):
             current_character,
             person_id=p.get("person_id", ""),
             venue_id=p.get("venue_id", "bedroom_candlelight"),
+            music_id=p.get("music_id", "acoustic_jazz"),
+            outfit_id=p.get("outfit_id", "natural_cozy"),
+            foreplay_id=p.get("foreplay_id", "massage_oil"),
+            style_id=p.get("style_id", "tender_sensual"),
+            twist_id=p.get("twist_id"),
+            twist_choice_id=p.get("twist_choice_id"),
             protection_id=p.get("protection_id", "condom_safe"),
-            mood_id=p.get("mood_id", "tender_romantic")
+            morning_id=p.get("morning_id", "breakfast_in_bed"),
+            mood_id=p.get("mood_id")
         )
     elif act == "detailed_fight":
         res = do_detailed_fight(current_character, p.get("person_id", ""), p.get("topic_id", "jealousy_dm"), p.get("attitude_id", "calm_ultimatum"))
@@ -371,9 +382,9 @@ def handle_activity(req: ActivityRequest):
     elif act == "classmate_action":
         res = do_classmate_action(current_character, p.get("person_id", ""), p.get("action_id", "hangout_canteen"))
     elif act == "coworker_action":
-        res = do_coworker_action(current_character, p.get("person_id", ""), p.get("action_id", "happy_hour"))
+        res = do_coworker_action(current_character, p.get("person_id", ""), p.get("action_id", "happy_hour"), p.get("sub_id", ""), p.get("story_id", ""))
     elif act == "boss_action":
-        res = do_boss_action(current_character, p.get("person_id", ""), p.get("action_id", "suck_up_boss"))
+        res = do_boss_action(current_character, p.get("person_id", ""), p.get("action_id", "suck_up_boss"), p.get("sub_id", ""))
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -473,9 +484,21 @@ def get_market_data():
         "date_mid_events": DATE_MID_EVENTS,
         "date_finales": DATE_FINALES,
         "intimacy_venues": INTIMACY_VENUES,
+        "intimacy_musics": INTIMACY_MUSICS,
+        "intimacy_outfits": INTIMACY_OUTFITS,
+        "intimacy_foreplays": INTIMACY_FOREPLAY_ACTIONS,
+        "intimacy_styles": INTIMACY_STYLES,
+        "intimacy_twists": INTIMACY_TWISTS,
+        "intimacy_mornings": INTIMACY_MORNING_ACTIONS,
         "intimacy_moods": INTIMACY_MOODS,
         "intimacy_protections": INTIMACY_PROTECTIONS,
-        "intimacy_afterglows": INTIMACY_AFTERGLOWS
+        "intimacy_afterglows": INTIMACY_AFTERGLOWS,
+        "coworker_projects": COWORKER_PROJECT_OPTIONS,
+        "coworker_gossips": COWORKER_GOSSIP_STORIES,
+        "coworker_gossip_reactions": COWORKER_GOSSIP_REACTIONS,
+        "coworker_hangouts": COWORKER_HANGOUT_OPTIONS,
+        "boss_mentorships": BOSS_MENTORSHIP_TOPICS,
+        "boss_negotiations": BOSS_NEGOTIATION_TACTICS
     }
 
 @app.get("/api/graveyard")
