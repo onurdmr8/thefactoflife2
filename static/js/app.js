@@ -3126,18 +3126,8 @@ async function submitCustomLife() {
 }
 
 function showToast(text, type = "info") {
-    const container = document.getElementById("toastContainer");
-    if (!container) return;
-
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<span>🔔</span><div>${text}</div>`;
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 300);
-    }, 3200);
+    // Kullanıcı talebi doğrultusunda ekranı kapatan ve rahatsız eden bildirimler devre dışı bırakıldı.
+    return;
 }
 
 // ----------------- PAKET 2, 3, 4, 10: INSTASTORY, SOYAĞACI, GARDIROP, YKS/KPSS & ASKERLİK -----------------
