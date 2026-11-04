@@ -99,6 +99,11 @@ class Business(BaseModel):
     employees: int = 3
     reputation: int = 70
     years_active: int = 0
+    stage: str = "Tohum (Startup)"
+    shares_owned: int = 100
+    is_ipo: bool = False
+    branches: int = 1
+    has_manager: bool = False
 
 class MusicBand(BaseModel):
     name: str
@@ -199,6 +204,9 @@ class Character(BaseModel):
     
     # Secondary Stats & Skills
     fame: int = 0
+    fame_archetype: str = ""
+    fame_manager: str = ""
+    fame_awards: List[str] = Field(default_factory=list)
     karma: int = 50
     stress: int = 10
     skills: Dict[str, int] = Field(default_factory=lambda: {

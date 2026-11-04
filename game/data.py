@@ -418,11 +418,15 @@ PART_TIME_JOBS = [
 ]
 
 BUSINESS_TYPES = [
-    {"id": "cigkofte", "name": "Adıyaman Çiğköfte & Dürüm Bayisi", "sector": "Gıda", "cost": 350000, "base_profit": 140000},
-    {"id": "coffee_shop", "name": "Üçüncü Nesil Butik Kahveci", "sector": "Kafe", "cost": 950000, "base_profit": 340000},
-    {"id": "ecommerce", "name": "Moda & E-Ticaret Mağazası", "sector": "E-Ticaret", "cost": 1800000, "base_profit": 620000},
-    {"id": "game_studio", "name": "Bağımsız Mobil Oyun Stüdyosu", "sector": "Teknoloji", "cost": 3500000, "base_profit": 1350000},
-    {"id": "ai_startup", "name": "Yapay Zeka & FinTech Girişimi", "sector": "Teknoloji", "cost": 12000000, "base_profit": 4800000}
+    {"id": "cigkofte", "name": "Adıyaman Çiğköfte & Dürüm Bayisi", "sector": "Gıda & Hizmet", "cost": 350000, "base_profit": 140000, "desc": "Hızlı ciro, düşük risk, popüler sokak lezzeti."},
+    {"id": "coffee_shop", "name": "3. Nesil Butik Kahveci & Roastery", "sector": "Kafe & Gastronomi", "cost": 950000, "base_profit": 360000, "desc": "Gençlerin ve plaza çalışanlarının uğrak noktası, yüksek kâr marjı."},
+    {"id": "food_bistro", "name": "Gurme Burger & Steakhouse Restoranı", "sector": "Restoran", "cost": 2200000, "base_profit": 850000, "desc": "Şehrin en popüler gastronomi mekanı, yüksek sadakat."},
+    {"id": "ecommerce", "name": "Lüks Sokak Modası & E-Ticaret Markası", "sector": "E-Ticaret & Moda", "cost": 1800000, "base_profit": 720000, "desc": "Sosyal medyada viral olan özgün giyim koleksiyonları ve küresel kargo."},
+    {"id": "game_studio", "name": "Bağımsız Mobil & PC Oyun Stüdyosu", "sector": "Oyun & Teknoloji", "cost": 4500000, "base_profit": 1800000, "desc": "Steam ve uygulama marketlerinde küresel hit oyun çıkarma potansiyeli."},
+    {"id": "ai_startup", "name": "Üretken Yapay Zeka & B2B SaaS Şirketi", "sector": "Yapay Zeka & Yazılım", "cost": 9000000, "base_profit": 3800000, "desc": "Milyon dolarlık küresel değerleme ve Silicon Valley fonlarından yatırım çekme gücü."},
+    {"id": "construction_firm", "name": "Müteahhitlik & Lüks Rezidans Projeleri", "sector": "İnşaat & Gayrimenkul", "cost": 18000000, "base_profit": 7500000, "desc": "Büyükşehirlerde kentsel dönüşüm ve ultra lüks site projeleri."},
+    {"id": "logistics_fleet", "name": "Şehirlerarası Lojistik & Kargo Filosu", "sector": "Lojistik & Taşımacılık", "cost": 14000000, "base_profit": 5500000, "desc": "E-ticaret patlamasıyla devasa hacme ulaşan modern nakliye ve filo yönetimi."},
+    {"id": "biotech_pharma", "name": "Klinik Biyoteknoloji & İlaç Laboratuvarı", "sector": "Sağlık & Biyoteknoloji", "cost": 28000000, "base_profit": 12000000, "desc": "Patentli moleküller ve küresel ilaç devlerine lisanslama potansiyeli."}
 ]
 
 JOBS_DATABASE = [
@@ -906,7 +910,189 @@ COMPANY_EXPANSION_ACTIONS = [
     {"id": "marketing", "name": "📣 Viral Reklam & Influencer Kampanyası", "cost": 150000, "desc": "Yıllık kârı %35 sıçratır ve müşteri trafiğini patlatır."},
     {"id": "rd_patent", "name": "💡 AR-GE & Yeni Nesil Ürün Lansmanı", "cost": 300000, "desc": "Şirket değerlemesini %40 artırır ve sektörel patent kazandırır."},
     {"id": "employee_bonus", "name": "🎁 Çalışanlara Çift Maaş İkramiyesi & Moral Partisi", "cost": 85000, "desc": "Çalışan sadakatini ve şirket itibarını zirveye (%100) çıkarır."},
-    {"id": "open_branch", "name": "🏬 Büyükşehirde Yeni Şube Açma", "cost": 500000, "desc": "Yıllık kâra doğrudan +₺220.000/yıl kalıcı katkı sağlar."}
+    {"id": "open_branch", "name": "🏬 Büyükşehirde Yeni Şube Açma", "cost": 500000, "desc": "Yıllık kâra doğrudan +₺220.000/yıl kalıcı katkı sağlar ve çalışan sayısını artırır."},
+    {"id": "angel_pitch", "name": "👼 Melek Yatırımcı & Girişim Sermayesi Turu", "cost": 75000, "desc": "Fon yöneticilerine sunum yaparsın. Başarılı olursa şirkete dev nakit fon girer ve değerleme 2 katına çıkar (%10 hisse verilir)."},
+    {"id": "hostile_takeover", "name": "🦈 Sektördeki En Büyük Rakibi Satın Al (Tekel Ol)", "cost": 2500000, "desc": "Rakip firmayı bünyene katıp pazar payını domine edersin. Yıllık kârın %80 fırlar!"},
+    {"id": "hire_ceo", "name": "👔 Profesyonel CEO & Yönetim Kurulu Ata", "cost": 450000, "desc": "Şirketin operasyonel yükünü profesyonellere devredersin; stresin kalıcı olarak sıfırlanır, şirket her yıl tıkır tıkır büyür."},
+    {"id": "ipo_bist", "name": "🔔 Borsa İstanbul'da Halka Arz Et (IPO Çanı)", "cost": 1200000, "desc": "En az 25.000.000 TL değerlemeye ulaşmış şirketler içindir. Şirket borsaya açılır, kurucuya yüz milyonlarca TL nakit servet ve dev Şöhret kazandırır!"}
+]
+
+COMPANY_CRISES = [
+    {
+        "id": "price_war",
+        "title": "📉 Rakip Şirketten Agresif Damping & Fiyat Savaşı!",
+        "desc": "Pazardaki en büyük rakibiniz zararına fiyat kırarak tüm müşterilerinizi çalmaya çalışıyor. Yönetim kurulu acil toplantı talep etti!",
+        "options": [
+            {
+                "id": "slash_prices",
+                "text": "⚔️ Biz de Fiyat Kıralım! (Kâr marjı düşer ama pazar payı korunur)",
+                "summary": "Fiyat savaşını kabul ettin! Kâr marjın bir miktar azaldı ama rakip pes edip geri çekildi."
+            },
+            {
+                "id": "premium_branding",
+                "text": "💎 Kalite ve VIP Deneyime Odaklanalım! (Fiyat kırmadan itibar yükseltme)",
+                "summary": "Kaliteden ödün vermedin! Müşteriler seni 'premium marka' olarak benimsedi, itibarın tavan yaptı."
+            },
+            {
+                "id": "acquire_competitor",
+                "text": "💰 Rakibe Satın Alma Teklifi Götürelim! (Finansal güç gösterisi)",
+                "summary": "Masaya parayı koydun ve rakibi ucuza satın aldın! Pazarın tek hakimi oldun."
+            }
+        ]
+    },
+    {
+        "id": "boycott_pr",
+        "title": "📢 Sosyal Medyada Ürün Linci & Boykot Dalgası!",
+        "desc": "Twitter ve TikTok'ta şirketinin bir ürünü hakkında asılsız iddialar yayıldı, hashtag 1 numara oldu ve boykot çağrıları başladı!",
+        "options": [
+            {
+                "id": "sincere_apology",
+                "text": "🎙️ Samimi Bir Açıklama Yap, Kusurlu Partiyi Geri Çağır ve Bağış Yap",
+                "summary": "Kriz masasını mükemmel yönettin! Şeffaf duruşun kamuoyunda büyük sempati topladı."
+            },
+            {
+                "id": "legal_action",
+                "text": "⚖️ İftira Atan Trolleri Mahkemeye Ver ve PR Kampanyası Başlat",
+                "summary": "Tazminat davaları açtın ve güçlü bir PR atağıyla iftiraları çürüttün."
+            },
+            {
+                "id": "ignore_crisis",
+                "text": "🤫 Sessiz Kal, Açıklama Yapma; Gündem 3 Güne Değişir",
+                "summary": "Hiçbir açıklama yapmadın. Fırtına birkaç haftada dindi ama şirket itibarı biraz zedelendi."
+            }
+        ]
+    },
+    {
+        "id": "tax_audit",
+        "title": "🕵️ Maliye & Vergi Denetim Müfettişleri Şirkete Geldi!",
+        "desc": "Vergi Dairesi Başkanlığı son 3 yılın tüm ticari defterlerini, faturalarını ve hesap hareketlerini incelemeye aldı!",
+        "options": [
+            {
+                "id": "transparent_audit",
+                "text": "📖 Tüm Defterleri ve Sunucuları Şeffafça Aç, Kahve İkram Et",
+                "summary": "Müfettişler her satırı inceledi ve şirketin dürüstlüğünü takdir etti. Tertemiz bir rapor aldın!"
+            },
+            {
+                "id": "hire_tax_sharks",
+                "text": "👨‍⚖️ Eski Maliye Müfettişlerinden Kurulu Kurt Avukat Ordusunu Görevlendir",
+                "summary": "Eski maliyeci avukatların tüm yasal teşvik ve indirimleri kullanarak şirketi sıfır cezayla kurtardı!"
+            },
+            {
+                "id": "bribe_attempt",
+                "text": "💼 Kapalı Kapılar Ardında 'Uzlaşma' ve Rüşvet Teklif Et (Çok Riskli!)",
+                "summary": "Müfettişler öfkeden köpürdü! Ağır vergi cezası kesildi ve savcılığa sevk edildin!"
+            }
+        ]
+    }
+]
+
+FAME_ARCHETYPES = [
+    {
+        "id": "actor",
+        "name": "🎬 Dizi & Sinema Başrol Oyuncusu",
+        "desc": "Prime-time dizilerin aranan yüzü, festival filmlerinin ödüllü aktörü.",
+        "primary_skill": "looks",
+        "work_name": "Başrol Dizi / Sinema Filmi"
+    },
+    {
+        "id": "popstar",
+        "name": "🎤 Pop & Sahne Yıldızı",
+        "desc": "Listeleri altüst eden hit şarkılar, stadyum konserleri ve sahne şovları.",
+        "primary_skill": "music",
+        "work_name": "Hit Albüm & Stadyum Turnesi"
+    },
+    {
+        "id": "influencer",
+        "name": "📱 Sosyal Medya Fenomeni & Yayıncı",
+        "desc": "Milyon takipçili YouTube, TikTok ve Instagram içerik üreticisi.",
+        "primary_skill": "charisma",
+        "work_name": "Viral Trend Video Serisi"
+    },
+    {
+        "id": "athlete",
+        "name": "⚽ Süper Lig & Milli Yıldız Sporcu",
+        "desc": "Derbi kahramanı, milli gurur, transfer rekorları kıran ikon.",
+        "primary_skill": "athletics",
+        "work_name": "Kupa Finali Maçı & Sezon Zaferi"
+    },
+    {
+        "id": "socialite",
+        "name": "💎 Cemiyet Hayatı & Magazin İkonu",
+        "desc": "Lüks balolar, Bodrum beach kulüpleri ve magazin manşetleri.",
+        "primary_skill": "charisma",
+        "work_name": "VIP Cemiyet Galası & Lansman"
+    }
+]
+
+FAME_MANAGERS = [
+    {
+        "id": "independent",
+        "name": "📱 Bağımsız / Kendi Kendini Yönetme",
+        "cost": 0,
+        "commission": 0,
+        "desc": "Tüm kararları kendin alırsın, komisyon ödemezsin ama teklifler kısıtlı kalır."
+    },
+    {
+        "id": "nisantasi_agency",
+        "name": "🏢 Nişantaşı Prestij Ajansı",
+        "cost": 150000,
+        "commission": 15,
+        "desc": "Dizi ve reklam tekliflerini %35 artırır, magazin krizlerini ustalıkla yönetir."
+    },
+    {
+        "id": "global_talent",
+        "name": "👑 Global Hollywood & Avrupa Talent Agency",
+        "cost": 1200000,
+        "commission": 20,
+        "desc": "Dünya çapında lüks marka yüzü olma, Cannes Film Festivali ve küresel iş birlikleri!"
+    }
+]
+
+FAME_CRISES = [
+    {
+        "id": "paparazzi_brawl",
+        "title": "📸💥 Gece Kulübü Çıkışı Paparazzi Kavgası!",
+        "desc": "Bebek'te gece kulübü çıkışında flaşlar patladı! Kameralar burnuna sokulunca ortalık karıştı ve görüntüler ana haber bültenlerine düştü!",
+        "options": [
+            {
+                "id": "dignified_statement",
+                "text": "🎙️ Ertesi Gün Sakin Bir Basın Açıklaması Yap ve Özel Hayat Sınırlarına Değin",
+                "summary": "Asil ve ölçülü duruşunla kamuoyunun ve aydın kesimin büyük saygısını kazandın."
+            },
+            {
+                "id": "emotional_video",
+                "text": "🥺 Sosyal Medyada 'Beni Çok Yıprattılar' Diyerek Ağlama Videosu Çek",
+                "summary": "Videon milyonlarca izlendi! Halkın duygusal desteği çığ gibi büyüdü."
+            },
+            {
+                "id": "bad_boy_attitude",
+                "text": "🔥 'Ben Buyum! Kimseye Hesap Vermem!' Raconu Kes",
+                "summary": "Asi ve başına buyruk duruşun genç hayran kitleni çıldırttı! Şöhretin daha da parladı."
+            }
+        ]
+    },
+    {
+        "id": "live_broadcast_gaffe",
+        "title": "📺 Canlı Yayında Gaf Yaptın & Sosyal Medyada TT Oldun!",
+        "desc": "Katıldığın canlı talk show programında mikrofonun açık olduğunu unutup ağzından tartışmalı bir kelime kaçırdın!",
+        "options": [
+            {
+                "id": "self_deprecating",
+                "text": "😂 Durumla Kendin Dalga Geç ve Mizahi Bir Story Paylaş",
+                "summary": "Krizi kahkahaya çevirdin! Herkes senin doğallığına ve özgüvenine hayran kaldı."
+            },
+            {
+                "id": "official_apology",
+                "text": "📜 'Yanlış anlaşıldım, üzdüğüm herkesten özür dilerim' Resmi Metni Yayınla",
+                "summary": "Özrün olgunlukla karşılandı ve konu tatlıya bağlandı."
+            },
+            {
+                "id": "sue_critics",
+                "text": "🤬 Üzerine Gelen Eleştirmenlere Ateş Püskür ve Hakaret Davaları Aç",
+                "summary": "Sert tepkin magazin programlarına haftalarca malzeme oldu! Şöhretin zirveye tırmandı."
+            }
+        ]
+    }
 ]
 
 CAR_CARE_ACTIONS = [

@@ -44,7 +44,8 @@ from game.data import (
     INTIMACY_OUTFITS, INTIMACY_FOREPLAY_ACTIONS, INTIMACY_STYLES, INTIMACY_TWISTS, INTIMACY_MORNING_ACTIONS,
     INTIMACY_MUSICS,
     COWORKER_PROJECT_OPTIONS, COWORKER_GOSSIP_STORIES, COWORKER_GOSSIP_REACTIONS,
-    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS
+    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS,
+    COMPANY_CRISES, FAME_ARCHETYPES, FAME_MANAGERS, FAME_CRISES
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -63,7 +64,7 @@ from game.activities import (
     change_student_housing, change_outfit_style,
     do_drama_intrigue_action, create_music_band, do_band_action, do_bank_offshore_action,
     do_couple_business, do_divorce_court, do_pro_sports_action,
-    do_relationship_conflict, do_company_management_action,
+    do_relationship_conflict, do_company_management_action, do_company_crisis_choice,
     do_tenant_action, do_car_care_action, do_wellness_action,
     do_detailed_kiss, do_detailed_date, do_detailed_fight, run_date_simulation, do_intimacy,
     do_parent_care_action, do_sibling_action, do_parenting_action, do_friend_action, do_consolidated_chat,
@@ -213,7 +214,7 @@ def handle_activity(req: ActivityRequest):
     elif act == "apply_part_time":
         res = apply_part_time_job(current_character, p.get("pt_id", "pt_barista"))
     elif act == "start_business":
-        res = start_new_business(current_character, p.get("biz_id", "cigkofte"))
+        res = start_new_business(current_character, p.get("biz_id", "cigkofte"), p.get("custom_name", ""))
     elif act == "invest_business":
         res = invest_in_business(current_character)
     elif act == "sell_business":
@@ -272,7 +273,7 @@ def handle_activity(req: ActivityRequest):
     elif act == "group_party":
         res = do_group_party(current_character)
     elif act == "fame_action":
-        res = do_fame_activity(current_character, p.get("sub_action", "audition_fame"))
+        res = do_fame_activity(current_character, p.get("sub_action", "audition_fame"), p.get("extra_id", ""))
     elif act == "politics_run":
         res = run_for_political_office(current_character, p.get("office_id", "muhtar"))
     elif act == "politics_action":
@@ -314,6 +315,8 @@ def handle_activity(req: ActivityRequest):
         res = do_relationship_conflict(current_character, p.get("person_id", ""), p.get("conflict_id", ""), p.get("choice_id", ""))
     elif act == "company_manage":
         res = do_company_management_action(current_character, p.get("action_id", "marketing"))
+    elif act == "company_crisis_choice":
+        res = do_company_crisis_choice(current_character, p.get("crisis_id", ""), p.get("choice_id", ""))
     elif act == "tenant_manage":
         res = do_tenant_action(current_character, p.get("asset_id", ""), p.get("action_id", "demand_letter"))
     elif act == "car_care":
@@ -498,7 +501,11 @@ def get_market_data():
         "coworker_gossip_reactions": COWORKER_GOSSIP_REACTIONS,
         "coworker_hangouts": COWORKER_HANGOUT_OPTIONS,
         "boss_mentorships": BOSS_MENTORSHIP_TOPICS,
-        "boss_negotiations": BOSS_NEGOTIATION_TACTICS
+        "boss_negotiations": BOSS_NEGOTIATION_TACTICS,
+        "company_crises": COMPANY_CRISES,
+        "fame_archetypes": FAME_ARCHETYPES,
+        "fame_managers": FAME_MANAGERS,
+        "fame_crises": FAME_CRISES
     }
 
 @app.get("/api/graveyard")

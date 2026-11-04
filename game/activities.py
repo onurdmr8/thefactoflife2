@@ -30,7 +30,8 @@ from .data import (
     INTIMACY_OUTFITS, INTIMACY_FOREPLAY_ACTIONS, INTIMACY_STYLES, INTIMACY_TWISTS, INTIMACY_MORNING_ACTIONS,
     INTIMACY_MUSICS,
     COWORKER_PROJECT_OPTIONS, COWORKER_GOSSIP_STORIES, COWORKER_GOSSIP_REACTIONS,
-    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS
+    COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS,
+    COMPANY_CRISES, FAME_ARCHETYPES, FAME_MANAGERS, FAME_CRISES
 )
 
 # ----------------- SAĞLIK & KİŞİSEL BAKIM -----------------
@@ -246,7 +247,7 @@ def apply_part_time_job(char: Character, pt_id: str) -> Dict[str, Any]:
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="⏱️"))
     return {"success": True, "message": msg}
 
-def start_new_business(char: Character, biz_id: str) -> Dict[str, Any]:
+def start_new_business(char: Character, biz_id: str, custom_name: str = "") -> Dict[str, Any]:
     if char.age < 18:
         return {"success": False, "message": "Şirket kurmak için 18 yaşını doldurmuş olmalısın."}
     if char.business:
@@ -257,23 +258,28 @@ def start_new_business(char: Character, biz_id: str) -> Dict[str, Any]:
         return {"success": False, "message": "Girişim türü bulunamadı."}
     
     if char.money < b_spec["cost"]:
-        return {"success": False, "message": f"'{b_spec['name']}' kurmak için {b_spec['cost']:,} TL sermaye gerekiyor."}
+        return {"success": False, "message": f"'{b_spec['name']}' kurmak için {b_spec['cost']:,} TL sermaye gerekiyor (Mevcut Paran: {char.money:,} TL)."}
     
     char.money -= b_spec["cost"]
+    chosen_name = custom_name.strip() if custom_name and custom_name.strip() else b_spec["name"]
     char.business = Business(
         id=b_spec["id"],
-        name=b_spec["name"],
+        name=chosen_name,
         sector=b_spec["sector"],
         capital_invested=b_spec["cost"],
         valuation=b_spec["cost"],
         annual_profit=b_spec["base_profit"],
         employees=4,
-        reputation=75
+        reputation=75,
+        stage="Tohum (Startup)",
+        shares_owned=100,
+        branches=1,
+        is_ipo=False
     )
     if "boss" not in char.achievements:
         char.achievements.append("boss")
     char.happiness = min(100, char.happiness + 25)
-    msg = f"🏢 Kendi işinin patronu oldun! '{b_spec['name']}' resmen faaliyete başladı!"
+    msg = f"🏢 Kendi işinin patronu oldun! '{chosen_name}' ({b_spec['sector']}) resmen faaliyete başladı!"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏢"))
     return {"success": True, "message": msg}
 
@@ -1893,8 +1899,8 @@ def do_group_party(char: Character) -> Dict[str, Any]:
 
 # ----------------- PAKET 2: ÜNLÜ OLMA, ŞÖHRET & MAGAZİN SİSTEMİ -----------------
 
-def do_fame_activity(char: Character, sub_action: str) -> Dict[str, Any]:
-    """Şöhret, Konser/Albüm/Film, TV Şovu, Sponsorluk, Magazin Skandalı ve VIP Ünlü Flörtü."""
+def do_fame_activity(char: Character, sub_action: str, extra_id: str = "") -> Dict[str, Any]:
+    """Şöhret, Konser/Albüm/Film, TV Şovu, Sponsorluk, Magazin Skandalı, Harbiye Konseri, Ödül Töreni ve VIP Ünlü Flörtü."""
     if char.age < 16:
         return {"success": False, "message": "Şöhret ve magazin dünyasına adım atmak için en az 16 yaşında olmalısın."}
 
@@ -2001,6 +2007,94 @@ def do_fame_activity(char: Character, sub_action: str) -> Dict[str, Any]:
             char.achievements.append("first_love")
         msg = f"🌟💘 YILIN MAGAZİN AŞKI! {celeb_person.job} {celeb_name} (Görünüş: %{celeb_person.looks}, Servet: %{celeb_person.wealth}) ile VIP Galada tanışıp sevgili oldunuz!"
         char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="love", icon="🌟"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "select_archetype":
+        arch = next((a for a in FAME_ARCHETYPES if a["id"] == extra_id), FAME_ARCHETYPES[0])
+        char.fame_archetype = arch["name"]
+        char.fame = min(100, char.fame + 15)
+        char.happiness = min(100, char.happiness + 15)
+        msg = f"🌟🎭 ŞÖHRET YOLUNU ÇİZDİN: '{arch['name']}'! {arch['desc']} (Şöhret +15 -> %{char.fame})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🌟"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "hire_manager":
+        mgr = next((m for m in FAME_MANAGERS if m["id"] == extra_id), FAME_MANAGERS[0])
+        if mgr["cost"] > 0 and char.money < mgr["cost"]:
+            return {"success": False, "message": f"'{mgr['name']}' sözleşmesi için {mgr['cost']:,} TL transfer bütçesi gerekli."}
+        if mgr["cost"] > 0:
+            char.money -= mgr["cost"]
+        char.fame_manager = mgr["name"]
+        char.fame = min(100, char.fame + 12)
+        char.happiness = min(100, char.happiness + 15)
+        msg = f"🤝🌟 VIP MENAJER ANLAŞMASI! '{mgr['name']}' kariyerinin yönetimini üstlendi! {mgr['desc']} (Şöhret +12)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🤝"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "harbiye_concert":
+        if char.fame < 25:
+            return {"success": False, "message": "Harbiye Açıkhava veya Dev Festival Sahnesi için en az %25 Şöhret gerekir!"}
+        base_rev = random.randint(1800000, 4800000) + (char.fame * 35000)
+        if "Global" in getattr(char, "fame_manager", ""):
+            base_rev = int(base_rev * 1.40)
+        char.money += base_rev
+        char.fame = min(100, char.fame + 22)
+        char.happiness = min(100, char.happiness + 25)
+        if "famous" not in char.achievements:
+            char.achievements.append("famous")
+        arch_title = char.fame_archetype or "Sahne Yıldızı"
+        msg = f"🎪🔥 HARBİYE AÇIKHAVA YIKILDI! Biletler dakikalar içinde tükendi! 15.000 kişi hep bir ağızdan sana eşlik etti! Gişe ve sponsorluklardan +{base_rev:,} TL kazandın! (Şöhret: %{char.fame})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🎪"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "red_carpet_award":
+        if char.fame < 35:
+            return {"success": False, "message": "Altın Kelebek veya Kırmızı Halı Ödül Töreni adaylığı için en az %35 Şöhret gerekir!"}
+        award_name = "🏆 Altın Kelebek: Yılın En İlham Veren Yıldızı Ödülü"
+        if not hasattr(char, "fame_awards") or char.fame_awards is None:
+            char.fame_awards = []
+        if award_name not in char.fame_awards:
+            char.fame_awards.append(award_name)
+        char.fame = min(100, char.fame + 25)
+        char.happiness = 100
+        if "famous" not in char.achievements:
+            char.achievements.append("famous")
+        msg = f"🏆✨ KIRMIZI HALI ZAFERİ! Canlı yayında alkış tufanı eşliğinde sahneye çıktın: '{award_name}' sana takdim edildi! Konuşman tüm Türkiye'de ayakta alkışlandı! (Şöhret +25 -> %{char.fame})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏆"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "fashion_week":
+        if char.fame < 30 and char.looks < 80:
+            return {"success": False, "message": "Paris/Milano Moda Haftasında Ön Sıra (Front Row) için en az %30 Şöhret veya %80 Görünüş gerekir!"}
+        char.fame = min(100, char.fame + 16)
+        char.looks = min(100, char.looks + 4)
+        char.happiness = min(100, char.happiness + 20)
+        msg = f"👠✨ PARİS & MİLANO MODA HAFTASI! Dünyaca ünlü tasarımcıların defilesinde ön sırada (Front Row) oturdun! Vogue ve Elle dergilerine poz verdin! (Şöhret +16, Görünüş +4)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="👠"))
+        return {"success": True, "message": msg}
+
+    elif sub_action == "fame_crisis_choice":
+        # extra_id format: crisisId:choiceId
+        parts = extra_id.split(":")
+        c_id = parts[0] if len(parts) > 0 else "paparazzi_brawl"
+        ch_id = parts[1] if len(parts) > 1 else "dignified_statement"
+        crisis = next((c for c in FAME_CRISES if c["id"] == c_id), FAME_CRISES[0])
+        opt = next((o for o in crisis["options"] if o["id"] == ch_id), crisis["options"][0])
+
+        if ch_id in ["dignified_statement", "official_apology"]:
+            char.fame = min(100, char.fame + 12)
+            char.karma = min(100, char.karma + 10)
+            char.stress = max(0, char.stress - 10)
+        elif ch_id in ["emotional_video", "self_deprecating"]:
+            char.fame = min(100, char.fame + 20)
+            char.happiness = min(100, char.happiness + 15)
+        else: # bad_boy_attitude, sue_critics
+            char.fame = min(100, char.fame + 25)
+            char.karma = max(0, char.karma - 15)
+            char.stress = min(100, char.stress + 15)
+
+        msg = f"📸💥 MAGAZİN KRİZİ YÖNETİLDİ: {crisis['title']}\n\n{opt['summary']}"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="general", icon="📸"))
         return {"success": True, "message": msg}
 
     return {"success": False, "message": "Geçersiz şöhret işlemi."}
@@ -2873,15 +2967,23 @@ def do_relationship_conflict(char: Character, person_id: str, conflict_id: str, 
         return {"success": True, "message": msg}
 
 def do_company_management_action(char: Character, action_id: str) -> Dict[str, Any]:
-    """Şirket Patronu Karar Odası: Pazarlama, AR-GE, Çalışan Primi ve Yeni Şube."""
+    """Şirket Patronu Karar Odası: Pazarlama, AR-GE, Çalışan Primi, Yeni Şube, Melek Yatırım, Rakibi Satın Alma, CEO Atama ve BIST Halka Arz."""
     if not char.business:
-        return {"success": False, "message": "Aktif bir şirketin bulunmuyor!"}
+        return {"success": False, "message": "Aktif bir şirketiniz bulunmuyor!"}
     b = char.business
     act = next((a for a in COMPANY_EXPANSION_ACTIONS if a["id"] == action_id), None)
     if not act:
         return {"success": False, "message": "Geçersiz şirket kararı."}
+
+    # BIST IPO kontrolü
+    if action_id == "ipo_bist":
+        if b.is_ipo:
+            return {"success": False, "message": f"'{b.name}' zaten Borsa İstanbul'da işlem gören halka açık bir şirkettir!"}
+        if b.valuation < 20000000:
+            return {"success": False, "message": f"Borsa İstanbul'da (BIST) halka arz (IPO) yapabilmek için şirket değerlemesinin en az 20.000.000 TL olması gerekir (Şu anki Değerleme: {b.valuation:,} TL)."}
+
     if char.money < act["cost"]:
-        return {"success": False, "message": f"'{act['name']}' kararı için {act['cost']:,} TL şirket bütçesi gerekli."}
+        return {"success": False, "message": f"'{act['name']}' kararı için {act['cost']:,} TL şirket bütçesi gerekli (Mevcut Paran: {char.money:,} TL)."}
 
     char.money -= act["cost"]
 
@@ -2902,10 +3004,94 @@ def do_company_management_action(char: Character, action_id: str) -> Dict[str, A
         b.annual_profit += 220000
         b.employees += 8
         b.valuation += 450000
-        msg = f"🏬✨ YENİ ŞUBE AÇILDI! '{b.name}' metropolde görkemli bir şube daha açtı! Yıllık kârına kalıcı +220.000 TL eklendi!"
+        b.branches = getattr(b, "branches", 1) + 1
+        msg = f"🏬✨ YENİ ŞUBE AÇILDI! '{b.name}' metropolde görkemli bir şube daha açtı (Toplam {b.branches} Şube)! Yıllık kârına kalıcı +220.000 TL eklendi!"
+    elif action_id == "angel_pitch":
+        pitch_score = char.smarts + char.skills.get("charisma", 20) + random.randint(15, 45)
+        if pitch_score >= 80:
+            funding_amount = int(b.valuation * 0.35)
+            char.money += funding_amount
+            b.valuation = int(b.valuation * 2.2)
+            b.stage = "Seri A (Scaleup)"
+            b.shares_owned = max(40, getattr(b, "shares_owned", 100) - 10)
+            b.reputation = min(100, b.reputation + 15)
+            msg = f"👼🚀 FON BULUNDU! Melek yatırımcı konsorsiyumu sunumuna hayran kaldı! %10 hisse karşılığında şirkete +{funding_amount:,} TL nakit girdi! Yeni Değerleme: {b.valuation:,} TL (Aşama: {b.stage})!"
+        else:
+            b.reputation = max(30, b.reputation - 5)
+            msg = f"📉 YATIRIMCILAR TEMKİNLİ: Sunum ilgi gördü ancak mevcut pazar koşulları nedeniyle fon bu turda teklif vermedi."
+    elif action_id == "hostile_takeover":
+        b.annual_profit = int(b.annual_profit * 1.80)
+        b.valuation = int(b.valuation * 1.75)
+        b.employees += 18
+        b.branches = getattr(b, "branches", 1) + 4
+        b.stage = "Pazar Lideri (Tekel)"
+        b.reputation = min(100, b.reputation + 15)
+        msg = f"🦈🏢 DEV ŞİRKET EVLİLİĞİ! Sektördeki en dişli rakibi bünyene kattın! Pazar payının %70'ine hükmediyorsun! (Yıllık Kâr: {b.annual_profit:,} TL, Değerleme: {b.valuation:,} TL)"
+    elif action_id == "hire_ceo":
+        b.has_manager = True
+        char.stress = max(0, char.stress - 35)
+        b.reputation = min(100, b.reputation + 10)
+        b.annual_profit = int(b.annual_profit * 1.20)
+        msg = f"👔✨ PROFESYONEL CEO ATANDI! Çokuluslu şirketten transfer ettiğin CEO operasyonları devraldı. Stres sıfırlandı, şirket kurumsal bir deve dönüştü!"
+    elif action_id == "ipo_bist":
+        b.is_ipo = True
+        b.stage = "Borsa İstanbul (BIST) Kote Şirket"
+        cashout = int(b.valuation * 0.35)
+        char.money += cashout
+        char.fame = min(100, char.fame + 40)
+        char.happiness = 100
+        if "boss" not in char.achievements:
+            char.achievements.append("boss")
+        msg = f"🔔🇹🇷 BORSA İSTANBUL'DA GONG ÇALDI! '{b.name}' halka arz edildi (IPO)! Yatırımcılardan gelen talep tavan yaptı! Kasana +{cashout:,} TL nakit servet girdi! (Şöhret: %{char.fame}, Değerleme: {b.valuation:,} TL)"
     else:
         msg = "Karar uygulandı."
 
+    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏢"))
+    return {"success": True, "message": msg}
+
+
+def do_company_crisis_choice(char: Character, crisis_id: str, choice_id: str) -> Dict[str, Any]:
+    """Şirket Kriz Masası: Fiyat savaşı, ürün boykotu ve vergi denetimi kararları."""
+    if not char.business:
+        return {"success": False, "message": "Aktif bir şirketiniz bulunmuyor."}
+    b = char.business
+    crisis = next((c for c in COMPANY_CRISES if c["id"] == crisis_id), None)
+    if not crisis:
+        return {"success": False, "message": "Kriz senaryosu bulunamadı."}
+    opt = next((o for o in crisis["options"] if o["id"] == choice_id), crisis["options"][0])
+
+    if choice_id in ["slash_prices", "sincere_apology"]:
+        b.annual_profit = int(b.annual_profit * 0.90)
+        b.reputation = min(100, b.reputation + 15)
+        char.stress = max(0, char.stress - 10)
+    elif choice_id in ["premium_branding", "legal_action"]:
+        b.valuation = int(b.valuation * 1.15)
+        b.reputation = min(100, b.reputation + 10)
+        char.stress = max(0, char.stress - 5)
+    elif choice_id == "acquire_competitor":
+        cost = int(b.valuation * 0.35)
+        if char.money >= cost:
+            char.money -= cost
+            b.annual_profit = int(b.annual_profit * 1.45)
+            b.valuation = int(b.valuation * 1.40)
+        else:
+            b.annual_profit = int(b.annual_profit * 1.10)
+    elif choice_id == "transparent_audit":
+        b.reputation = min(100, b.reputation + 20)
+        char.karma = min(100, char.karma + 10)
+    elif choice_id == "hire_tax_sharks":
+        cost = 180000
+        if char.money >= cost:
+            char.money -= cost
+        b.reputation = min(100, b.reputation + 10)
+    elif choice_id == "bribe_attempt":
+        penalty = int(b.valuation * 0.20)
+        char.money = max(0, char.money - penalty)
+        b.reputation = max(10, b.reputation - 40)
+        char.stress = min(100, char.stress + 40)
+        char.karma = max(0, char.karma - 30)
+
+    msg = f"🏢🚨 ŞİRKET KRİZİ YÖNETİLDİ: {crisis['title']}\n\n{opt['summary']}"
     char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🏢"))
     return {"success": True, "message": msg}
 

@@ -675,14 +675,21 @@ function renderCareerTab() {
         const b = gameState.business;
         bizCard.innerHTML = `
             <div class="card-title-row">
-                <span class="card-title">🏢 ${b.name}</span>
-                <span class="card-badge badge-yellow">Değer: ₺ ${b.valuation.toLocaleString("tr-TR")}</span>
+                <span class="card-title">🏢 ${b.name} (${b.sector})</span>
+                <span class="card-badge ${b.is_ipo ? 'badge-green' : 'badge-yellow'}">${b.is_ipo ? '🔔 BIST: Halka Açık' : 'Değer: ₺ ' + b.valuation.toLocaleString("tr-TR")}</span>
             </div>
-            <p class="card-desc">
-                Sektör: ${b.sector} • Yıllık Kâr: <b>+₺ ${b.annual_profit.toLocaleString("tr-TR")}</b> • Çalışan: ${b.employees} Kişi • İtibar: %${b.reputation}
-            </p>
+            <div class="person-chip-row" style="margin:6px 0 8px;">
+                <span class="person-chip" style="color:#60a5fa;">📍 Aşama: ${b.stage || 'Tohum (Startup)'}</span>
+                <span class="person-chip" style="color:#6ee7b7;">📈 Kâr: +₺ ${b.annual_profit.toLocaleString("tr-TR")}/yıl</span>
+                <span class="person-chip">📊 Hisse: %${b.shares_owned || 100}</span>
+                <span class="person-chip">🏬 Şube: ${b.branches || 1}</span>
+                <span class="person-chip">👥 Ekip: ${b.employees} Kişi</span>
+                <span class="person-chip">⭐ İtibar: %${b.reputation}</span>
+                ${b.has_manager ? `<span class="person-chip" style="color:#a78bfa;">👔 Profesyonel CEO</span>` : ""}
+            </div>
             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
-                <button type="button" class="btn-primary" style="flex:2;" onclick="openCompanyDecisionsModal()">🏬 Patron Karar Odası (Pazarlama, AR-GE, Şube)</button>
+                <button type="button" class="btn-primary" style="flex:2;" onclick="openCompanyDecisionsModal()">🏬 Patron Karar Odası (Büyüme & BIST)</button>
+                <button type="button" class="btn-action-outline" style="flex:1;" onclick="openCompanyCrisisModal()">🚨 Kriz Masası</button>
                 <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('invest_business')">🚀 Hızlı Yatırım</button>
                 <button type="button" class="btn-action-outline" style="flex:1; border-color: var(--accent-green); color: var(--accent-green);" onclick="performActivity('sell_business')">💰 Şirketi Sat (Exit)</button>
             </div>
@@ -693,7 +700,7 @@ function renderCareerTab() {
                 <span class="card-title">🏢 Girişimcilik & Kendi İşin</span>
                 <span class="card-badge badge-purple">Fırsat</span>
             </div>
-            <p class="card-desc">Kendi dükkanını, kafenizi veya teknoloji şirketinizi kurup patron olabilirsiniz.</p>
+            <p class="card-desc">Kendi dükkanını, restoranınızı veya teknoloji şirketinizi kurup patron olabilirsiniz.</p>
             <button type="button" class="btn-action-outline" style="width:100%; margin-top:8px;" onclick="openBusinessModal()">🏢 Yeni Şirket / Bayi Kur</button>
         `;
     }
@@ -2521,46 +2528,181 @@ async function buyAuctionItem(itemId) {
 
 function openFameModal() {
     sound.playClick();
-    document.getElementById("genericModalTitle").textContent = `🌟 Şöhret, Sahne & Magazin Merkezi (%${gameState.fame || 0})`;
+    const awardsText = (gameState.fame_awards && gameState.fame_awards.length > 0)
+        ? gameState.fame_awards.join(" • ")
+        : "Henüz ödül kazanılmadı";
+
+    document.getElementById("genericModalTitle").textContent = `🌟 Şöhret, Sahne & Magazin İmparatorluğu (%${gameState.fame || 0})`;
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
-        <div class="panel-card">
-            <div class="card-title-row"><span class="card-title">🎭 Türkiye Yetenek & Ekran Seçmeleri</span><span class="card-badge badge-green">₺ 2.000</span></div>
-            <p class="card-desc">Kamera karşısına çıkıp yeteneğini sergile, şöhret basamaklarını hızla tırman!</p>
-            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('audition_fame')">Seçmelere Katıl 🌟</button>
+        <div class="panel-card" style="border-color:#f59e0b; margin-bottom:12px; background:linear-gradient(135deg, rgba(245,158,11,0.08), rgba(168,85,247,0.08));">
+            <div class="card-title-row">
+                <span class="card-title">👑 Yıldız Profilin: ${gameState.fame_archetype || "Arketip Seçilmedi"}</span>
+                <span class="card-badge badge-yellow">Şöhret: %${gameState.fame || 0}</span>
+            </div>
+            <p class="card-desc" style="margin-top:4px;">
+                Menajer: <b>${gameState.fame_manager || "Bağımsız / Kendi Kendini Yönetme"}</b><br>
+                Ödüller: <b>${awardsText}</b>
+            </p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;">
+                <button type="button" class="btn-choice" onclick="openFameArchetypeModal()">🎭 Şöhret Arketipini Seç</button>
+                <button type="button" class="btn-choice" onclick="openFameManagerModal()">🤝 VIP Menajer / Ajans</button>
+            </div>
+            <button type="button" class="btn-choice" style="border-color:#ef4444; color:#ef4444; width:100%; margin-top:6px;" onclick="openFameCrisisModal()">📸💥 Magazin & Skandal Kriz Masası</button>
         </div>
-        <div class="panel-card">
-            <div class="card-title-row"><span class="card-title">🏆 Hit Albüm / Başrol Film / Şampiyonluk Maçı</span><span class="card-badge badge-yellow">+Telif & Şöhret</span></div>
-            <p class="card-desc">En az %20 Şöhret veya Sanat/Spor kariyeri gerekir. Milyonluk telif ve prim kazandırır!</p>
-            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('release_work')">Yeni Eser / Performans Çıkar 🔥</button>
-        </div>
-        <div class="panel-card">
-            <div class="card-title-row"><span class="card-title">📺 Prime-Time Talk Show Konuğu Ol</span><span class="card-badge badge-blue">+45B Takipçi</span></div>
-            <p class="card-desc">Cuma gecesi canlı yayına konuk ol, hem şöhretini hem sosyal medya takipçilerini katla!</p>
-            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('tv_show')">Talk Show'a Çık 📺</button>
-        </div>
-        <div class="panel-card">
-            <div class="card-title-row"><span class="card-title">💎 Dev Marka Reklam Anlaşması</span><span class="card-badge badge-green">Yüksek Gelir</span></div>
-            <p class="card-desc">En az %30 Şöhret gerekir. Şöhret oranına göre yüz binlerce TL reklam ücreti al.</p>
-            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('brand_deal')">Reklam Sözleşmesi İmzala ✍️</button>
-        </div>
-        <div class="panel-card">
-            <div class="card-title-row"><span class="card-title">📸 Magazin & Paparazzi Gündemi Yarat</span><span class="card-badge badge-purple">+18 Şöhret</span></div>
-            <p class="card-desc">Bebek sahilinde paparazzilere sansasyonel röportaj vererek tüm manşetlere çık!</p>
-            <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('paparazzi_stunt')">Manşetlere Çık 📸</button>
-        </div>
-        <div class="panel-card" style="border-color:#f472b6;">
-            <div class="card-title-row"><span class="card-title">💘 VIP Ünlüler Kulübünde Yıldızla Tanış</span><span class="card-badge badge-purple">VIP Aşk</span></div>
-            <p class="card-desc">Ünlü bir Dizi Yıldızı, Pop İkonu, Süpermodel veya Milli Futbolcu ile yılın aşkına başla!</p>
-            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('celebrity_date')">VIP Galaya Git & Tanış 🥂</button>
+
+        <div class="person-action-group-title" style="margin-bottom:8px;">Sahne, Performans & Global Şöhret:</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="panel-card" style="border-color:#ec4899;">
+                <div class="card-title-row"><span class="card-title">🎪 Harbiye Açıkhava Konseri & Stadyum Turnesi</span><span class="card-badge badge-green">Milyonluk Gişe</span></div>
+                <p class="card-desc">En az %25 Şöhret gerekir. 15.000 kişilik Harbiye Açıkhava'da veya stadyumda biletleri tüket, dev gişe geliri elde et!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('harbiye_concert')">Harbiye'ye Çık 🎪🔥</button>
+            </div>
+            <div class="panel-card" style="border-color:#f59e0b;">
+                <div class="card-title-row"><span class="card-title">🏆 Kırmızı Halı & Altın Kelebek Ödül Töreni</span><span class="card-badge badge-yellow">+25 Şöhret & Prestij</span></div>
+                <p class="card-desc">En az %35 Şöhret gerekir. Yılın En İlham Veren Yıldızı ödülünü kazan, canlı yayında tüm Türkiye önünde konuşma yap!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('red_carpet_award')">Kırmızı Halıda Yürü 🏆✨</button>
+            </div>
+            <div class="panel-card" style="border-color:#a855f7;">
+                <div class="card-title-row"><span class="card-title">👠 Paris & Milano Moda Haftası (Front Row)</span><span class="card-badge badge-purple">+16 Şöhret & Görünüş</span></div>
+                <p class="card-desc">En az %30 Şöhret veya %80 Görünüş gerekir. Dünyaca ünlü tasarımcıların en ön sırasında otur, Vogue ve Elle kapağı ol!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('fashion_week')">Front Row'da Yerini Al 👠✨</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">🎭 Türkiye Yetenek & Ekran Seçmeleri</span><span class="card-badge badge-green">₺ 2.000</span></div>
+                <p class="card-desc">Kamera karşısına çıkıp yeteneğini sergile, şöhret basamaklarını hızla tırman!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('audition_fame')">Seçmelere Katıl 🌟</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">🏆 Hit Albüm / Başrol Film / Şampiyonluk Maçı</span><span class="card-badge badge-yellow">+Telif & Şöhret</span></div>
+                <p class="card-desc">En az %20 Şöhret veya Sanat/Spor kariyeri gerekir. Milyonluk telif ve prim kazandırır!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('release_work')">Yeni Eser / Performans Çıkar 🔥</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">📺 Prime-Time Talk Show Konuğu Ol</span><span class="card-badge badge-blue">+45B Takipçi</span></div>
+                <p class="card-desc">Cuma gecesi canlı yayına konuk ol, hem şöhretini hem sosyal medya takipçilerini katla!</p>
+                <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('tv_show')">Talk Show'a Çık 📺</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">💎 Dev Marka Reklam Anlaşması</span><span class="card-badge badge-green">Yüksek Gelir</span></div>
+                <p class="card-desc">En az %30 Şöhret gerekir. Şöhret oranına göre yüz binlerce TL reklam ücreti al.</p>
+                <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('brand_deal')">Reklam Sözleşmesi İmzala ✍️</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">📸 Magazin & Paparazzi Gündemi Yarat</span><span class="card-badge badge-purple">+18 Şöhret</span></div>
+                <p class="card-desc">Bebek sahilinde paparazzilere sansasyonel röportaj vererek tüm manşetlere çık!</p>
+                <button type="button" class="btn-choice" style="margin-top:8px;" onclick="triggerFameAction('paparazzi_stunt')">Manşetlere Çık 📸</button>
+            </div>
+            <div class="panel-card" style="border-color:#f472b6;">
+                <div class="card-title-row"><span class="card-title">💘 VIP Ünlüler Kulübünde Yıldızla Tanış</span><span class="card-badge badge-purple">VIP Aşk</span></div>
+                <p class="card-desc">Ünlü bir Dizi Yıldızı, Pop İkonu, Süpermodel veya Milli Futbolcu ile yılın aşkına başla!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="triggerFameAction('celebrity_date')">VIP Galaya Git & Tanış 🥂</button>
+            </div>
         </div>
     `;
     openDialogModal("genericModal");
 }
 
-async function triggerFameAction(subAction) {
-    await performActivity("fame_action", { sub_action: subAction });
+async function triggerFameAction(subAction, extraId = "") {
+    await performActivity("fame_action", { sub_action: subAction, extra_id: extraId });
+    closeModal("genericModal");
+}
+
+function openFameArchetypeModal() {
+    sound.playClick();
+    const archetypes = (marketData && marketData.fame_archetypes) || [];
+    document.getElementById("genericModalTitle").textContent = "🎭 Şöhret Arketipini & İmajını Belirle";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Hangi alanda parlamak istiyorsun? Tarzını seçerek kariyerine güçlü bir kimlik kazandır:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${archetypes.map(a => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${a.name}</span>
+                        <span class="card-badge badge-yellow">${a.primary_skill.toUpperCase()}</span>
+                    </div>
+                    <p class="card-desc">${a.desc}</p>
+                    <p class="card-desc" style="font-size:0.8rem; color:var(--text-muted);">Öne Çıkan Eser: <b>${a.work_name}</b></p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitFameArchetype('${a.id}')">Bu İmajı Seç 🌟</button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openFameModal()">← Şöhret Merkezine Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitFameArchetype(archId) {
+    await performActivity("fame_action", { sub_action: "select_archetype", extra_id: archId });
+    openFameModal();
+}
+
+function openFameManagerModal() {
+    sound.playClick();
+    const managers = (marketData && marketData.fame_managers) || [];
+    document.getElementById("genericModalTitle").textContent = "🤝 VIP Menajer & PR Ajansı Seç";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Kariyerini zirveye taşıyacak profesyonel bir menajer veya uluslararası bir ajansla el sıkış:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${managers.map(m => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${m.name}</span>
+                        <span class="card-badge badge-green">${m.cost > 0 ? '₺ ' + m.cost.toLocaleString("tr-TR") : 'Ücretsiz'}</span>
+                    </div>
+                    <p class="card-desc">${m.desc}</p>
+                    <p class="card-desc" style="font-size:0.8rem; color:var(--text-muted);">Komisyon: <b>%${m.commission}</b></p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitFameManager('${m.id}')">Bu Ajansla Anlaş 🤝</button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openFameModal()">← Şöhret Merkezine Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitFameManager(mgrId) {
+    await performActivity("fame_action", { sub_action: "hire_manager", extra_id: mgrId });
+    openFameModal();
+}
+
+function openFameCrisisModal() {
+    sound.playClick();
+    const crises = (marketData && marketData.fame_crises) || [];
+    document.getElementById("genericModalTitle").textContent = "📸💥 Magazin & Skandal Kriz Masası";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Magazinciler peşinde! Ansızın patlak veren sansasyon ve skandallara karşı duruşunu seç:</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            ${crises.map(c => `
+                <div class="panel-card" style="border-color:#ef4444;">
+                    <div class="card-title-row">
+                        <span class="card-title">${c.title}</span>
+                    </div>
+                    <p class="card-desc" style="margin-bottom:10px;">${c.desc}</p>
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        ${c.options.map(opt => `
+                            <button type="button" class="btn-choice" style="text-align:left; padding:8px 12px;" onclick="submitFameCrisis('${c.id}', '${opt.id}')">
+                                <b>${opt.text}</b>
+                            </button>
+                        `).join("")}
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openFameModal()">← Şöhret Merkezine Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitFameCrisis(crisisId, choiceId) {
+    await performActivity("fame_action", { sub_action: "fame_crisis_choice", extra_id: `${crisisId}:${choiceId}` });
     closeModal("genericModal");
 }
 
@@ -2622,28 +2764,44 @@ async function triggerPoliticalAction(subAction) {
 function openBusinessModal() {
     sound.playClick();
     if (!marketData || !marketData.businesses) return;
-    document.getElementById("genericModalTitle").textContent = "🏢 Girişimcilik & Şirket Kur";
+    document.getElementById("genericModalTitle").textContent = "🏢 Girişimcilik & Kendi Şirketini Kur";
     const body = document.getElementById("genericModalBody");
-    body.innerHTML = "";
 
-    marketData.businesses.forEach(b => {
-        const card = document.createElement("div");
-        card.className = "panel-card";
-        card.innerHTML = `
-            <div class="card-title-row">
-                <span class="card-title">${b.name}</span>
-                <span class="card-badge badge-yellow">Sermaye: ₺ ${b.cost.toLocaleString("tr-TR")}</span>
-            </div>
-            <p class="card-desc">Sektör: ${b.sector} • Beklenen Yıllık Kâr: <b>+₺ ${b.base_profit.toLocaleString("tr-TR")}/yıl</b></p>
-            <button type="button" class="btn-primary" style="margin-top: 8px;" onclick="createBusiness('${b.id}')">Şirketi Kur</button>
-        `;
-        body.appendChild(card);
-    });
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:12px; background:rgba(30,41,59,0.7); border:1px solid rgba(255,255,255,0.15);">
+            <div style="font-size:12px; font-weight:700; color:#f8fafc; margin-bottom:6px;">✨ Şirketine Özel İsim Ver (İsteğe Bağlı):</div>
+            <input type="text" id="customBizNameInput" placeholder="Örn: Demir Holding / Nova Burger (Boş bırakırsan varsayılan atanır)" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(15,23,42,0.85); color:#fff; font-size:13px; box-sizing:border-box;">
+        </div>
+        <p class="card-desc" style="margin-bottom:10px;">
+            Kurmak istediğin sektörü ve şirket modelini seç:
+        </p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            ${marketData.businesses.map(b => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${b.name}</span>
+                        <span class="card-badge ${gameState.money >= b.cost ? 'badge-green' : 'badge-danger'}">
+                            Sermaye: ₺ ${b.cost.toLocaleString("tr-TR")}
+                        </span>
+                    </div>
+                    <p class="card-desc" style="margin:4px 0 6px;">${b.desc || ''}</p>
+                    <div class="person-chip-row" style="margin-bottom:8px;">
+                        <span class="person-chip" style="color:#93c5fd;">🏢 Sektör: ${b.sector}</span>
+                        <span class="person-chip" style="color:#6ee7b7;">📈 Beklenen Kâr: +₺ ${b.base_profit.toLocaleString("tr-TR")}/yıl</span>
+                    </div>
+                    <button type="button" class="btn-primary" ${gameState.money < b.cost ? 'disabled style="opacity:0.5;"' : ''} onclick="createBusiness('${b.id}')">
+                        ${gameState.money >= b.cost ? 'Şirketi Kur 🚀' : 'Yetersiz Sermaye'}
+                    </button>
+                </div>
+            `).join("")}
+        </div>
+    `;
     openDialogModal("genericModal");
 }
 
 async function createBusiness(bizId) {
-    await performActivity("start_business", { biz_id: bizId });
+    const customName = document.getElementById("customBizNameInput") ? document.getElementById("customBizNameInput").value : "";
+    await performActivity("start_business", { biz_id: bizId, custom_name: customName });
     closeModal("genericModal");
 }
 
@@ -3849,16 +4007,20 @@ function openCompanyDecisionsModal() {
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
-        <div class="panel-card" style="border-color:var(--accent-blue); margin-bottom:12px;">
+        <div class="panel-card" style="border-color:var(--accent-blue); margin-bottom:12px; background:linear-gradient(135deg, rgba(59,130,246,0.08), rgba(16,185,129,0.08));">
             <div class="card-title-row">
                 <span class="card-title">🏢 ${b.name} (${b.sector})</span>
                 <span class="card-badge badge-yellow">Değer: ₺ ${b.valuation.toLocaleString("tr-TR")}</span>
             </div>
-            <p class="card-desc">
+            <p class="card-desc" style="margin-top:4px;">
+                Aşama: <b>${b.stage || "Girişim"}</b> • Şube/Tesis: <b>${b.branches || 1}</b> • Pay: <b>%${b.shares_owned ?? 100}</b> • BIST Halka Açık: <b>${b.is_ipo ? "Evet 📈" : "Hayır"}</b> • CEO: <b>${b.has_manager ? "Profesyonel Yönetici 👔" : "Bizzat Siz"}</b><br>
                 Yıllık Kâr: <b>₺ ${b.annual_profit.toLocaleString("tr-TR")}</b> • Çalışan: <b>${b.employees} Kişi</b> • İtibar: <b>%${b.reputation}</b>
             </p>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button type="button" class="btn-choice" style="border-color:#ef4444; color:#ef4444; width:100%;" onclick="openCompanyCrisisModal()">🚨 Şirket Kriz Masası</button>
+            </div>
         </div>
-        <div class="person-action-group-title" style="margin-bottom:8px;">Stratejik Yönetim Hamleleri:</div>
+        <div class="person-action-group-title" style="margin-bottom:8px;">Stratejik Yönetim & Büyüme Hamleleri:</div>
         <div style="display:flex; flex-direction:column; gap:8px;">
             ${actions.map(act => `
                 <div class="panel-card">
@@ -3878,6 +4040,42 @@ function openCompanyDecisionsModal() {
 async function submitCompanyDecision(actionId) {
     await performActivity("company_manage", { action_id: actionId });
     openCompanyDecisionsModal();
+}
+
+function openCompanyCrisisModal() {
+    sound.playClick();
+    if (!gameState.business) return;
+    const crises = (marketData && marketData.company_crises) || [];
+    document.getElementById("genericModalTitle").textContent = `🚨 Şirket Kriz Masası & Risk Yönetimi`;
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Şirketinin karşılaşabileceği piyasa, denetim veya PR krizlerine karşı liderliğini göster ve kararlar al:</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            ${crises.map(c => `
+                <div class="panel-card" style="border-color:#ef4444;">
+                    <div class="card-title-row">
+                        <span class="card-title">${c.title}</span>
+                    </div>
+                    <p class="card-desc" style="margin-bottom:10px;">${c.desc}</p>
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        ${c.choices.map(choice => `
+                            <button type="button" class="btn-choice" style="text-align:left; padding:8px 12px;" onclick="submitCompanyCrisis('${c.id}', '${choice.id}')">
+                                <b>${choice.text}</b>
+                            </button>
+                        `).join("")}
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openCompanyDecisionsModal()">← Patron Karar Odasına Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCompanyCrisis(crisisId, choiceId) {
+    await performActivity("company_crisis_choice", { crisis_id: crisisId, choice_id: choiceId });
+    closeModal("genericModal");
 }
 
 function openTenantManageModal(assetId) {
