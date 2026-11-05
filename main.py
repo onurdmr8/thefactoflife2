@@ -45,7 +45,10 @@ from game.data import (
     INTIMACY_MUSICS,
     COWORKER_PROJECT_OPTIONS, COWORKER_GOSSIP_STORIES, COWORKER_GOSSIP_REACTIONS,
     COWORKER_HANGOUT_OPTIONS, BOSS_MENTORSHIP_TOPICS, BOSS_NEGOTIATION_TACTICS,
-    COMPANY_CRISES, FAME_ARCHETYPES, FAME_MANAGERS, FAME_CRISES
+    COMPANY_CRISES, FAME_ARCHETYPES, FAME_MANAGERS, FAME_CRISES,
+    SYNDICATES, SYNDICATE_RANKS, SYNDICATE_OPERATIONS,
+    HIGH_SCHOOL_TYPES, CAREER_LADDERS, ERASMUS_DESTINATIONS,
+    HEADHUNTER_OFFERS, MOONLIGHTING_OPTIONS
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -70,10 +73,13 @@ from game.activities import (
     do_parent_care_action, do_sibling_action, do_parenting_action, do_friend_action, do_consolidated_chat,
     do_hookup, do_flirt_opening, do_situationship_talk, do_confess_love, do_hard_launch, do_handle_ex_midnight_text,
     do_friend_to_lover, do_classmate_action, do_coworker_action, do_boss_action,
+    do_school_action, do_workplace_action,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
-    post_on_social_media, take_vacation
+    post_on_social_media, take_vacation,
+    join_syndicate, do_syndicate_operation, advance_syndicate_rank, syndicate_summit_choice,
+    do_leverage_trade, do_insider_trading, do_stake_crypto, set_detailed_will
 )
 
 app = FastAPI(title="BitLife Türkiye", description="Türkçe Hayat Simülatörü")
@@ -388,6 +394,10 @@ def handle_activity(req: ActivityRequest):
         res = do_coworker_action(current_character, p.get("person_id", ""), p.get("action_id", "happy_hour"), p.get("sub_id", ""), p.get("story_id", ""))
     elif act == "boss_action":
         res = do_boss_action(current_character, p.get("person_id", ""), p.get("action_id", "suck_up_boss"), p.get("sub_id", ""))
+    elif act == "school_action":
+        res = do_school_action(current_character, p.get("action_id", "cheat_exam"), p)
+    elif act == "workplace_action":
+        res = do_workplace_action(current_character, p.get("action_id", "take_annual_leave"), p)
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -418,6 +428,32 @@ def handle_activity(req: ActivityRequest):
         res = prison_escape_attempt(current_character, p.get("route", "tunnel"))
     elif act == "prison_act":
         res = prison_activity(current_character, p.get("activity", "library"))
+
+    # Yeraltı Dünyası, Mafya Ailesi & Suç İmparatorluğu (Turkish Underworld)
+    elif act == "syndicate_join":
+        res = join_syndicate(current_character, p.get("syndicate_id", "istanbul_babalar"))
+    elif act == "syndicate_operation":
+        res = do_syndicate_operation(current_character, p.get("operation_id", "extortion"))
+    elif act == "syndicate_rank_up":
+        res = advance_syndicate_rank(current_character)
+    elif act == "syndicate_summit":
+        res = syndicate_summit_choice(current_character, p.get("choice_id", "racon_cut"))
+
+    # Gelişmiş Finans & Kaldıraçlı Piyasalar (Leverage, Insider & Staking)
+    elif act == "leverage_trade":
+        res = do_leverage_trade(
+            current_character,
+            p.get("symbol", "THYAO"),
+            p.get("direction", "long"),
+            int(p.get("leverage", 10)),
+            int(p.get("margin_amount", 50000))
+        )
+    elif act == "insider_trading":
+        res = do_insider_trading(current_character, p.get("symbol", "THYAO"))
+    elif act == "stake_crypto":
+        res = do_stake_crypto(current_character, p.get("symbol", "BTC"), int(p.get("amount", 50000)))
+    elif act == "detailed_will":
+        res = set_detailed_will(current_character, p.get("target", "all_children"))
 
     # Sosyal Medya & Tatil
     elif act == "social_post":
@@ -505,7 +541,15 @@ def get_market_data():
         "company_crises": COMPANY_CRISES,
         "fame_archetypes": FAME_ARCHETYPES,
         "fame_managers": FAME_MANAGERS,
-        "fame_crises": FAME_CRISES
+        "fame_crises": FAME_CRISES,
+        "syndicates": SYNDICATES,
+        "syndicate_ranks": SYNDICATE_RANKS,
+        "syndicate_operations": SYNDICATE_OPERATIONS,
+        "high_school_types": HIGH_SCHOOL_TYPES,
+        "career_ladders": CAREER_LADDERS,
+        "erasmus_destinations": ERASMUS_DESTINATIONS,
+        "headhunter_offers": HEADHUNTER_OFFERS,
+        "moonlighting_options": MOONLIGHTING_OPTIONS
     }
 
 @app.get("/api/graveyard")
@@ -516,12 +560,13 @@ def get_graveyard():
     }
 
 @app.post("/api/reincarnate")
-def reincarnate():
+def reincarnate(request_data: Optional[Dict[str, Any]] = None):
     global current_character
     if not current_character:
         return JSONResponse(status_code=400, content={"success": False, "message": "Karakter yok."})
         
-    child_char = engine.reincarnate_as_child(current_character)
+    child_id = request_data.get("child_id") if request_data else None
+    child_char = engine.reincarnate_as_child(current_character, child_id)
     if child_char:
         current_character = child_char
         return {

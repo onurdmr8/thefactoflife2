@@ -237,8 +237,27 @@ class GameEngine:
                 elif p.relation == "Öğretmen":
                     p.relation = "Eski Öğretmen"
             char.education_level = "Lise"
-            char.current_school = f"{char.city} Anadolu Lisesi"
-            char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🏫 {char.current_school}'ne kayıt oldun!", category="school", icon="🏫"))
+            if not char.high_school_type:
+                score = min(500, int(260 + char.smarts * 2.2))
+                char.lgs_score = score
+                if score >= 450:
+                    char.high_school_type = "Fen Lisesi (TÜBİTAK Odaklı)"
+                    char.current_school = f"{char.city} Fen Lisesi"
+                elif score >= 410 and char.money >= 180000:
+                    char.high_school_type = "Köklü Yabancı Özel Kolej"
+                    char.current_school = f"{char.city} Özel Robert & Fransız Koleji"
+                elif score >= 340:
+                    char.high_school_type = "Nitelikli Anadolu Lisesi"
+                    char.current_school = f"{char.city} Anadolu Lisesi"
+                elif score >= 240:
+                    char.high_school_type = "Anadolu İmam Hatip Lisesi"
+                    char.current_school = f"{char.city} Anadolu İmam Hatip Lisesi"
+                else:
+                    char.high_school_type = "Mesleki ve Teknik Anadolu Lisesi"
+                    char.current_school = f"{char.city} Mesleki ve Teknik Anadolu Lisesi"
+                char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🏫 LGS'de {score} puan alarak '{char.current_school}'ne kayıt oldun!", category="school", icon="🏫"))
+            else:
+                char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🏫 LGS puanınla '{char.current_school}' bünyesinde lise hayatına başladın!", category="school", icon="🏫"))
             populate_classmates_if_needed(char)
         elif char.age == 18 and char.education_level == "Lise":
             char.current_school = None
@@ -254,6 +273,20 @@ class GameEngine:
                     p.relation = "Eski Öğretmen"
             char.logs.append(LifeLog(age=char.age, year=char.current_year, text="🎓 Liseden başarıyla mezun oldun!", category="school", icon="🎓"))
 
+        # Erasmus ve Değişim Programı Tamamlanması
+        if char.is_erasmus_active:
+            char.smarts = min(100, char.smarts + 14)
+            char.looks = min(100, char.looks + 8)
+            char.happiness = min(100, char.happiness + 20)
+            char.is_erasmus_active = False
+            char.logs.append(LifeLog(
+                age=char.age,
+                year=char.current_year,
+                text=f"🇪🇺✈️ ERASMUS YILI TAMAMLANDI! {char.erasmus_country} ülkesindeki 1 yıllık öğrenci değişimi hayatının en güzel yılı oldu! Akıcı yabancı dil ve global vizyon kazandın! (Zeka +14, Görünüş +8)",
+                category="school",
+                icon="🇪🇺"
+            ))
+
         # Üniversite Mezuniyet Takibi
         if char.school_years_left > 0:
             char.school_years_left -= 1
@@ -264,6 +297,8 @@ class GameEngine:
                 char.smarts = min(100, char.smarts + 8)
                 if "graduate" not in char.achievements:
                     char.achievements.append("graduate")
+                if char.double_major:
+                    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🎓📜 ÇİFT DİPLOMAYLA MEZUN OLDUN! Hem {grad_school} hem de '{char.double_major}' ÇAP programını başarıyla tamamladın!", category="milestone", icon="🎓"))
                 for p in char.relationships:
                     if p.relation == "Sınıf Arkadaşı":
                         if p.relationship_level >= 65:
@@ -307,6 +342,21 @@ class GameEngine:
                     char.fame = min(100, char.fame + 8)
                     if char.fame >= 50 and "famous" not in char.achievements:
                         char.achievements.append("famous")
+                
+                # Yıllık izin yenileme ve Headhunter şansı
+                char.annual_leave_days = 14
+                if char.current_job.performance >= 85 and char.current_job.experience_years >= 2:
+                    if random.random() < 0.35:
+                        char.has_headhunter_offer = True
+
+            # Moonlighting / Gizli Ek İş Geliri
+            if char.moonlighting_income > 0:
+                annual_income += char.moonlighting_income
+                income_items.append({"label": f"🌙 Ek İş / Danışmanlık ({char.moonlighting_job})", "amount": char.moonlighting_income})
+                annual_summary_lines.append(f"🌙 Ek iş geliri: +{char.moonlighting_income:,} TL.")
+                if random.random() < 0.05 and char.current_job:
+                    char.stress = min(100, char.stress + 18)
+                    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"⚠️🤫 Şirket yönetimi mesai sonrası gizlice danışmanlık yaptığını duydu! Patronun seni odasına çağırıp uyardı: 'İşine odaklan!'", category="career", icon="⚠️"))
 
             if char.political_office:
                 pol_sal = char.political_salary
@@ -507,14 +557,61 @@ class GameEngine:
                         char.money -= rep
                         annual_summary_lines.append(f"🔧 '{a.name}' aracın arızalandı, kaskon olmadığı için {rep:,} TL masraf çıktı!")
 
-        # 7. Borsa & Kripto Fiyat Dalgalanmaları (Simetrik & Gerçekçi Risk)
+        # 7. Borsa, Kripto Fiyat Dalgalanmaları & Temettü Gelirleri
+        total_dividends = 0
         for s in char.stocks.values():
-            vol = next((item["volatility"] for item in INITIAL_STOCKS if item["symbol"] == s.symbol), 0.15)
+            s_spec = next((item for item in INITIAL_STOCKS if item["symbol"] == s.symbol), None)
+            vol = s_spec["volatility"] if s_spec else 0.15
+            div_rate = s_spec.get("dividend", 0.0) if s_spec else 0.0
+            
             change = random.uniform(-vol * 1.02, vol * 1.04)
             s.current_price = max(1.0, round(s.current_price * (1 + change), 2))
             s.history.append(s.current_price)
             if len(s.history) > 15:
                 s.history.pop(0)
+            
+            if div_rate > 0 and s.shares > 0:
+                div_payout = int(s.shares * s.current_price * div_rate)
+                total_dividends += div_payout
+
+        if total_dividends > 0:
+            char.money += total_dividends
+            char.logs.append(LifeLog(
+                age=char.age,
+                year=char.current_year,
+                text=f"📈💰 TEMETTÜ DAĞITIMI: Borsa hisse portföyünden hesabına +{total_dividends:,} TL nakit kâr payı yattı!",
+                category="finance",
+                icon="💰"
+            ))
+
+        # Kripto Staking Faiz Getirisi
+        if hasattr(char, "crypto_staked") and char.crypto_staked:
+            total_staked_yield = 0
+            for c_sym, s_val in list(char.crypto_staked.items()):
+                if s_val > 0:
+                    y_gain = int(s_val * 0.12)
+                    total_staked_yield += y_gain
+                    char.crypto_staked[c_sym] += y_gain
+            if total_staked_yield > 0:
+                char.money += total_staked_yield
+                char.logs.append(LifeLog(
+                    age=char.age,
+                    year=char.current_year,
+                    text=f"🪙 STAKING GELİRİ: Kilitli kripto cüzdanından +{total_staked_yield:,} TL DeFi faizi hesabına aktarıldı!",
+                    category="finance",
+                    icon="🪙"
+                ))
+
+        # Yeraltı Dünyası & Mekan Koruma Haracı Geliri
+        if hasattr(char, "syndicate_racket_annual") and char.syndicate_racket_annual > 0:
+            char.money += char.syndicate_racket_annual
+            char.logs.append(LifeLog(
+                age=char.age,
+                year=char.current_year,
+                text=f"💼🔫 YERALTI HARACI: Kontrolündeki mekanlardan yıllık +{char.syndicate_racket_annual:,} TL koruma haracı kasaya girdi!",
+                category="crime",
+                icon="💼"
+            ))
 
         # Net Servet Hesaplama & Zaman Serisi Kaydı
         assets_val = sum(a.current_value for a in char.assets)
@@ -708,18 +805,34 @@ class GameEngine:
         }
         self.graveyard.insert(0, tombstone_entry)
 
-    def reincarnate_as_child(self, parent_char: Character) -> Optional[Character]:
-        children = [p for p in parent_char.relationships if p.relation == "Çocuk" and p.is_alive]
+    def reincarnate_as_child(self, parent_char: Character, child_id: Optional[str] = None) -> Optional[Character]:
+        children = [p for p in parent_char.relationships if p.relation == "Çocuk" and p.is_alive and not getattr(p, "is_disowned", False)]
         if not children:
             return None
             
         chosen_child = children[0]
+        if child_id:
+            match = next((c for c in children if c.id == child_id), None)
+            if match:
+                chosen_child = match
+        elif parent_char.will_beneficiary and parent_char.will_beneficiary.startswith("child_"):
+            target_id = parent_char.will_beneficiary.replace("child_", "")
+            match = next((c for c in children if c.id == target_id), None)
+            if match:
+                chosen_child = match
+
         # Vasiyetnameye göre miras aktarımı
         inherited_money = max(0, parent_char.net_worth)
         if parent_char.will_beneficiary == "charity":
             inherited_money = 0
+        elif parent_char.will_beneficiary == "spouse":
+            inherited_money = int(inherited_money * 0.25)
         elif parent_char.will_beneficiary == "all_children" and len(children) > 1:
             inherited_money = int(inherited_money / len(children))
+        elif parent_char.will_beneficiary and parent_char.will_beneficiary.startswith("child_"):
+            target_id = parent_char.will_beneficiary.replace("child_", "")
+            if chosen_child.id != target_id:
+                inherited_money = int(inherited_money * 0.10)
 
         child_char = Character(
             id=str(uuid.uuid4())[:8],
@@ -735,13 +848,27 @@ class GameEngine:
             generation=parent_char.generation + 1,
             happiness=80,
             health=95,
-            smarts=random.randint(55, 95),
-            looks=random.randint(50, 95),
+            smarts=getattr(chosen_child, "smarts", random.randint(55, 95)),
+            looks=getattr(chosen_child, "looks", random.randint(50, 95)),
             money=inherited_money,
             net_worth=inherited_money,
             education_level="Üniversite" if chosen_child.age >= 22 else ("Lise" if chosen_child.age >= 18 else "İlkokul"),
             achievements=["born"]
         )
+
+        if parent_char.business and inherited_money > 0:
+            child_char.business = parent_char.business
+            child_char.logs.append(LifeLog(
+                age=child_char.age,
+                year=child_char.current_year,
+                text=f"🏢 Aile şirketi '{parent_char.business.name}' ({parent_char.business.sector}) yönetimini devraldın!",
+                category="career",
+                icon="🏢"
+            ))
+
+        for a in parent_char.assets:
+            if a.asset_type in ["Ev", "Yat"]:
+                child_char.assets.append(a)
         
         for s in INITIAL_STOCKS:
             child_char.stocks[s["symbol"]] = Stock(

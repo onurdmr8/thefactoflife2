@@ -144,11 +144,16 @@ function cycleTheme() {
     } catch (e) {}
 }
 
+function openSettingsMenuModal() {
+    sound.playClick();
+    openDialogModal("settingsMenuModal");
+}
+
 function toggleSound() {
     sound.muted = !sound.muted;
     const btn = document.getElementById("btnSoundToggle");
     if (btn) {
-        btn.textContent = sound.muted ? "🔇" : "🔊";
+        btn.textContent = sound.muted ? "🔇 Ses: Kapalı" : "🔊 Ses: Açık";
     }
     if (!sound.muted) sound.playClick();
 }
@@ -640,17 +645,20 @@ function renderCareerTab() {
     if (!careerEl) return;
     careerEl.innerHTML = "";
 
-    // 1. Eğitim, YKS/KPSS Sınavları, Yurt/Öğrenci Evi ve Askerlik
+    // 1. Eğitim, LGS/YKS/KPSS Sınavları, Kampüs ve Askerlik
     const eduCard = document.createElement("div");
     eduCard.className = "panel-card";
     eduCard.innerHTML = `
         <div class="card-title-row">
-            <span class="card-title">🎓 Eğitim, Sınavlar & Askerlik</span>
+            <span class="card-title">🎓 Eğitim & Kampüs</span>
             <span class="card-badge badge-blue">${gameState.education_level}</span>
         </div>
         <p class="card-desc">
             ${gameState.current_school ? `Okul: <b>${gameState.current_school}</b>` : "Aktif öğrenci değilsin."}
-            ${gameState.school_club ? ` • Kulüp: <b>${gameState.school_club}</b>` : ""}
+            ${gameState.school_president ? ` • 👑 <b>Okul Başkanı</b>` : ""}
+            ${gameState.is_erasmus_active ? ` • 🇪🇺 <b>Erasmus (${gameState.erasmus_country})</b>` : ""}
+            ${gameState.double_major ? ` • 📜 <b>ÇAP: ${gameState.double_major}</b>` : ""}
+            ${gameState.school_club ? ` • 🏅 <b>${gameState.school_club}</b>` : ""}
             ${gameState.scholarship_annual > 0 ? ` • 🎓 Burs: <b>+₺ ${gameState.scholarship_annual.toLocaleString("tr-TR")}/yıl</b>` : ""}
             <br>
             🏠 Barınma: <b>${gameState.housing_type || "Aile Evi"}</b>
@@ -659,8 +667,9 @@ function renderCareerTab() {
         </p>
         <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
             <button type="button" class="btn-action-outline" onclick="performActivity('study_hard')">📚 Ders Çalış</button>
-            <button type="button" class="btn-action-outline" onclick="openExamsModal()">📝 YKS & KPSS Sınavı</button>
+            <button type="button" class="btn-action-outline" onclick="openExamsModal()">📝 Sınavlar (LGS, YKS, KPSS)</button>
             <button type="button" class="btn-action-outline" onclick="openUniversityModal()">🏛️ Üniversite</button>
+            <button type="button" class="btn-action-outline" style="border-color:#60a5fa; color:#93c5fd;" onclick="openSchoolActionsModal()">🎒 Okul & Kampüs Eylemleri</button>
             <button type="button" class="btn-action-outline" onclick="openStudentHousingModal()">🍜 Yurt & Öğrenci Evi</button>
             <button type="button" class="btn-action-outline" onclick="openClubsModal()">🏅 Okul Kulüpleri</button>
             <button type="button" class="btn-action-outline" onclick="openMilitaryModal()">🪖 Askerlik Şubesi</button>
@@ -719,18 +728,24 @@ function renderCareerTab() {
         `;
     } else if (gameState.current_job) {
         const j = gameState.current_job;
+        const jobTitle = j.rank_title || j.title;
         jobCard.innerHTML = `
             <div class="card-title-row">
-                <span class="card-title">💼 ${j.title} (Kademe ${j.level || 1})</span>
+                <span class="card-title">💼 ${jobTitle} (Kademe ${j.level || 1})</span>
                 <span class="card-badge badge-green">₺ ${j.salary.toLocaleString("tr-TR")}/yıl</span>
             </div>
             <div class="card-desc">
                 Sektör: ${j.category} • Performans: %${j.performance} • Kıdem: ${j.experience_years} Yıl
-                ${gameState.part_time_job ? `<br>⏱️ Ek İş: ${gameState.part_time_job.title} (+₺ ${gameState.part_time_job.salary.toLocaleString("tr-TR")}/yıl)` : ""}
+                • 🏖️ Yıllık İzin: <b>${gameState.annual_leave_days != null ? gameState.annual_leave_days : 14} Gün</b>
+                ${gameState.moonlighting_job ? `<br>🌙 Ek İş: <b>${gameState.moonlighting_job} (+₺ ${gameState.moonlighting_income.toLocaleString("tr-TR")}/yıl)</b>` : ""}
+                ${gameState.part_time_job ? `<br>⏱️ Part-Time: <b>${gameState.part_time_job.title} (+₺ ${gameState.part_time_job.salary.toLocaleString("tr-TR")}/yıl)</b>` : ""}
+                ${gameState.has_headhunter_offer ? `<br><span style="color:#fbbf24; font-weight:700;">💼 LinkedIn'den yeni bir Headhunter transfer teklifin var!</span>` : ""}
             </div>
             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;">
                 <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('work_harder')">💪 Mesai Yap</button>
-                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('ask_raise')">📈 Zam/Terfi İste</button>
+                <button type="button" class="btn-action-outline" style="flex:1" onclick="performWorkplaceAction('kpi_review')">📊 KPI & Terfi</button>
+                <button type="button" class="btn-action-outline" style="flex:1" onclick="performWorkplaceAction('take_annual_leave')">🏖️ İzin Kullan</button>
+                <button type="button" class="btn-action-outline" style="flex:1.5; border-color:#38bdf8; color:#7dd3fc;" onclick="openWorkplaceActionsModal()">💼 Plaza Eylemleri</button>
                 <button type="button" class="btn-action-outline" style="flex:1; border-color: var(--accent-red); color: var(--accent-red);" onclick="performActivity('quit_job')">🚪 İstifa</button>
             </div>
         `;
@@ -1083,6 +1098,12 @@ function openPersonModal(personId) {
                 ${person.cohabiting ? `<span class="person-chip" style="color:#6ee7b7;">🏠 Aynı Evdesiniz</span>` : ""}
                 ${person.has_prenup ? `<span class="person-chip" style="color:#fcd34d;">📜 Evlilik Sözleşmeli</span>` : ""}
                 ${person.years_together > 0 ? `<span class="person-chip">⏳ ${person.years_together} Yıllık Birliktelik</span>` : ""}
+                ${isChild ? `
+                    <span class="person-chip" style="color:#60a5fa;">📝 Okul Notu: %${person.child_grades ?? 80}</span>
+                    ${person.child_talent ? `<span class="person-chip" style="color:#f59e0b;">🌟 Yetenek: ${person.child_talent}</span>` : ""}
+                    <span class="person-chip" style="color:#f87171;">⚡ Ergenlik İsyanı: %${person.child_rebellion ?? 15}</span>
+                    ${person.is_disowned ? `<span class="person-chip" style="color:#ef4444; font-weight:700;">📜 Reddedilmiş Evlat</span>` : ""}
+                ` : ""}
             </div>
             ${(person.red_flags && person.red_flags.length > 0) ? `<div class="person-chip-row" style="margin:4px 0;">${person.red_flags.map(rf => `<span class="person-chip" style="color:#f87171; border:1px solid rgba(239,68,68,0.3);">🚩 ${rf}</span>`).join("")}</div>` : ""}
             ${(person.green_flags && person.green_flags.length > 0) ? `<div class="person-chip-row" style="margin:4px 0;">${person.green_flags.map(gf => `<span class="person-chip" style="color:#4ade80; border:1px solid rgba(74,222,128,0.3);">🌿 ${gf}</span>`).join("")}</div>` : ""}
@@ -1202,9 +1223,17 @@ function openPersonModal(personId) {
             actions.push({ id: "modal_detailed_fight", text: "🤬 Tartış ve Hesap Sor" });
         } else if (isChild) {
             actions.push({ id: "modal_parenting_crisis", text: "🎓 Ebeveynlik & Kriz Masası (Ergenlik / Gelecek Seçimi)", primary: true });
-            actions.push({ id: "educate_child", text: "📚 Birlikte Ders Çalış & Eğit (+Zeka)", primary: true });
+            actions.push({ id: "parent_tutor", text: "📚 Özel Ders Aldır & Birlikte Sınavlara Hazırlan (4.500 TL)", primary: true });
+            actions.push({ id: "parent_talent", text: "⚽🎹 Spor & Piyano / Sanat Akademisine Yazdır (15.000 TL)", primary: true });
+            actions.push({ id: "parent_theme_park", text: "🎡 Lunapark & Süper Lig Derbisine Götür (2.500 TL)" });
+            actions.push({ id: "parent_discipline", text: "🗣️ Ergenlik & Disiplin Nasihati Ver (İsyanı Düşür)" });
             actions.push({ id: "private_school", text: "🎓🏫 Özel Koleje & Yetenek Akademisine Gönder (45.000 TL)" });
             actions.push({ id: "marry_off_child", text: "👰🤵👶 Çocuğuna Düğün Yap, Evlendir & Torun Sahibi Ol (85.000 TL)" });
+            if (person.age >= 18) {
+                actions.push({ id: "parent_gift_car", text: "🏎️ 18 Yaşında İlk Arabasını Hediye Et (380.000 TL)" });
+                actions.push({ id: "parent_gift_flat", text: "🏠 Evlilik Çeyizine Lüks Daire Satın Al (2.200.000 TL)" });
+            }
+            actions.push({ id: "disown_child", text: "📜 Evlatlıktan Reddet & Mirastan Men Et" });
             actions.push({ id: "consolidated_chat", text: "💬 Vakit Geçir & Sohbet Et" });
             actions.push({ id: "modal_custom_gift", text: "🎁 Hediye Al" });
             actions.push({ id: "dna_test", text: "🧬 Gizli DNA & Babalık Testi Yaptır (8.000 TL)" });
@@ -2384,11 +2413,20 @@ function createSparklineSvg(history) {
 
 function openStocksModal() {
     sound.playClick();
-    document.getElementById("genericModalTitle").textContent = "📈 Borsa İstanbul & Kripto Piyasası";
+    document.getElementById("genericModalTitle").textContent = "📈 Borsa İstanbul, Kripto & Kaldıraç Piyasası";
     const body = document.getElementById("genericModalBody");
     body.innerHTML = "";
 
     if (!gameState.stocks) return;
+
+    const headerActions = document.createElement("div");
+    headerActions.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px;";
+    headerActions.innerHTML = `
+        <button type="button" class="btn-choice" onclick="openLeverageModal()">🚀 10x Kaldıraçlı İşlem (Long/Short)</button>
+        <button type="button" class="btn-choice" onclick="openInsiderTradingModal()">🕵️‍♂️ İçeriden Bilgi (Insider)</button>
+        <button type="button" class="btn-choice" style="grid-column: span 2;" onclick="openCryptoStakingModal()">🪙 Kripto Staking (%12 Yıllık Pasif Faiz)</button>
+    `;
+    body.appendChild(headerActions);
 
     Object.values(gameState.stocks).forEach(stock => {
         const card = document.createElement("div");
@@ -3020,7 +3058,7 @@ async function performPlasticSurgery(procedure) {
 
 function openCrimeModal() {
     sound.playClick();
-    document.getElementById("genericModalTitle").textContent = "🦹 Yeraltı & Cezaevi";
+    document.getElementById("genericModalTitle").textContent = "🦹 Yeraltı Dünyası, Mafya & Cezaevi";
     const body = document.getElementById("genericModalBody");
 
     if (gameState.is_in_prison) {
@@ -3038,23 +3076,141 @@ function openCrimeModal() {
                 </div>
             </div>
         `;
+    } else if (gameState.syndicate_id) {
+        const ops = (marketData && marketData.syndicate_operations) || [];
+        body.innerHTML = `
+            <div class="panel-card" style="border-color:#ef4444; margin-bottom:12px; background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(0,0,0,0.4));">
+                <div class="card-title-row">
+                    <span class="card-title">${gameState.syndicate_name || "Gayrimeşru Aile"}</span>
+                    <span class="card-badge badge-red">Korku / Saygınlık: %${gameState.syndicate_notoriety || 0}</span>
+                </div>
+                <p class="card-desc" style="margin-top:4px;">
+                    Rütben: <b>${gameState.syndicate_rank || "Çırak"}</b><br>
+                    Yıllık Harac Gelirin: <b>₺ ${(gameState.syndicate_racket_annual || 0).toLocaleString("tr-TR")}</b>
+                </p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px;">
+                    <button type="button" class="btn-primary" onclick="advanceSyndicateRank()">👑 Rütbe Atla</button>
+                    <button type="button" class="btn-choice" onclick="openSyndicateSummitModal()">⚔️ Masada Zirve & Racon</button>
+                </div>
+            </div>
+
+            <div class="person-action-group-title" style="margin-bottom:8px;">Yeraltı Operasyonları & Çökme:</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                ${ops.map(op => `
+                    <div class="panel-card">
+                        <div class="card-title-row">
+                            <span class="card-title">${op.name}</span>
+                            <span class="card-badge badge-yellow">${op.cost > 0 ? 'Bütçe: ₺ ' + op.cost.toLocaleString("tr-TR") : 'Ücretsiz'}</span>
+                        </div>
+                        <p class="card-desc">${op.desc}</p>
+                        <button type="button" class="btn-primary" style="margin-top:6px;" onclick="doSyndicateOperation('${op.id}')">Operasyonu Başlat 💥</button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
     } else {
         body.innerHTML = `
-            <div class="panel-card">
-                <div class="card-title-row"><span class="card-title">👛 Yankesicilik</span><span class="card-badge badge-blue">Düşük Risk</span></div>
-                <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('pickpocket')">Kalabalıkta Cüzdan Çarp</button>
+            <div class="panel-card" style="border-color:#ef4444; margin-bottom:12px; background:linear-gradient(135deg, rgba(239,68,68,0.08), rgba(0,0,0,0.2));">
+                <div class="card-title-row">
+                    <span class="card-title">🏛️ Gayrimeşru Aile & Yeraltı Masası</span>
+                    <span class="card-badge badge-red">Yeraltı Dünyası</span>
+                </div>
+                <p class="card-desc" style="margin-top:4px;">Büyük bir mafya ailesine katılarak sokakları ve gece hayatını haraca bağla, racon kes!</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="openJoinSyndicateModal()">Yeraltı Masasına Otur 🗡️</button>
             </div>
-            <div class="panel-card">
-                <div class="card-title-row"><span class="card-title">🏎️ Lüks Oto Hırsızlığı</span><span class="card-badge badge-yellow">Orta Risk</span></div>
-                <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('grand_theft_auto')">Düz Kontakla Araba Çal</button>
-            </div>
-            <div class="panel-card">
-                <div class="card-title-row"><span class="card-title">🏦 Merkez Bankası Soygunu</span><span class="card-badge badge-red">Yüksek Risk / Milyonluk Vurgun</span></div>
-                <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('bank_robbery')">Soygun Planını Başlat!</button>
+
+            <div class="person-action-group-title" style="margin-bottom:8px;">Bireysel Suçlar:</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="panel-card">
+                    <div class="card-title-row"><span class="card-title">👛 Yankesicilik</span><span class="card-badge badge-blue">Düşük Risk</span></div>
+                    <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('pickpocket')">Kalabalıkta Cüzdan Çarp</button>
+                </div>
+                <div class="panel-card">
+                    <div class="card-title-row"><span class="card-title">🏎️ Lüks Oto Hırsızlığı</span><span class="card-badge badge-yellow">Orta Risk</span></div>
+                    <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('grand_theft_auto')">Düz Kontakla Araba Çal</button>
+                </div>
+                <div class="panel-card">
+                    <div class="card-title-row"><span class="card-title">🏦 Merkez Bankası Soygunu</span><span class="card-badge badge-red">Yüksek Risk / Milyonluk Vurgun</span></div>
+                    <button type="button" class="btn-choice" style="margin-top: 8px;" onclick="doCrime('bank_robbery')">Soygun Planını Başlat!</button>
+                </div>
             </div>
         `;
     }
     openDialogModal("genericModal");
+}
+
+function openJoinSyndicateModal() {
+    sound.playClick();
+    const syns = (marketData && marketData.syndicates) || [];
+    document.getElementById("genericModalTitle").textContent = "🏛️ Bir Gayrimeşru Aile Seç";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Hangi yeraltı teşkilatına biat edip masaya oturmak istiyorsun?</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${syns.map(s => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${s.name}</span>
+                        <span class="card-badge badge-red">${s.territory}</span>
+                    </div>
+                    <p class="card-desc">Lider: <b>${s.leader}</b><br>${s.desc}</p>
+                    <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitJoinSyndicate('${s.id}')">Bu Aileye Biat Et 🗡️</button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openCrimeModal()">← Geri Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitJoinSyndicate(synId) {
+    await performActivity("syndicate_join", { syndicate_id: synId });
+    openCrimeModal();
+}
+
+async function doSyndicateOperation(opId) {
+    await performActivity("syndicate_operation", { operation_id: opId });
+    openCrimeModal();
+}
+
+async function advanceSyndicateRank() {
+    await performActivity("syndicate_rank_up", {});
+    openCrimeModal();
+}
+
+function openSyndicateSummitModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "⚔️ Yeraltı Masası Zirvesi";
+    const body = document.getElementById("genericModalBody");
+
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Diğer suç örgütlerinin liderleri gizli bir yalıda toplandı. Kararını ver:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">🗡️ Masaya Silahı Vur & Racon Kes</span></div>
+                <p class="card-desc">Tüm şehirdeki haklarını talep et. Karizman ve korku seviyen güçlüyse payını katlarsın.</p>
+                <button type="button" class="btn-primary" style="margin-top:8px;" onclick="submitSyndicateSummit('racon_cut')">Racon Kes 🗡️</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">🤝 Barış Anlaşması İmzala</span></div>
+                <p class="card-desc">Çatışmaları durdur, sınırları çiz ve yıllık 350.000 TL garanti bölge geliri bağla.</p>
+                <button type="button" class="btn-choice" style="margin-top:8px;" onclick="submitSyndicateSummit('peace_treaty')">Barış İmzala 🤝</button>
+            </div>
+            <div class="panel-card">
+                <div class="card-title-row"><span class="card-title">💣 Rakip Çetenin Deposuna Gece Baskını Yap</span></div>
+                <p class="card-desc">Yüksek risk! Rakip kartelin ana lojistik kasasını patlatıp milyonlarca TL ganimet kap.</p>
+                <button type="button" class="btn-primary" style="margin-top:8px; border-color:#ef4444;" onclick="submitSyndicateSummit('ambush_rival')">Gece Baskını Yap 💣</button>
+            </div>
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openCrimeModal()">← Yeraltı Merkezine Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitSyndicateSummit(choiceId) {
+    await performActivity("syndicate_summit", { choice_id: choiceId });
+    openCrimeModal();
 }
 
 async function doCrime(type) {
@@ -3136,14 +3292,30 @@ async function goVacation(destination) {
 
 function openWillModal() {
     sound.playClick();
-    document.getElementById("genericModalTitle").textContent = "📜 Noter & Vasiyetname";
+    document.getElementById("genericModalTitle").textContent = "📜 Noter & Resmi Vasiyetname";
     const body = document.getElementById("genericModalBody");
+
+    const children = (gameState.relationships || []).filter(p => p.relation === "Çocuk" && p.is_alive && !p.is_disowned);
+    const spouse = (gameState.relationships || []).find(p => p.relation === "Eş" && p.is_alive);
+
     body.innerHTML = `
-        <p class="card-desc" style="margin-bottom:12px;">Vefat ettiğinde tüm mal varlığının ve nakit servetinin kime devredileceğini belirle:</p>
+        <div class="panel-card" style="border-color:var(--accent-yellow); margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">📜 Aktif Vasiyet Durumu</span>
+                <span class="card-badge badge-yellow">Miras: ₺ ${(gameState.net_worth || 0).toLocaleString("tr-TR")}</span>
+            </div>
+            <p class="card-desc">Vefat ettiğinde tüm mal varlığının, aile şirketinin ve nakdinin kime devredileceğini seç:</p>
+        </div>
         <div style="display:flex; flex-direction:column; gap:8px;">
             <button type="button" class="btn-choice" onclick="saveWill('all_children')">👶 Tüm Çocuklarıma Eşit Olarak Paylaştır</button>
-            <button type="button" class="btn-choice" onclick="saveWill('spouse')">💍 Yalnızca Eşime Bırak</button>
-            <button type="button" class="btn-choice" onclick="saveWill('charity')">🏛️ Hayır Kurumu ve Eğitim Vakfına Bağışla</button>
+            ${spouse ? `<button type="button" class="btn-choice" onclick="saveWill('spouse')">💍 Yalnızca Eşime (${spouse.name}) Bırak</button>` : ""}
+            <button type="button" class="btn-choice" onclick="saveWill('charity')">🏛️ Mehmetçik Vakfı ve Sokak Hayvanları Derneğine Bağışla</button>
+            ${children.length > 0 ? `
+                <div class="person-action-group-title" style="margin-top:6px;">Tek Favori Çocuğunu Mirasçı Seç:</div>
+                ${children.map(c => `
+                    <button type="button" class="btn-choice" style="border-color:var(--accent-blue);" onclick="saveWill('child_${c.id}')">👑 Tüm Mirası Yalnızca ${c.name} Adlı Çocuğuma Bırak</button>
+                `).join("")}
+            ` : ""}
         </div>
     `;
     openDialogModal("genericModal");
@@ -3218,13 +3390,34 @@ function openDeathModal() {
     document.getElementById("tombReason").textContent = gameState.death_reason || "Doğal nedenlerle vefat etti.";
     document.getElementById("tombNetWorth").textContent = `Bıraktığı Miras: ₺ ${gameState.net_worth.toLocaleString("tr-TR")}`;
 
+    const children = (gameState.relationships || []).filter(p => p.relation === "Çocuk" && p.is_alive && !p.is_disowned);
+    const childContainer = document.getElementById("deathModalChildrenContainer");
+    if (childContainer) {
+        if (children.length > 0) {
+            childContainer.innerHTML = `
+                <p class="card-desc" style="margin:10px 0 6px;">👑 Nesiller Boyu Hanedanlık: Hangi çocuğunun hayatına geçip mirası devralmak istersin?</p>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    ${children.map(c => `
+                        <button type="button" class="btn-primary" onclick="continueAsChild('${c.id}')">👑 ${c.name} (${c.age} Yaş) Olarak Hayata Devam Et</button>
+                    `).join("")}
+                </div>
+            `;
+        } else {
+            childContainer.innerHTML = `<p class="card-desc" style="margin-top:8px;">Yaşayan bir çocuğun olmadığı için hanedanlık bu kuşakta son buldu.</p>`;
+        }
+    }
+
     openDialogModal("deathModal");
 }
 
-async function continueAsChild() {
+async function continueAsChild(childId = null) {
     sound.playClick();
     try {
-        const res = await fetch("/api/reincarnate", { method: "POST" });
+        const res = await fetch("/api/reincarnate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(childId ? { child_id: childId } : {})
+        });
         const data = await res.json();
         if (data.success) {
             gameState = data.character;
@@ -3456,10 +3649,18 @@ async function selectMilitaryService(serviceType) {
 
 function openExamsModal() {
     sound.playClick();
-    document.getElementById("genericModalTitle").textContent = "📝 ÖSYM Sınav Merkezi: YKS & KPSS";
+    document.getElementById("genericModalTitle").textContent = "📝 Ulusal Sınav Merkezi: LGS, YKS & KPSS";
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">🎒 LGS (Liselere Geçiş Sınavı)</span>
+                <span class="card-badge badge-yellow">Son Puan: ${gameState.lgs_score || "Girmedi"}</span>
+            </div>
+            <p class="card-desc">LGS'den 450+ puanla <b>Fen Lisesi</b>, 410+ ile <b>Köklü Özel Kolej</b> veya 340+ ile <b>Nitelikli Anadolu Lisesi</b> kazan!</p>
+            <button type="button" class="btn-primary" style="margin-top:8px;" onclick="startExamQuiz('lgs')">🎒 LGS Sınavına Gir</button>
+        </div>
         <div class="panel-card">
             <div class="card-title-row">
                 <span class="card-title">🎓 YKS (Yükseköğretim Kurumları Sınavı)</span>
@@ -3485,7 +3686,7 @@ function startExamQuiz(examType) {
     const questions = (marketData && marketData.exam_questions && marketData.exam_questions[examType]) || [];
     if (questions.length < 2) return;
 
-    document.getElementById("genericModalTitle").textContent = examType === "yks" ? "📝 YKS Sınav Kitapçığı" : "🏛️ KPSS Sınav Kitapçığı";
+    document.getElementById("genericModalTitle").textContent = examType === "yks" ? "📝 YKS Sınav Kitapçığı" : (examType === "lgs" ? "🎒 LGS Sınav Kitapçığı" : "🏛️ KPSS Sınav Kitapçığı");
     const body = document.getElementById("genericModalBody");
 
     body.innerHTML = `
@@ -5203,3 +5404,100 @@ function showIntimacyResultModal(res) {
 
 
 
+
+function openLeverageModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🚀 10x Kaldıraçlı Vadeli İşlemler";
+    const body = document.getElementById("genericModalBody");
+
+    const stockKeys = Object.keys(gameState.stocks || {});
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Vadeli işlem borsasında 10 kat kaldıraçla Long (Yükseliş) veya Short (Düşüş) pozisyonu aç (Yüksek kâr / Likidasyon riski!):</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <div>
+                <label style="font-size:12px; color:var(--text-secondary);">İşlem Paritesi:</label>
+                <select id="levSymbol" class="input-theme" style="width:100%; margin-top:4px;">
+                    ${stockKeys.map(s => `<option value="${s}">${s} - ${(gameState.stocks[s]||{}).name}</option>`).join("")}
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px; color:var(--text-secondary);">Teminat Miktarı (₺):</label>
+                <input id="levMargin" type="number" class="input-theme" style="width:100%; margin-top:4px;" value="50000" min="5000" step="5000" />
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                <button type="button" class="btn-primary" style="background:#10b981;" onclick="submitLeverageTrade('long')">🟢 10x LONG (Yükseliş)</button>
+                <button type="button" class="btn-primary" style="background:#ef4444;" onclick="submitLeverageTrade('short')">🔴 10x SHORT (Düşüş)</button>
+            </div>
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openStocksModal()">← Borsaya Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitLeverageTrade(direction) {
+    const sym = document.getElementById("levSymbol").value;
+    const margin = parseInt(document.getElementById("levMargin").value) || 50000;
+    await performActivity("leverage_trade", { symbol: sym, direction: direction, leverage: 10, margin_amount: margin });
+    openStocksModal();
+}
+
+function openInsiderTradingModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🕵️‍♂️ Plazada İçeriden Bilgi (Insider Trading)";
+    const body = document.getElementById("genericModalBody");
+
+    const stockKeys = Object.keys(gameState.stocks || {});
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">100.000 TL bilgi rüşveti vererek holding yöneticilerinden gizli bilanço / birleşme istihbaratı al (%72 başarıyla tavan kilitler, SPK yakalarsa 3 yıl hapis!):</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${stockKeys.slice(0, 6).map(sym => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${sym}</span>
+                        <span class="card-badge badge-yellow">Maliyet: ₺ 100.000</span>
+                    </div>
+                    <button type="button" class="btn-primary" style="margin-top:6px;" onclick="submitInsiderTrading('${sym}')">Kulis Bilgisi Al & Pozisyon Aç 🕵️‍♂️</button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openStocksModal()">← Borsaya Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitInsiderTrading(symbol) {
+    await performActivity("insider_trading", { symbol: symbol });
+    openStocksModal();
+}
+
+function openCryptoStakingModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🪙 Kripto Staking (DeFi Havuzu)";
+    const body = document.getElementById("genericModalBody");
+
+    const cryptos = ["BTC", "ETH", "MEME", "MOONCOIN"];
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Kripto varlıklarını akıllı sözleşmeye kilitleyip yıllık %12 pasif faiz geliri elde et:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            ${cryptos.map(sym => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${sym} Havuzu</span>
+                        <span class="card-badge badge-green">%12 Yıllık Getiri</span>
+                    </div>
+                    <div style="display:flex; gap:6px; margin-top:8px;">
+                        <button type="button" class="btn-choice" style="flex:1;" onclick="submitCryptoStaking('${sym}', 50000)">50B ₺ Kilitle</button>
+                        <button type="button" class="btn-choice" style="flex:1;" onclick="submitCryptoStaking('${sym}', 200000)">200B ₺ Kilitle</button>
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="openStocksModal()">← Borsaya Dön</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function submitCryptoStaking(sym, amount) {
+    await performActivity("stake_crypto", { symbol: sym, amount: amount });
+    openStocksModal();
+}

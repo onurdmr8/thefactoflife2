@@ -26,26 +26,8 @@
                 <span>🧬 BITLIFE TÜRKİYE</span>
             </div>
             <div class="utility-actions">
-                <button type="button" id="btnThemeToggle" class="btn-icon-pill" onclick="cycleTheme()" title="Arayüz Temasını Değiştir">
-                    🎨 Tema
-                </button>
-                <button type="button" class="btn-icon-pill" onclick="openStatsChartModal()" title="Yaşam & Servet Grafikleri">
-                    📊 Grafik
-                </button>
-                <button type="button" class="btn-icon-pill" onclick="openAnnualBudgetModal()" title="Yıllık Finansal Bütçe Karnesi">
-                    📑 Bütçe
-                </button>
-                <button type="button" id="btnSoundToggle" class="btn-icon-pill" onclick="toggleSound()" title="Sesi Aç/Kapat">
-                    🔊
-                </button>
-                <button type="button" class="btn-icon-pill" onclick="openAchievementsModal()">
-                    🏆 <span id="achCountBadge">1/15</span>
-                </button>
-                <button type="button" class="btn-icon-pill" onclick="openGraveyardModal()">
-                    ⚰️ Mezarlık
-                </button>
-                <button type="button" class="btn-icon-pill" onclick="openNewCustomLifeModal()">
-                    ✨ Yeni
+                <button type="button" class="btn-icon-pill" onclick="openSettingsMenuModal()" title="Ayarlar ve Seçenekler">
+                    ⚙️ Menü
                 </button>
             </div>
         </div>
@@ -130,55 +112,16 @@
         <!-- Sekme 2: İlişkiler, Flört & Evcil Hayvanlar -->
         <section id="tabRelationships" class="tab-content">
             <div id="relationshipsSummary" class="rel-summary-bar"></div>
-            <div class="romance-hub-banner">
-                <div class="romance-hub-header">
-                    <span class="romance-hub-title">💘 Aşk, Tanışma & Sosyal Merkez</span>
-                    <span style="font-size:11px; color:#f9a8d4; font-weight:700;">İlişki Yönetimi</span>
-                </div>
-                <div class="romance-hub-grid">
-                    <button type="button" class="btn-romance-action" onclick="openKismetAppModal()">
-                        <span>📱</span> <span>KısmetApp (Flört)</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openDramaIntrigueModal()">
-                        <span>📺</span> <span>Kısmet Evi TV & Ofis Aşkı</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openInstaStoryModal()">
-                        <span>🔥</span> <span>InstaStory Paylaş</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openFamilyTreeModal()">
-                        <span>🌳</span> <span>Aile Soyağacı</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openHookupModal()">
-                        <span>🍸</span> <span>Gece Hayatı & Kaçamak</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openDateSimPickerModal()">
-                        <span>🌹</span> <span>Date Simülatörü</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openIntimacyPickerModal()">
-                        <span>🔥</span> <span>Yatak Odası & Birlikte Ol</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openWardrobeModal()">
-                        <span>👔</span> <span>Gardırop & Tarz</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openMeetPlacesModal()">
-                        <span>🥂</span> <span>Sosyal & Görücü Usulü</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="performActivity('group_party')">
-                        <span>🍻</span> <span>Ev Partisi & Mangal</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="openFameModal()">
-                        <span>🌟</span> <span>VIP Ünlüler & Magazin</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="performActivity('make_friend')">
-                        <span>🤝</span> <span>Yeni Arkadaş Edin</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="triggerFamilyDinnerQuick()">
-                        <span>🍲</span> <span>Aile Yemeği (2.000₺)</span>
-                    </button>
-                    <button type="button" class="btn-romance-action" onclick="performActivity('adopt_child')">
-                        <span>👶</span> <span>Çocuk Evlat Edin</span>
-                    </button>
-                </div>
+            <div class="rel-quick-bar">
+                <button type="button" class="btn-rel-quick" onclick="openKismetAppModal()">
+                    <span>💘</span> <span>KısmetApp</span>
+                </button>
+                <button type="button" class="btn-rel-quick" onclick="performActivity('make_friend')">
+                    <span>🤝</span> <span>Yeni Arkadaş</span>
+                </button>
+                <button type="button" class="btn-rel-quick" onclick="openFamilyTreeModal()">
+                    <span>🌳</span> <span>Soyağacı</span>
+                </button>
             </div>
             <div id="relationshipsList"></div>
         </section>
@@ -190,161 +133,350 @@
 
         <!-- Sekme 4: Aktiviteler -->
         <section id="tabActivities" class="tab-content">
-            <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 10px;">⚡ Hayat Aktiviteleri & Mekanlar</h3>
-            
-            <div class="activity-grid">
-                <button type="button" class="activity-btn" onclick="openKismetAppModal()">
-                    <span>💘</span>
-                    <div>KısmetApp</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openDramaIntrigueModal()">
-                    <span>📺</span>
-                    <div>Kısmet Evi TV</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openBandModal()">
-                    <span>🎸</span>
-                    <div>Müzik Grubu</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openHookupModal()">
-                    <span>🍸</span>
-                    <div>Gece Kaçamağı</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openProSportsModal()">
-                    <span>⚽</span>
-                    <div>Spor Kariyeri</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openBankOffshoreModal()">
-                    <span>🏦</span>
-                    <div>Banka & Offshore</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openStatsChartModal()">
-                    <span>📊</span>
-                    <div>Yaşam Grafiği</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openInstaStoryModal()">
-                    <span>🔥</span>
-                    <div>Story Paylaş</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openFamilyTreeModal()">
-                    <span>🌳</span>
-                    <div>Soyağacı</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openWardrobeModal()">
-                    <span>👔</span>
-                    <div>Gardırop & Tarz</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openExamsModal()">
-                    <span>📝</span>
-                    <div>YKS & KPSS</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openMilitaryModal()">
-                    <span>🪖</span>
-                    <div>Askerlik Şubesi</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openMeetPlacesModal()">
-                    <span>🥂</span>
-                    <div>Tanışma Mekanı</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openFameModal()">
-                    <span>🌟</span>
-                    <div>Şöhret & Magazin</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openPoliticsModal()">
-                    <span>🏛️</span>
-                    <div>Siyaset & Seçim</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openAuctionModal()">
-                    <span>🖼️</span>
-                    <div>Sanat Müzayedesi</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('group_party')">
-                    <span>🍻</span>
-                    <div>Ev Partisi Ver</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('doctor_checkup')">
-                    <span>🩺</span>
-                    <div>Doktora Git</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('gym_workout')">
-                    <span>🏋️</span>
-                    <div>Spor Salonu</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('meditation')">
-                    <span>🧘</span>
-                    <div>Meditasyon</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openWellnessModal('psychologist')">
-                    <span>🧠</span>
-                    <div>Klinik Psikolog</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openWellnessModal('library')">
-                    <span>📚</span>
-                    <div>Kütüphane & Kitap</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openWellnessModal('surgery')">
-                    <span>🏥</span>
-                    <div>Uzman Cerrahi</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openPlasticSurgeryModal()">
-                    <span>💉</span>
-                    <div>Estetik Cerrahi</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openSkillsModal()">
-                    <span>🎯</span>
-                    <div>Kurs & Beceri</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('take_driving_license')">
-                    <span>🚗</span>
-                    <div>Ehliyet Al</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openBlackjackModal()">
-                    <span>🃏</span>
-                    <div>Blackjack (21)</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="performActivity('scratch_card')">
-                    <span>🎟️</span>
-                    <div>Kazı Kazan</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openStocksModal()">
-                    <span>📈</span>
-                    <div>Borsa & Kripto</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openBusinessModal()">
-                    <span>🏢</span>
-                    <div>Şirket Kur</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openRealEstateModal()">
-                    <span>🏠</span>
-                    <div>Emlakçı</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openVehiclesModal()">
-                    <span>🏎️</span>
-                    <div>Oto Galeri</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openPetsModal()">
-                    <span>🐾</span>
-                    <div>Hayvan Sahiplen</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openCrimeModal()">
-                    <span>🦹</span>
-                    <div>Suç & Firar</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openSocialMediaModal()">
-                    <span>📱</span>
-                    <div>Sosyal Medya</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openVacationModal()">
-                    <span>✈️</span>
-                    <div>Tatile Çık</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openWillModal()">
-                    <span>📜</span>
-                    <div>Vasiyetname</div>
-                </button>
-                <button type="button" class="activity-btn" onclick="openNewCustomLifeModal()">
-                    <span>✨</span>
-                    <div>Yeni Hayat</div>
-                </button>
+            <!-- 1. Aşk & Sosyal -->
+            <div class="activity-section">
+                <div class="activity-section-title">💕 Aşk & Sosyal Hayat</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="openKismetAppModal()">
+                        <span class="activity-icon">💘</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">KısmetApp (Flört)</div>
+                            <div class="activity-sub">Çevrimiçi flört ve yeni insanlarla eşleşme</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openDramaIntrigueModal()">
+                        <span class="activity-icon">📺</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Kısmet Evi TV</div>
+                            <div class="activity-sub">Yarışma programı, ofis entrikaları ve kaos</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openHookupModal()">
+                        <span class="activity-icon">🍸</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Gece Kaçamağı</div>
+                            <div class="activity-sub">Gece kulüpleri ve tek gecelik kaçamaklar</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openMeetPlacesModal()">
+                        <span class="activity-icon">🥂</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Tanışma Mekanları</div>
+                            <div class="activity-sub">Kafeler, partiler ve görücü usulü tanışma</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="performActivity('group_party')">
+                        <span class="activity-icon">🍻</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Ev Partisi Ver</div>
+                            <div class="activity-sub">Tüm arkadaş ve tanıdıklarınla mangal partisi</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openFamilyTreeModal()">
+                        <span class="activity-icon">🌳</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Aile Soyağacı</div>
+                            <div class="activity-sub">Sülale haritanı ve tüm akrabalarını incele</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openPetsModal()">
+                        <span class="activity-icon">🐾</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Evcil Hayvan Barınağı</div>
+                            <div class="activity-sub">Kedi, köpek veya egzotik hayvan sahiplen</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Kariyer & Eğitim -->
+            <div class="activity-section">
+                <div class="activity-section-title">💼 Kariyer, Eğitim & Disiplin</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="openExamsModal()">
+                        <span class="activity-icon">📝</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">YKS & KPSS Sınavları</div>
+                            <div class="activity-sub">Üniversite ve memurluk sınavlarına hazırlan</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openSkillsModal()">
+                        <span class="activity-icon">🎯</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Kurs & Beceriler</div>
+                            <div class="activity-sub">Yabancı dil, kodlama, dövüş sanatı, enstrüman</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="performActivity('take_driving_license')">
+                        <span class="activity-icon">🚗</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Ehliyet Sınavı</div>
+                            <div class="activity-sub">Sürücü kursuna yazıl ve ehliyet al</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openMilitaryModal()">
+                        <span class="activity-icon">🪖</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Askerlik Şubesi</div>
+                            <div class="activity-sub">Bedelli askerlik veya zorunlu vatani görev</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openProSportsModal()">
+                        <span class="activity-icon">⚽</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Profesyonel Sporcu</div>
+                            <div class="activity-sub">Süper Lig futbolcusu veya basketbolcu ol</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openBandModal()">
+                        <span class="activity-icon">🎸</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Müzik Grubu</div>
+                            <div class="activity-sub">Rock grubu kur, albüm çıkar ve turnede çal</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openPoliticsModal()">
+                        <span class="activity-icon">🏛️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Siyaset & Seçimler</div>
+                            <div class="activity-sub">Muhtarlık, belediye başkanlığı ve milletvekilliği</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Finans & Mülkler -->
+            <div class="activity-section">
+                <div class="activity-section-title">💰 Finans, Yatırım & Varlıklar</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="openBusinessModal()">
+                        <span class="activity-icon">🏢</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Şirket Kur & Yönet</div>
+                            <div class="activity-sub">Girişimcilik, AR-GE ve borsa halka arzı (IPO)</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openStocksModal()">
+                        <span class="activity-icon">📈</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">BIST 100 & Kripto Borsa</div>
+                            <div class="activity-sub">Hisse, temettü, kaldıraçlı long/short ve staking</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openRealEstateModal()">
+                        <span class="activity-icon">🏠</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Emlak & Gayrimenkul</div>
+                            <div class="activity-sub">Daire, lüks villa satın al ve kiraya ver</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openVehiclesModal()">
+                        <span class="activity-icon">🏎️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Oto Galeri & Vasıtalar</div>
+                            <div class="activity-sub">Otomobil, süper spor, yat ve helikopter</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openBankOffshoreModal()">
+                        <span class="activity-icon">🏦</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Banka & Offshore Hesap</div>
+                            <div class="activity-sub">Kredi çek, İsviçre hesaplarında vergi optimizasyonu</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openAuctionModal()">
+                        <span class="activity-icon">🖼️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Sanat Müzayedesi</div>
+                            <div class="activity-sub">Paha biçilemez tablolar ve nadir antikalar</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openWillModal()">
+                        <span class="activity-icon">📜</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Noter & Vasiyetname</div>
+                            <div class="activity-sub">Mirasını ve varis çocuğunu resmileştir</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. Sağlık & Zihin -->
+            <div class="activity-section">
+                <div class="activity-section-title">🩺 Sağlık, Zihin & Bakım</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="performActivity('doctor_checkup')">
+                        <span class="activity-icon">🩺</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Doktora Git</div>
+                            <div class="activity-sub">Genel muayene, tedavi ve sağlık tahlilleri</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openWellnessModal('psychologist')">
+                        <span class="activity-icon">🧠</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Klinik Psikolog</div>
+                            <div class="activity-sub">Ruh sağlığı seansı ve depresyon tedavisi</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="performActivity('gym_workout')">
+                        <span class="activity-icon">🏋️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Spor Salonu</div>
+                            <div class="activity-sub">Ağırlık çalış, formunu ve çekiciliğini artır</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="performActivity('meditation')">
+                        <span class="activity-icon">🧘</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Meditasyon & Zihin</div>
+                            <div class="activity-sub">Stresi sıfırla ve iç huzura kavuş</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openWellnessModal('library')">
+                        <span class="activity-icon">📚</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Halk Kütüphanesi</div>
+                            <div class="activity-sub">Kitap oku, kültür ve zekanı geliştir</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openPlasticSurgeryModal()">
+                        <span class="activity-icon">💉</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Estetik Cerrahi</div>
+                            <div class="activity-sub">Burun estetiği, saç ekimi, botoks</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openWellnessModal('surgery')">
+                        <span class="activity-icon">🏥</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Uzman Cerrahi</div>
+                            <div class="activity-sub">Büyük ameliyatlar ve kritik operasyonlar</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 5. Şans, Yeraltı & Suç -->
+            <div class="activity-section">
+                <div class="activity-section-title">🦹 Şans, Yeraltı & Suç</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="openCrimeModal()">
+                        <span class="activity-icon">🦹</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Suç & Mafya Sendikası</div>
+                            <div class="activity-sub">Hırsızlık, haraç, yeraltı operasyonları ve firar</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openBlackjackModal()">
+                        <span class="activity-icon">🃏</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Blackjack (21 Masası)</div>
+                            <div class="activity-sub">Kumarhanede krupiyeye karşı kart çek</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="performActivity('scratch_card')">
+                        <span class="activity-icon">🎟️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Milli Piyango / Kazı Kazan</div>
+                            <div class="activity-sub">25₺ ile anında ikramiye şansı</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 6. Yaşam Tarzı & Şöhret -->
+            <div class="activity-section">
+                <div class="activity-section-title">✨ Yaşam Tarzı & Şöhret</div>
+                <div class="activity-list">
+                    <button type="button" class="activity-row" onclick="openSocialMediaModal()">
+                        <span class="activity-icon">📱</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Sosyal Medya & İçerik</div>
+                            <div class="activity-sub">Instagram, TikTok, YouTube ile kitle büyüt</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openInstaStoryModal()">
+                        <span class="activity-icon">🔥</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">InstaStory Paylaş</div>
+                            <div class="activity-sub">Takipçilerinle anlık fotoğraf ve hikaye paylaş</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openFameModal()">
+                        <span class="activity-icon">🌟</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Şöhret & Magazin Kulisi</div>
+                            <div class="activity-sub">VIP galalar, sponsorluklar ve röportajlar</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openWardrobeModal()">
+                        <span class="activity-icon">👔</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Gardırop & İmaj</div>
+                            <div class="activity-sub">Giyim tarzını ve kombinlerini değiştir</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openVacationModal()">
+                        <span class="activity-icon">✈️</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Tatile Çık</div>
+                            <div class="activity-sub">Antalya, Bodrum veya yurt dışı seyahatleri</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openStatsChartModal()">
+                        <span class="activity-icon">📊</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Yaşam Çizelgesi</div>
+                            <div class="activity-sub">Yıllara göre servet ve istatistik grafiği</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                    <button type="button" class="activity-row" onclick="openNewCustomLifeModal()">
+                        <span class="activity-icon">✨</span>
+                        <div class="activity-meta">
+                            <div class="activity-title">Yeni Hayata Başla</div>
+                            <div class="activity-sub">Sıfırdan yepyeni bir karakter oluştur</div>
+                        </div>
+                        <span class="activity-arrow">›</span>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -390,6 +522,39 @@
     </nav>
 
     <!-- ==================== NATIVE <dialog> MODALLAR ==================== -->
+
+    <!-- 0. Ayarlar ve Seçenekler Menüsü Modalı (closedby="any") -->
+    <dialog id="settingsMenuModal" class="app-dialog" closedby="any" aria-labelledby="settingsMenuTitle">
+        <div class="modal-header">
+            <h3 id="settingsMenuTitle">⚙️ Oyun & Seçenekler</h3>
+            <button type="button" class="btn-close-modal" aria-label="Kapat" onclick="closeModal('settingsMenuModal')">✕</button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 9px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button type="button" id="btnThemeToggle" class="btn-choice" onclick="cycleTheme()" style="text-align: center; margin: 0;">
+                    🎨 Tema Değiştir
+                </button>
+                <button type="button" id="btnSoundToggle" class="btn-choice" onclick="toggleSound()" style="text-align: center; margin: 0;">
+                    🔊 Ses: Açık
+                </button>
+            </div>
+            <button type="button" class="btn-choice" onclick="closeModal('settingsMenuModal'); openStatsChartModal();">
+                📊 Yaşam & Servet Çizelgesi
+            </button>
+            <button type="button" class="btn-choice" onclick="closeModal('settingsMenuModal'); openAnnualBudgetModal();">
+                📑 Yıllık Finansal Bütçe Karnesi
+            </button>
+            <button type="button" class="btn-choice" onclick="closeModal('settingsMenuModal'); openAchievementsModal();">
+                🏆 Başarımlar (<span id="achCountBadge">0/15</span>)
+            </button>
+            <button type="button" class="btn-choice" onclick="closeModal('settingsMenuModal'); openGraveyardModal();">
+                ⚰️ Mezarlık & Eski Hayatlar
+            </button>
+            <button type="button" class="btn-primary" style="margin-top: 6px;" onclick="closeModal('settingsMenuModal'); openNewCustomLifeModal();">
+                ✨ Sıfırdan Yeni Hayat Yarat
+            </button>
+        </div>
+    </dialog>
 
     <!-- 1. Zorunlu Olay / İkilem Karar Modalı (closedby="none") -->
     <dialog id="eventModal" class="app-dialog" closedby="none" aria-labelledby="eventTitle">
@@ -444,6 +609,7 @@
                 <p id="tombReason" class="tombstone-reason">Huzur içinde vefat etti.</p>
             </div>
             <p id="tombNetWorth" style="text-align: center; font-weight: 800; color: var(--accent-green); margin-bottom: 10px;">Miras: ₺ 0</p>
+            <div id="deathModalChildrenContainer" style="margin-bottom: 10px;"></div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn-primary" onclick="continueAsChild()">👑 Çocuğun Olarak Devam Et (Miras Devri)</button>

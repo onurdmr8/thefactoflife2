@@ -46,6 +46,10 @@ class Person(BaseModel):
     chat_history: List[Dict[str, str]] = Field(default_factory=list)
     intimacy_count: int = 0             # Karakterle bu kişi arasındaki toplam birliktelik sayısı
     intimacy_chemistry: int = 50        # Ten uyumu ve tecrübe seviyesi (50-100)
+    child_grades: int = 80              # Çocuklar için okul not ortalaması
+    child_talent: str = ""              # Çocuğun özel yeteneği (Piyano, Futbol, Kodlama vb.)
+    child_rebellion: int = 15           # Çocuğun isyan / ergenlik seviyesi (0-100)
+    is_disowned: bool = False           # Evlatlıktan reddedildi mi?
 
 class DatingCandidate(BaseModel):
     id: str
@@ -88,6 +92,7 @@ class Job(BaseModel):
     stress: int = 30
     experience_years: int = 0
     level: int = 1
+    rank_title: str = ""  # Gerçek kurumsal/kamu basamak unvanı
 
 class Business(BaseModel):
     id: str
@@ -232,6 +237,14 @@ class Character(BaseModel):
     prison_sentence: int = 0
     military_status: str = "Muaf/Yaş Gelmedi"
     
+    # Yeraltı Dünyası, Mafya & Suç İmparatorluğu
+    syndicate_id: Optional[str] = None
+    syndicate_name: Optional[str] = None
+    syndicate_rank: Optional[str] = None
+    syndicate_notoriety: int = 0         # 0 - 100 Korku / Yeraltı Saygınlığı
+    syndicate_racket_annual: int = 0     # Yıllık mekan haracı geliri
+    crypto_staked: Dict[str, float] = Field(default_factory=dict)
+    
     # Education & Occupation
     education_level: str = "Yok"
     current_school: Optional[str] = None
@@ -239,6 +252,18 @@ class Character(BaseModel):
     school_performance: int = 75
     school_club: Optional[str] = None
     has_drivers_license: bool = False
+    high_school_type: Optional[str] = None
+    lgs_score: int = 0
+    gpa: float = 3.2
+    is_erasmus_active: bool = False
+    erasmus_country: str = ""
+    double_major: Optional[str] = None
+    school_president: bool = False
+    annual_leave_days: int = 14
+    moonlighting_job: Optional[str] = None
+    moonlighting_income: int = 0
+    has_headhunter_offer: bool = False
+    kpi_bonus_last_year: int = 0
     
     current_job: Optional[Job] = None
     part_time_job: Optional[Job] = None

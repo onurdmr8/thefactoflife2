@@ -659,11 +659,18 @@ VEHICLE_MARKET = [
 ]
 
 INITIAL_STOCKS = [
-    {"symbol": "BISTECH", "name": "Bistech Yazılım & Teknoloji", "initial_price": 145.50, "volatility": 0.20},
-    {"symbol": "PETRO", "name": "Marmara Enerji & Rafineri", "initial_price": 88.20, "volatility": 0.10},
-    {"symbol": "HAVACILIK", "name": "Türk Gökleri Havayolları", "initial_price": 260.00, "volatility": 0.14},
-    {"symbol": "MOONCOIN", "name": "Moon Kripto Token", "initial_price": 12.40, "volatility": 0.48},
-    {"symbol": "ALTIN", "name": "Gram Altın Yatırım Fonu", "initial_price": 2850.00, "volatility": 0.07}
+    {"symbol": "BISTECH", "name": "Bistech Yazılım & Teknoloji", "initial_price": 145.50, "volatility": 0.20, "dividend": 0.02, "desc": "Yerli yazılım ve savunma teknolojileri şirketi."},
+    {"symbol": "PETRO", "name": "Marmara Enerji & Rafineri", "initial_price": 88.20, "volatility": 0.10, "dividend": 0.05, "desc": "Yüksek nakit temettü dağıtan enerji ve rafineri devi."},
+    {"symbol": "HAVACILIK", "name": "Türk Gökleri Havayolları", "initial_price": 260.00, "volatility": 0.14, "dividend": 0.03, "desc": "Küresel uçuş ağına sahip bayrak taşıyıcı havayolu."},
+    {"symbol": "THYAO", "name": "THYAO - Türk Hava Yolları", "initial_price": 315.00, "volatility": 0.12, "dividend": 0.04, "desc": "BIST 30 lideri, küresel kargo ve yolcu taşımacılığı devi."},
+    {"symbol": "TUPRS", "name": "TUPRS - Tüpraş Rafinerileri", "initial_price": 178.50, "volatility": 0.10, "dividend": 0.06, "desc": "Türkiye'nin en büyük sanayi kuruluşu, yüksek temettü güvencesi."},
+    {"symbol": "ASELS", "name": "ASELS - Aselsan Savunma Sanayii", "initial_price": 64.20, "volatility": 0.15, "dividend": 0.03, "desc": "Milli savunma elektroniği ve radar sistemleri ihracat şampiyonu."},
+    {"symbol": "SASA", "name": "SASA - Sasa Polyester Sanayi", "initial_price": 42.80, "volatility": 0.24, "dividend": 0.01, "desc": "Petrokimya ve polimer devi, yüksek büyüme ve volatilite."},
+    {"symbol": "BTC", "name": "BTC - Bitcoin Dijital Altın", "initial_price": 2850000.00, "volatility": 0.35, "dividend": 0.0, "desc": "Kripto dünyasının amiral gemisi, küresel rezerv dijital varlık."},
+    {"symbol": "ETH", "name": "ETH - Ethereum Smart Contracts", "initial_price": 118000.00, "volatility": 0.38, "dividend": 0.0, "desc": "DeFi ve akıllı sözleşmelerin merkezi kripto platformu."},
+    {"symbol": "MEME", "name": "PEPE/DOGE - Viral Meme Token", "initial_price": 1.25, "volatility": 0.85, "dividend": 0.0, "desc": "Aşırı spekülatif, 10x kazanç veya tek gecede sıfırlanma riski!"},
+    {"symbol": "MOONCOIN", "name": "Moon Kripto Token", "initial_price": 12.40, "volatility": 0.48, "dividend": 0.0, "desc": "Spekülatif altcoin tokeni."},
+    {"symbol": "ALTIN", "name": "GLD - Borsa Gram Altın Fonu", "initial_price": 3080.00, "volatility": 0.06, "dividend": 0.0, "desc": "Enflasyona karşı fiziki altına dayalı güvenli liman fonu."}
 ]
 
 PET_BREEDS = [
@@ -803,6 +810,18 @@ OUTFIT_STYLES = [
 ]
 
 EXAM_QUESTIONS = {
+    "lgs": [
+        {
+            "q": "LGS Mantık & Muhakeme: Bir sınıftaki öğrenciler sıralara ikişerli oturunca 4 öğrenci ayakta kalıyor, üçerli oturunca 2 sıra boş kalıyor. Sınıf mevcudu kaçtır?",
+            "options": ["16 Öğrenci", "20 Öğrenci", "24 Öğrenci"],
+            "correct": 2
+        },
+        {
+            "q": "LGS Fen Bilimleri: DNA replikasyonunda Adenin (A) bazının karşısına hangi nükleotid bağlanır?",
+            "options": ["Timin (T)", "Guanin (G)", "Sitozin (S)"],
+            "correct": 0
+        }
+    ],
     "yks": [
         {
             "q": "YKS Türkçe & Paragraf Sorusu: 'Bir eserin kalıcılığı, yazıldığı çağın ruhunu aşabilmesine bağlıdır.' cümlesinde vurgulanan temel düşünce nedir?",
@@ -2485,5 +2504,327 @@ BOSS_NEGOTIATION_TACTICS = [
         "raise_pct": 40,
         "success_msg": "Patronun panikledi ve ter döktü: 'Sakın rakibe gitmeyi aklından geçirme! Seni kaybetmeyi göze alamayız!' diyerek anında %40 REKOR ZAM ve ŞİRKET ARABASI tahsis etti!",
         "fail_msg": "Patronun soğuk bir ses tonuyla kapıyı işaret etti: 'Kimse bu şirketten büyük değildir! Madem öyle, istifanı hemen masama bırakabilirsin!' (İlişki ve itibar çöktü!)"
+    }
+]
+
+
+# ============================================================================
+# YERALTI DÜNYASI, MAFYA AİLESİ & SUÇ İMPARATORLUĞU (TURKISH UNDERWORLD)
+# ============================================================================
+
+SYNDICATES = [
+    {
+        "id": "istanbul_babalar",
+        "name": "🏛️ İstanbul Yeraltı Masası & Babalar Meclisi",
+        "leader": "Duran Ağa (Büyük Baba)",
+        "territory": "Boğaz Hattı & Gece Hayatı",
+        "desc": "Tarihi yarımadadan Bebek sahiline kadar tüm lüks kulüpleri ve eğlence sektörünü kontrol eden köklü gayrimeşru aile."
+    },
+    {
+        "id": "karadeniz_karteli",
+        "name": "⚓ Karadeniz Liman & Kaçakçılık Karteli",
+        "leader": "Reis İshak Kaptanoğlu",
+        "territory": "Limanlar & Uluslararası Gümrük",
+        "desc": "Konteyner gemileri, lüks araç kaçakçılığı ve sınır ötesi gümrük ağlarını yöneten denizci kartel."
+    },
+    {
+        "id": "baskent_lobisi",
+        "name": "💼 Başkent Gölge Şebekesi & İhale Teşkilatı",
+        "leader": "Müsteşar Namık Bey",
+        "territory": "Bürokrasi & Kamu İhaleleri",
+        "desc": "Devasa kamu ihalelerine fesat karıştıran, lüks otel süitlerinde gizli pazarlıklar yürüten sert teşkilat."
+    }
+]
+
+SYNDICATE_RANKS = [
+    {
+        "id": "cirak",
+        "name": "🧢 Mahalle Delikanlısı / Çırak",
+        "min_notoriety": 0,
+        "bonus_cut": 0.10,
+        "desc": "Ailenin getir götür işlerini yapar, mahalledeki ufak tahsilatlara bakar."
+    },
+    {
+        "id": "tetikci",
+        "name": "🔫 Tetikçi & Operasyon Şefi",
+        "min_notoriety": 30,
+        "bonus_cut": 0.25,
+        "desc": "Sert baskınları yönetir, mekana çöker, ailenin adını sokakta duyurur."
+    },
+    {
+        "id": "kaptan",
+        "name": "👔 Masa Ortağı & Bölge Kaptanı",
+        "min_notoriety": 65,
+        "bonus_cut": 0.50,
+        "desc": "Yeraltı kumarhanelerini işletir, rüşvet çarkını ve lojistik sevkiyatları idare eder."
+    },
+    {
+        "id": "baba",
+        "name": "👑 Yeraltı Babası (Don / Reisi)",
+        "min_notoriety": 90,
+        "bonus_cut": 1.0,
+        "desc": "Tüm masanın mutlak lideri. Kanun onun sözüdür, tüm şehir ona harac öder!"
+    }
+]
+
+SYNDICATE_OPERATIONS = [
+    {
+        "id": "extortion",
+        "name": "💼 Lüks Gece Kulüplerine Çök & Koruma Haracı Kes",
+        "cost": 50000,
+        "loot_min": 250000,
+        "loot_max": 850000,
+        "notoriety_gain": 12,
+        "risk": 0.22,
+        "desc": "Lüks gece kulüpleri ve mekanlara gidip 'buraların güvenliği artık bizden sorulur' diyerek aylık düzenli haraca bağla."
+    },
+    {
+        "id": "underground_casino",
+        "name": "🎰 Yeraltı VIP Kumarhanesi & Poker Masası Kur",
+        "cost": 750000,
+        "loot_min": 1200000,
+        "loot_max": 3800000,
+        "notoriety_gain": 18,
+        "risk": 0.28,
+        "desc": "Villanın bodrumunda gizli rulet ve yüksek limitli VIP poker masası kur. Şehrin zenginleri oluk oluk para akıtsın."
+    },
+    {
+        "id": "luxury_smuggling",
+        "name": "📦 Uluslararası Lüks Otomobil & Konteyner Kaçakçılığı",
+        "cost": 1500000,
+        "loot_min": 3500000,
+        "loot_max": 9500000,
+        "notoriety_gain": 24,
+        "risk": 0.35,
+        "desc": "Avrupa'dan getirilen sıfır kilometre Ferrari ve Porsche'leri gümrük mührünü delerek piyasaya sür."
+    },
+    {
+        "id": "bribe_justice",
+        "name": "⚖️ Emniyet & Yargı Masası (Sabıkayı Sildir)",
+        "cost": 650000,
+        "loot_min": 0,
+        "loot_max": 0,
+        "notoriety_gain": 10,
+        "risk": 0.10,
+        "desc": "Yargıdaki ve emniyetteki köstebeklere yüklü rüşvet vererek sabıka kaydını sistemden sildir."
+    },
+    {
+        "id": "mob_summit",
+        "name": "⚔️ Masada Racon Kes & Barış / Savaş İlanı",
+        "cost": 200000,
+        "loot_min": 800000,
+        "loot_max": 2500000,
+        "notoriety_gain": 25,
+        "risk": 0.30,
+        "desc": "Diğer suç örgütlerinin liderleriyle kapalı kapılar ardında zirve yap. Racon keserek bölgeyi ele geçir!"
+    }
+]
+
+# ==============================================================
+# DERİNLEŞTİRİLMİŞ OKUL, LİSE, ÜNİVERSİTE VE KARİYER SİSTEMİ
+# ==============================================================
+
+HIGH_SCHOOL_TYPES = [
+    {
+        "id": "fen",
+        "name": "Fen Lisesi (TÜBİTAK & Bilim Odaklı)",
+        "min_score": 450,
+        "desc": "Türkiye'nin en başarılı öğrencilerinin okuduğu lise. Matematik ve olimpiyat projeleriyle YKS başarısını garantiler.",
+        "smarts_boost_annual": 6,
+        "yks_bonus": 45,
+        "tuition": 0
+    },
+    {
+        "id": "kolej",
+        "name": "Köklü Yabancı Özel Kolej (Robert & Galatasaray Havasında)",
+        "min_score": 420,
+        "desc": "Elit ailelerin çocuklarının okuduğu lise. Akıcı yabancı dil, üst düzey vizyon ve çok güçlü bir iş çevresi (network) kazandırır.",
+        "smarts_boost_annual": 4,
+        "charisma_boost_annual": 6,
+        "tuition": 180000
+    },
+    {
+        "id": "anadolu",
+        "name": "Nitelikli Anadolu Lisesi",
+        "min_score": 340,
+        "desc": "Köklü devlet anadolu lisesi. Sosyal aktiviteler ve dengeli üniversite hazırlığı sunar.",
+        "smarts_boost_annual": 3,
+        "yks_bonus": 20,
+        "tuition": 0
+    },
+    {
+        "id": "meslek",
+        "name": "Mesleki ve Teknik Anadolu Lisesi (Bilişim & Elektrik)",
+        "min_score": 200,
+        "desc": "Atölye ve sanayi stajlarıyla erken yaşta altın bilezik kazandırır. Kendi dükkanını açma ve teknisyenlik kapılarını aralar.",
+        "smarts_boost_annual": 2,
+        "tuition": 0
+    },
+    {
+        "id": "imam_hatip",
+        "name": "Anadolu İmam Hatip Lisesi",
+        "min_score": 240,
+        "desc": "Hitabet, münazara ve manevi ahlak eğitimiyle öne çıkan lise.",
+        "smarts_boost_annual": 2,
+        "karma_boost_annual": 8,
+        "tuition": 0
+    }
+]
+
+CAREER_LADDERS = {
+    "Teknoloji": [
+        {"level": 1, "title": "Stajyer Yazılımcı (Intern Dev)", "min_exp": 0, "base_salary": 520000},
+        {"level": 2, "title": "Junior Software Developer", "min_exp": 1, "base_salary": 950000},
+        {"level": 3, "title": "Mid-Level Software Engineer", "min_exp": 3, "base_salary": 1550000},
+        {"level": 4, "title": "Senior Software Architect", "min_exp": 6, "base_salary": 2400000},
+        {"level": 5, "title": "Tech Lead / Takım Lideri", "min_exp": 9, "base_salary": 3500000},
+        {"level": 6, "title": "Chief Technology Officer (CTO)", "min_exp": 13, "base_salary": 5500000}
+    ],
+    "Kurumsal": [
+        {"level": 1, "title": "Operasyon Asistanı", "min_exp": 0, "base_salary": 450000},
+        {"level": 2, "title": "Uzman Yardımcısı", "min_exp": 1, "base_salary": 750000},
+        {"level": 3, "title": "Kıdemli Kurumsal Uzman", "min_exp": 4, "base_salary": 1300000},
+        {"level": 4, "title": "Birim & Proje Müdürü", "min_exp": 7, "base_salary": 2100000},
+        {"level": 5, "title": "Departman Grup Direktörü", "min_exp": 10, "base_salary": 3300000},
+        {"level": 6, "title": "Genel Müdür Yardımcısı / CFO", "min_exp": 14, "base_salary": 5200000}
+    ],
+    "Tıp": [
+        {"level": 1, "title": "İntörn Doktor", "min_exp": 0, "base_salary": 650000},
+        {"level": 2, "title": "Pratisyen Hekim", "min_exp": 1, "base_salary": 1200000},
+        {"level": 3, "title": "Uzman Tabip", "min_exp": 4, "base_salary": 2100000},
+        {"level": 4, "title": "Doçent Doktor", "min_exp": 8, "base_salary": 3100000},
+        {"level": 5, "title": "Profesör Doktor", "min_exp": 12, "base_salary": 4500000},
+        {"level": 6, "title": "Hastane Başhekimi / Cerrahi Direktörü", "min_exp": 16, "base_salary": 6800000}
+    ],
+    "Hukuk": [
+        {"level": 1, "title": "Stajyer Avukat", "min_exp": 0, "base_salary": 400000},
+        {"level": 2, "title": "İcra & Dava Avukatı", "min_exp": 1, "base_salary": 920000},
+        {"level": 3, "title": "Kıdemli Ceza / Ticaret Avukatı", "min_exp": 4, "base_salary": 1750000},
+        {"level": 4, "title": "Hukuk Müşaviri & Arabulucu", "min_exp": 8, "base_salary": 2700000},
+        {"level": 5, "title": "Hukuk Bürosu Yönetici Ortağı (Senior Partner)", "min_exp": 12, "base_salary": 4600000}
+    ],
+    "Kamu": [
+        {"level": 1, "title": "Aday Devlet Memuru", "min_exp": 0, "base_salary": 580000},
+        {"level": 2, "title": "Kadrolu Memur (657)", "min_exp": 1, "base_salary": 780000},
+        {"level": 3, "title": "Servis Şefi", "min_exp": 4, "base_salary": 1200000},
+        {"level": 4, "title": "Şube Müdürü", "min_exp": 8, "base_salary": 1800000},
+        {"level": 5, "title": "Bakanlık Daire Başkanı / Kaymakam", "min_exp": 12, "base_salary": 2900000},
+        {"level": 6, "title": "Genel Müdür / Vali", "min_exp": 16, "base_salary": 4400000}
+    ],
+    "Hizmet": [
+        {"level": 1, "title": "Komi / Çırak", "min_exp": 0, "base_salary": 320000},
+        {"level": 2, "title": "Kıdemli Garson / Kasiyer", "min_exp": 1, "base_salary": 480000},
+        {"level": 3, "title": "Kaptan Garson / Vardiya Amiri", "min_exp": 3, "base_salary": 720000},
+        {"level": 4, "title": "Restoran Şefi (Head Waiter)", "min_exp": 6, "base_salary": 1100000},
+        {"level": 5, "title": "İşletme Genel Müdürü", "min_exp": 10, "base_salary": 1900000}
+    ]
+}
+
+ERASMUS_DESTINATIONS = [
+    {
+        "id": "germany",
+        "country": "Almanya (Münih Teknik Üniversitesi)",
+        "city": "Münih",
+        "cost": 65000,
+        "grant": 45000,
+        "smarts_req": 70,
+        "desc": "Almanya'da disiplinli mühendislik ve endüstri eğitimi. Kariyerine büyük prestij katar."
+    },
+    {
+        "id": "italy",
+        "country": "İtalya (Bologna Üniversitesi)",
+        "city": "Bologna",
+        "cost": 55000,
+        "grant": 45000,
+        "smarts_req": 65,
+        "desc": "Avrupa'nın en eski üniversitesinde sanat, gastronomi ve Akdeniz yaşam tarzı."
+    },
+    {
+        "id": "spain",
+        "country": "İspanya (Barselona Üniversitesi)",
+        "city": "Barselona",
+        "cost": 50000,
+        "grant": 45000,
+        "smarts_req": 60,
+        "desc": "Sıcak kanlı Akdeniz kültürü, eğlenceli öğrenci festivalleri ve unutulmaz anılar."
+    },
+    {
+        "id": "netherlands",
+        "country": "Hollanda (Amsterdam Üniversitesi)",
+        "city": "Amsterdam",
+        "cost": 75000,
+        "grant": 45000,
+        "smarts_req": 75,
+        "desc": "Özgürlükler şehri Amsterdam'da bisikletli kampüs hayatı ve ileri düzey İngilizce."
+    }
+]
+
+HEADHUNTER_OFFERS = [
+    {
+        "id": "dubai_fund",
+        "company": "Körfez Uluslararası Yatırım Fonu (Dubai / Londra)",
+        "role_boost": "Kıdemli Danışman & Strateji Direktörü",
+        "salary_mult": 1.75,
+        "signing_bonus": 500000,
+        "desc": "Global portföy yönetimi ve vergisiz devasa maaş imkanı."
+    },
+    {
+        "id": "dutch_fintech",
+        "company": "Avrupa Menşeili Lider FinTech Unicorn",
+        "role_boost": "Lead Engineering Manager",
+        "salary_mult": 1.55,
+        "signing_bonus": 350000,
+        "desc": "Amsterdam merkezli hibrit çalışma ve hisse opsiyonu paketi."
+    },
+    {
+        "id": "holding_csuite",
+        "company": "Türkiye'nin En Büyük Özel Holdingi",
+        "role_boost": "Grup Başkan Yardımcısı (EVP)",
+        "salary_mult": 1.45,
+        "signing_bonus": 250000,
+        "desc": "Levent plazalarında şoförlü lüks makam aracı ve özel sağlık sigortası."
+    }
+]
+
+MOONLIGHTING_OPTIONS = [
+    {
+        "id": "tech_consultant",
+        "title": "Akşamları Uzaktan Yazılım & Mimari Danışmanlığı",
+        "annual_income": 360000,
+        "stress_add": 14,
+        "required_category": "Teknoloji",
+        "min_exp": 2
+    },
+    {
+        "id": "corp_advisor",
+        "title": "KOBİ'lere Hafta Sonu Finans & Yönetim Danışmanlığı",
+        "annual_income": 280000,
+        "stress_add": 12,
+        "required_category": "Kurumsal",
+        "min_exp": 2
+    },
+    {
+        "id": "med_expert",
+        "title": "Özel Klinik & Tıbbi Bilirkişi Raporlama",
+        "annual_income": 420000,
+        "stress_add": 16,
+        "required_category": "Tıp",
+        "min_exp": 3
+    },
+    {
+        "id": "law_advisor",
+        "title": "Online Sözleşme İnceleme & Arabuluculuk",
+        "annual_income": 320000,
+        "stress_add": 12,
+        "required_category": "Hukuk",
+        "min_exp": 2
+    },
+    {
+        "id": "general_freelance",
+        "title": "E-Ticaret Danışmanlığı & Çeviri",
+        "annual_income": 200000,
+        "stress_add": 10,
+        "required_category": "Hizmet",
+        "min_exp": 1
     }
 ]
