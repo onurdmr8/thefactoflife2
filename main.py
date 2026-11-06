@@ -48,7 +48,9 @@ from game.data import (
     COMPANY_CRISES, FAME_ARCHETYPES, FAME_MANAGERS, FAME_CRISES,
     SYNDICATES, SYNDICATE_RANKS, SYNDICATE_OPERATIONS,
     HIGH_SCHOOL_TYPES, CAREER_LADDERS, ERASMUS_DESTINATIONS,
-    HEADHUNTER_OFFERS, MOONLIGHTING_OPTIONS
+    HEADHUNTER_OFFERS, MOONLIGHTING_OPTIONS,
+    TRADITIONAL_SHOP_TYPES, PRISON_ROLES, PRISON_CONTRABAND_ITEMS,
+    CHRONIC_CONDITIONS, ALTERNATIVE_MEDICINES, NURSING_HOMES
 )
 from game.activities import (
     do_doctor_checkup, do_plastic_surgery, do_gym_workout, do_meditation,
@@ -74,6 +76,7 @@ from game.activities import (
     do_hookup, do_flirt_opening, do_situationship_talk, do_confess_love, do_hard_launch, do_handle_ex_midnight_text,
     do_friend_to_lover, do_classmate_action, do_coworker_action, do_boss_action,
     do_school_action, do_workplace_action,
+    do_traditional_shop_action, do_prison_deep_action, do_health_aging_action,
     buy_real_estate, buy_vehicle, sell_asset,
     buy_stock, sell_stock, blackjack_action, play_scratch_card,
     commit_crime, prison_escape_attempt, prison_activity,
@@ -398,6 +401,12 @@ def handle_activity(req: ActivityRequest):
         res = do_school_action(current_character, p.get("action_id", "cheat_exam"), p)
     elif act == "workplace_action":
         res = do_workplace_action(current_character, p.get("action_id", "take_annual_leave"), p)
+    elif act == "shop_action":
+        res = do_traditional_shop_action(current_character, p.get("action_id", "train_apprentice"), p)
+    elif act == "prison_deep_action":
+        res = do_prison_deep_action(current_character, p.get("action_id", "yard_walk_allies"), p)
+    elif act == "health_aging_action":
+        res = do_health_aging_action(current_character, p.get("action_id", "alternative_medicine"), p)
     elif act == "interact_person":
         res = interact_with_person(current_character, p.get("person_id", ""), p.get("person_action", "chat"))
     elif act == "set_will":
@@ -549,7 +558,13 @@ def get_market_data():
         "career_ladders": CAREER_LADDERS,
         "erasmus_destinations": ERASMUS_DESTINATIONS,
         "headhunter_offers": HEADHUNTER_OFFERS,
-        "moonlighting_options": MOONLIGHTING_OPTIONS
+        "moonlighting_options": MOONLIGHTING_OPTIONS,
+        "traditional_shop_types": TRADITIONAL_SHOP_TYPES,
+        "prison_roles": PRISON_ROLES,
+        "prison_contraband_items": PRISON_CONTRABAND_ITEMS,
+        "chronic_conditions": CHRONIC_CONDITIONS,
+        "alternative_medicines": ALTERNATIVE_MEDICINES,
+        "nursing_homes": NURSING_HOMES
     }
 
 @app.get("/api/graveyard")

@@ -2828,3 +2828,124 @@ MOONLIGHTING_OPTIONS = [
         "min_exp": 1
     }
 ]
+
+# ==============================================================
+# 2. ESNAF & SANAYİ SİMÜLATÖRÜ VERİLERİ (GELENEKSEL İŞLETMELER)
+# ==============================================================
+
+TRADITIONAL_SHOP_TYPES = [
+    {
+        "id": "donerci",
+        "name": "Meşhur Yaprak Döner & Dürüm Salonu",
+        "sector": "Gıda & Esnaf",
+        "capital_required": 220000,
+        "base_annual_profit": 360000,
+        "desc": "Odun ateşinde yaprak döner ve özel tombik ekmek. Öğle ve akşam saatlerinde kapıda kuyruk olur."
+    },
+    {
+        "id": "cigkofte",
+        "name": "Adıyaman Çiğ Köftecisi (Franchise)",
+        "sector": "Gıda & Esnaf",
+        "capital_required": 130000,
+        "base_annual_profit": 250000,
+        "desc": "Düşük maliyetli, nar ekşili ve gece 02:00'ye kadar aralıksız paket servis cirosu sağlar."
+    },
+    {
+        "id": "sanayi_tamir",
+        "name": "Oto Sanayi Tamir & Egzoz Servisi",
+        "sector": "Sanayi & Esnaf",
+        "capital_required": 390000,
+        "base_annual_profit": 580000,
+        "desc": "Motor rektifiye, fren balatası ve periyodik bakım. Sanayi esnafının vazgeçilmez ustası olursun."
+    },
+    {
+        "id": "tekel_bayi",
+        "name": "Mahalle Tekel & Şarküteri Bayisi",
+        "sector": "Perakende & Esnaf",
+        "capital_required": 340000,
+        "base_annual_profit": 480000,
+        "desc": "Gece saatlerinde yoğun meze ve içecek trafiği. Sadık bir mahalle müşteri kitlesi vardır."
+    },
+    {
+        "id": "kiraathane",
+        "name": "Geleneksel Mahalle Kıraathanesi & Çay Ocağı",
+        "sector": "Hizmet & Esnaf",
+        "capital_required": 95000,
+        "base_annual_profit": 190000,
+        "desc": "Tavla, okey masaları, demli çay ve mahalle dedikodularının kalbi."
+    }
+]
+
+# ==============================================================
+# 3. KOĞUŞ HAYATI & CEZAEVİ HİYERARŞİSİ VERİLERİ
+# ==============================================================
+
+PRISON_ROLES = [
+    {"role": "Çaylak", "min_rep": 0, "desc": "Yeni gelen taze mahkum. Herkesin gözü üstünde."},
+    {"role": "Koğuş Çaycısı / Paspassı", "min_rep": 25, "desc": "Semaveri yakar, çay dağıtır, koğuş düzenini sağlar."},
+    {"role": "Kıdemli Mahkum", "min_rep": 50, "desc": "Ranza köşesini kapmış, sözü dinlenen saygın mahkum."},
+    {"role": "Koğuşun İkinci Adamı", "min_rep": 75, "desc": "Ağanın sağ kolu. Racon keser, cezaları uygular."},
+    {"role": "👑 Koğuş Ağası", "min_rep": 90, "desc": "Koğuşun mutlak hakimi. Çay ve haracı o toplar, raconu o keser!"}
+]
+
+PRISON_CONTRABAND_ITEMS = [
+    {"id": "tea_sugar", "name": "☕ Kaçak Çay & Kesme Şeker Paketi", "cost_cigs": 5, "rep_gain": 8},
+    {"id": "radio_walkman", "name": "📻 Gizli Pilli Radyo / Kasetçalar", "cost_cigs": 15, "rep_gain": 20},
+    {"id": "smart_phone", "name": "📱 Kaçak Akıllı Telefon & Şarj", "cost_cigs": 40, "rep_gain": 35}
+]
+
+# ==============================================================
+# 5. SAĞLIK, YAŞLILIK, ALTERNATİF TIP & BAKIM VERİLERİ
+# ==============================================================
+
+CHRONIC_CONDITIONS = [
+    {"id": "herniated_disc", "name": "Lomber Bel Fıtığı", "stress_impact": 10, "health_penalty": 5, "desc": "Ağır kaldırma ve hareketsizlikten omurgada fıtık oluştu. Bel ağrıları uyutmuyor."},
+    {"id": "reflux", "name": "Kronik Mide Reflüsü", "stress_impact": 8, "health_penalty": 4, "desc": "Baharatlı ve geç saatte yenen yemekler mideyi yakıyor."},
+    {"id": "kidney_stone", "name": "Böbrek Taşı Sancısı", "stress_impact": 15, "health_penalty": 10, "desc": "Sancısı doğum sancısıyla yarışır derecede şiddetli ataklar yapıyor."},
+    {"id": "panic_attack", "name": "Panik Atak & Anksiyete", "stress_impact": 20, "health_penalty": 6, "desc": "Kalp çarpıntısı ve nefes darlığı nöbetleri."},
+    {"id": "migraine", "name": "Şiddetli Migren Nöbetleri", "stress_impact": 12, "health_penalty": 5, "desc": "Işığa ve sese tahammülsüzlük yaratan yarım baş ağrısı."}
+]
+
+ALTERNATIVE_MEDICINES = [
+    {
+        "id": "thermal_spa",
+        "name": "♨️ Afyon / Kızılcahamam Kaplıca Kürü (7 Gün)",
+        "cost": 35000,
+        "health_gain": 25,
+        "stress_reduction": 45,
+        "desc": "Şifalı termal havuzlar, çamur banyoları ve masaj. Fıtık ve romatizma ağrılarını bıçak gibi keser."
+    },
+    {
+        "id": "cupping_leeches",
+        "name": "🪱 Hacamat & Tıbbi Sülük Tedavisi",
+        "cost": 8500,
+        "health_gain": 18,
+        "stress_reduction": 20,
+        "desc": "Geleneksel kupa çekme ve sülüklerle kirli kanı arındırma. Vücuda taze canlılık ve hafiflik kazandırır."
+    },
+    {
+        "id": "lead_pouring",
+        "name": "🧿 Kurşun Döktürme & Nazar Muskası",
+        "cost": 4500,
+        "health_gain": 5,
+        "stress_reduction": 25,
+        "desc": "Mahalledeki ocaklı teyzeye kurşun döktürüp üzerindeki kem gözleri, ağırlığı ve nazarı defet."
+    }
+]
+
+NURSING_HOMES = [
+    {
+        "id": "state_nursing",
+        "name": "Huzurlu Emeklilik Devlet Bakımevi",
+        "cost_annual": 48000,
+        "comfort": 65,
+        "desc": "Devlet destekli, bahçesinde tavla oynanan, dost sohbetli samimi bir huzurevi."
+    },
+    {
+        "id": "luxury_residence",
+        "name": "Bodrum Akdeniz Altın Yaş Lüks Yaşam Rezidansı",
+        "cost_annual": 320000,
+        "comfort": 95,
+        "desc": "Deniz manzaralı süit odalar, 7/24 özel hemşire, organik mutfak ve termal spa imkanları."
+    }
+]

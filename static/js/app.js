@@ -251,7 +251,18 @@ function renderHeader() {
             html += `<span class="status-chip" style="background:rgba(59,130,246,0.22); color:#93c5fd; cursor:pointer;" onclick="openPoliticsModal()">${gameState.political_office} (%${gameState.approval_rating})</span>`;
         }
         if (gameState.is_in_prison) {
-            html += `<span class="status-chip chip-danger">🚨 Cezaevinde (${gameState.prison_years_left} Yıl)</span>`;
+            html += `<span class="status-chip chip-danger" style="cursor:pointer;" onclick="openPrisonModal()" title="Koğuş Hiyerarşisi">🚨 Cezaevinde: ${gameState.prison_role || 'Mahkum'} (${gameState.prison_years_left} Yıl)</span>`;
+        }
+        if (gameState.chronic_conditions && gameState.chronic_conditions.length > 0) {
+            gameState.chronic_conditions.forEach(cond => {
+                html += `<span class="status-chip" style="background:rgba(239,68,68,0.18); color:#fca5a5; cursor:pointer;" onclick="openAlternativeMedicineModal()" title="Alternatif Tıp Tedavisi">⚠️ ${cond}</span>`;
+            });
+        }
+        if (gameState.nursing_home) {
+            html += `<span class="status-chip" style="background:rgba(99,102,241,0.2); color:#c7d2fe; cursor:pointer;" onclick="openElderlyCareModal()" title="Huzurevi">🏡 ${gameState.nursing_home}</span>`;
+        }
+        if (gameState.elderly_caregiver) {
+            html += `<span class="status-chip" style="background:rgba(16,185,129,0.2); color:#a7f3d0; cursor:pointer;" onclick="openElderlyCareModal()" title="Hasta Bakıcı">👩‍⚕️ Yatılı Hasta Bakıcı</span>`;
         }
         if (gameState.illnesses && gameState.illnesses.length > 0) {
             gameState.illnesses.forEach(ill => {
@@ -682,35 +693,62 @@ function renderCareerTab() {
     bizCard.className = "panel-card";
     if (gameState.business) {
         const b = gameState.business;
-        bizCard.innerHTML = `
-            <div class="card-title-row">
-                <span class="card-title">🏢 ${b.name} (${b.sector})</span>
-                <span class="card-badge ${b.is_ipo ? 'badge-green' : 'badge-yellow'}">${b.is_ipo ? '🔔 BIST: Halka Açık' : 'Değer: ₺ ' + b.valuation.toLocaleString("tr-TR")}</span>
-            </div>
-            <div class="person-chip-row" style="margin:6px 0 8px;">
-                <span class="person-chip" style="color:#60a5fa;">📍 Aşama: ${b.stage || 'Tohum (Startup)'}</span>
-                <span class="person-chip" style="color:#6ee7b7;">📈 Kâr: +₺ ${b.annual_profit.toLocaleString("tr-TR")}/yıl</span>
-                <span class="person-chip">📊 Hisse: %${b.shares_owned || 100}</span>
-                <span class="person-chip">🏬 Şube: ${b.branches || 1}</span>
-                <span class="person-chip">👥 Ekip: ${b.employees} Kişi</span>
-                <span class="person-chip">⭐ İtibar: %${b.reputation}</span>
-                ${b.has_manager ? `<span class="person-chip" style="color:#a78bfa;">👔 Profesyonel CEO</span>` : ""}
-            </div>
-            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
-                <button type="button" class="btn-primary" style="flex:2;" onclick="openCompanyDecisionsModal()">🏬 Patron Karar Odası (Büyüme & BIST)</button>
-                <button type="button" class="btn-action-outline" style="flex:1;" onclick="openCompanyCrisisModal()">🚨 Kriz Masası</button>
-                <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('invest_business')">🚀 Hızlı Yatırım</button>
-                <button type="button" class="btn-action-outline" style="flex:1; border-color: var(--accent-green); color: var(--accent-green);" onclick="performActivity('sell_business')">💰 Şirketi Sat (Exit)</button>
-            </div>
-        `;
+        if (b.is_traditional_shop) {
+            bizCard.innerHTML = `
+                <div class="card-title-row">
+                    <span class="card-title">🥙 ${b.name} (${b.sector})</span>
+                    <span class="card-badge badge-green">Değer: ₺ ${b.valuation.toLocaleString("tr-TR")}</span>
+                </div>
+                <div class="person-chip-row" style="margin:6px 0 8px;">
+                    <span class="person-chip" style="color:#6ee7b7;">📈 Yıllık Kâr: +₺ ${b.annual_profit.toLocaleString("tr-TR")}/yıl</span>
+                    <span class="person-chip" style="color:#60a5fa;">👦 Çırak Ustalığı: %${b.apprentice_skill || 15}</span>
+                    <span class="person-chip" style="color:#f59e0b;">🛵 Kurye Motoru: ${b.courier_fleet || 0} Adet</span>
+                    <span class="person-chip">🧼 Zabıta Hijyen: %${b.hygiene_score || 85}</span>
+                    <span class="person-chip" style="color:#ec4899;">🌶️ ${b.secret_recipe ? 'Gizli Reçete Var ✨' : 'Standart Tarif'}</span>
+                </div>
+                <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" class="btn-action-outline" onclick="performShopAction('train_apprentice')">👦 Çırak Eğit (Eti Senin...)</button>
+                    <button type="button" class="btn-action-outline" onclick="performShopAction('develop_secret_recipe')">🌶️ Gizli Sos/Tarif Geliştir</button>
+                    <button type="button" class="btn-action-outline" onclick="performShopAction('inspect_hygiene_zabita')">👮 Zabıta Hijyen Teftişi</button>
+                    <button type="button" class="btn-action-outline" onclick="performShopAction('expand_courier_fleet')">🛵 Kurye Motoru Ekle (65B ₺)</button>
+                    <button type="button" class="btn-action-outline" onclick="performShopAction('negotiate_wholesaler')">📦 Hal / Toptancı Pazarlığı</button>
+                    <button type="button" class="btn-action-outline" style="border-color: var(--accent-red); color: var(--accent-red);" onclick="performActivity('sell_business')">💰 Dükkanı Devret (Exit)</button>
+                </div>
+            `;
+        } else {
+            bizCard.innerHTML = `
+                <div class="card-title-row">
+                    <span class="card-title">🏢 ${b.name} (${b.sector})</span>
+                    <span class="card-badge ${b.is_ipo ? 'badge-green' : 'badge-yellow'}">${b.is_ipo ? '🔔 BIST: Halka Açık' : 'Değer: ₺ ' + b.valuation.toLocaleString("tr-TR")}</span>
+                </div>
+                <div class="person-chip-row" style="margin:6px 0 8px;">
+                    <span class="person-chip" style="color:#60a5fa;">📍 Aşama: ${b.stage || 'Tohum (Startup)'}</span>
+                    <span class="person-chip" style="color:#6ee7b7;">📈 Kâr: +₺ ${b.annual_profit.toLocaleString("tr-TR")}/yıl</span>
+                    <span class="person-chip">📊 Hisse: %${b.shares_owned || 100}</span>
+                    <span class="person-chip">🏬 Şube: ${b.branches || 1}</span>
+                    <span class="person-chip">👥 Ekip: ${b.employees} Kişi</span>
+                    <span class="person-chip">⭐ İtibar: %${b.reputation}</span>
+                    ${b.has_manager ? `<span class="person-chip" style="color:#a78bfa;">👔 Profesyonel CEO</span>` : ""}
+                </div>
+                <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <button type="button" class="btn-primary" style="flex:2;" onclick="openCompanyDecisionsModal()">🏬 Patron Karar Odası (Büyüme & BIST)</button>
+                    <button type="button" class="btn-action-outline" style="flex:1;" onclick="openCompanyCrisisModal()">🚨 Kriz Masası</button>
+                    <button type="button" class="btn-action-outline" style="flex:1" onclick="performActivity('invest_business')">🚀 Hızlı Yatırım</button>
+                    <button type="button" class="btn-action-outline" style="flex:1; border-color: var(--accent-green); color: var(--accent-green);" onclick="performActivity('sell_business')">💰 Şirketi Sat (Exit)</button>
+                </div>
+            `;
+        }
     } else {
         bizCard.innerHTML = `
             <div class="card-title-row">
                 <span class="card-title">🏢 Girişimcilik & Kendi İşin</span>
                 <span class="card-badge badge-purple">Fırsat</span>
             </div>
-            <p class="card-desc">Kendi dükkanını, restoranınızı veya teknoloji şirketinizi kurup patron olabilirsiniz.</p>
-            <button type="button" class="btn-action-outline" style="width:100%; margin-top:8px;" onclick="openBusinessModal()">🏢 Yeni Şirket / Bayi Kur</button>
+            <p class="card-desc">Kendi esnaf dükkanını, sanayi servisini veya teknoloji şirketini kurup patron olabilirsiniz.</p>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+                <button type="button" class="btn-action-outline" style="flex:1;" onclick="openBusinessModal()">🏢 Yeni Şirket Kur</button>
+                <button type="button" class="btn-action-outline" style="flex:1; border-color:#10b981; color:#6ee7b7;" onclick="openTraditionalShopModal()">🥙 Esnaf & Sanayi Aç</button>
+            </div>
         `;
     }
     careerEl.appendChild(bizCard);
@@ -721,11 +759,14 @@ function renderCareerTab() {
     if (gameState.is_in_prison) {
         jobCard.innerHTML = `
             <div class="card-title-row">
-                <span class="card-title">🚨 Cezaevi Hükümlüsü</span>
+                <span class="card-title">🚨 Cezaevi: ${gameState.prison_role || 'Mahkum'}</span>
                 <span class="card-badge badge-red">${gameState.prison_years_left} Yıl Kaldı</span>
             </div>
-            <p class="card-desc">Hapishanedeyken dışarıda çalışamazsın.</p>
-        `;
+            <p class="card-desc">Hapishanedeyken dışarıda çalışamazsın. Koğuş hiyerarşisinde hayatta kalıp infazını bekle.</p>
+            <div style="margin-top: 8px;">
+                <button type="button" class="btn-primary" style="width:100%;" onclick="openPrisonModal()">⛓️ Koğuş Hayatı & Cezaevi Masası</button>
+            </div>
+        `;`
     } else if (gameState.current_job) {
         const j = gameState.current_job;
         const jobTitle = j.rank_title || j.title;
@@ -3065,8 +3106,9 @@ function openCrimeModal() {
         body.innerHTML = `
             <div class="panel-card" style="border-color: var(--accent-red);">
                 <h4>🚨 Cezaevindesin (Kalan: ${gameState.prison_years_left} Yıl)</h4>
-                <p class="card-desc" style="margin: 8px 0;">Özgürlüğüne kavuşmak için bir hamle seç:</p>
+                <p class="card-desc" style="margin: 8px 0;">Özgürlüğüne kavuşmak veya koğuşta racon kesmek için bir hamle seç:</p>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button type="button" class="btn-primary" onclick="openPrisonModal()">⛓️ Koğuş Hayatı, Racon & Sigara Masası</button>
                     <button type="button" class="btn-choice" onclick="doPrisonAction('escape_tunnel')">🏃💨 Havalandırma Tünelinden Firar Dene</button>
                     <button type="button" class="btn-choice" onclick="doPrisonAction('escape_disguise')">🎭 Gardiyan Üniformasıyla Firar Dene</button>
                     <button type="button" class="btn-choice" onclick="doPrisonAction('appeal_lawyer')">⚖️ Ünlü Ceza Avukatı Tut & Temyiz (60.000 TL)</button>
@@ -5500,4 +5542,282 @@ function openCryptoStakingModal() {
 async function submitCryptoStaking(sym, amount) {
     await performActivity("stake_crypto", { symbol: sym, amount: amount });
     openStocksModal();
+}
+
+
+// ==========================================
+// 1. ESNAF & SANAYİ SİMÜLATÖRÜ MODALI
+// ==========================================
+
+function openTraditionalShopModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🥙 Esnaf & Sanayi Dükkanı Aç";
+    const body = document.getElementById("genericModalBody");
+
+    if (gameState.business) {
+        body.innerHTML = `
+            <div class="panel-card" style="border-color:var(--accent-yellow);">
+                <h4>⚠️ Zaten Aktif Bir İşletmen Var</h4>
+                <p class="card-desc" style="margin: 8px 0;">Şu anda '<b>${gameState.business.name}</b>' işletmesini yönetiyorsun. Yeni bir dükkan açabilmek için mevcut işletmeni devretmeli veya satmalısın.</p>
+                <button type="button" class="btn-secondary" style="width:100%; margin-top:8px;" onclick="closeModal('genericModal')">Tamam</button>
+            </div>
+        `;
+        openDialogModal("genericModal");
+        return;
+    }
+
+    const shops = (marketData && marketData.traditional_shop_types) || [];
+    body.innerHTML = `
+        <p class="card-desc" style="margin-bottom:12px;">Kendi yağında kavrulan geleneksel bir Türk esnafı ol! Çırak yetiştir, gizli sosunu geliştir, zabıtayla anlaş ve motor kuryelerle sipariş yağdır:</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            ${shops.map(s => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${s.name}</span>
+                        <span class="card-badge badge-green">Sermaye: ₺ ${s.capital_required.toLocaleString("tr-TR")}</span>
+                    </div>
+                    <p class="card-desc" style="margin:6px 0;">${s.desc}</p>
+                    <div class="person-chip-row" style="margin-bottom:8px;">
+                        <span class="person-chip" style="color:#6ee7b7;">📈 Başlangıç Kârı: +₺ ${s.base_annual_profit.toLocaleString("tr-TR")}/yıl</span>
+                        <span class="person-chip">🏷️ Sektör: ${s.sector}</span>
+                    </div>
+                    <button type="button" class="btn-primary" style="width:100%;" onclick="startTraditionalShop('${s.id}')" ${gameState.money < s.capital_required ? 'disabled style="opacity:0.5;"' : ''}>
+                        ${gameState.money >= s.capital_required ? '🥙 Dükkanı Aç (Siftah Yap)' : 'Yetersiz Para (₺ ' + s.capital_required.toLocaleString("tr-TR") + ' gerekli)'}
+                    </button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="closeModal('genericModal')">Vazgeç</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function startTraditionalShop(shopId) {
+    const res = await performActivity("shop_action", { action_id: "start_shop", shop_id: shopId });
+    if (res && res.success) {
+        closeModal("genericModal");
+    }
+}
+
+async function performShopAction(actionId, params = {}) {
+    await performActivity("shop_action", { action_id: actionId, ...params });
+}
+
+// ==========================================
+// 2. KOĞUŞ HAYATI & CEZAEVİ HİYERARŞİSİ MODALI
+// ==========================================
+
+function openPrisonModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "⛓️ Koğuş Hayatı & Cezaevi Hiyerarşisi";
+    const body = document.getElementById("genericModalBody");
+
+    if (!gameState.is_in_prison) {
+        body.innerHTML = `
+            <div class="panel-card">
+                <h4>🏛️ Şu Anda Özgürsün</h4>
+                <p class="card-desc" style="margin: 8px 0;">Koğuş hiyerarşisi, karaborsa sigara ticareti ve ağalık mücadeleleri yalnızca cezaevinde hükümlüyken aktifleşir.</p>
+                <div style="display:flex; gap:6px; margin-top:10px;">
+                    <button type="button" class="btn-primary" style="flex:1;" onclick="openCrimeModal()">🦹 Suç & Yeraltı Masasına Git</button>
+                    <button type="button" class="btn-secondary" style="flex:1;" onclick="closeModal('genericModal')">Kapat</button>
+                </div>
+            </div>
+        `;
+        openDialogModal("genericModal");
+        return;
+    }
+
+    const role = gameState.prison_role || "Çaylak";
+    const rep = gameState.prison_reputation || 10;
+    const cigs = gameState.prison_contraband_cigarettes || 0;
+    const yearsLeft = gameState.prison_years_left || 1;
+
+    body.innerHTML = `
+        <div class="panel-card" style="border-color:#ef4444; background:linear-gradient(135deg, rgba(239,68,68,0.15), rgba(15,23,42,0.6)); margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title" style="font-size:1.1rem;">🏢 Koğuş Rütben: <b>${role}</b></span>
+                <span class="card-badge badge-red">⏳ ${yearsLeft} Yıl Ceza</span>
+            </div>
+            <div class="person-chip-row" style="margin:8px 0 4px;">
+                <span class="person-chip" style="color:#fbbf24;">⭐ Koğuş Saygınlığı: %${rep}</span>
+                <span class="person-chip" style="color:#60a5fa;">🚬 Kaçak Tütün/Sigara: ${cigs} Paket</span>
+            </div>
+            <p class="card-desc" style="margin-top:6px; color:#cbd5e1;">Koğuşta sözünün geçmesi ve ezilmemek için saygınlığını yükseltmeli, semaverin başına geçip raconunu kesmelisin.</p>
+        </div>
+
+        <div class="person-action-group-title" style="margin-bottom:8px;">Koğuş Eylemleri & Racon:</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <button type="button" class="btn-choice" onclick="performPrisonDeepAction('challenge_warden_boss')">
+                👑 <b>Ağaya Meydan Oku / Racon Kes</b>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Koğuş ağalığına oyna! Başarırsan mutlak lider olursun ve haracı sen toplarsın.</span>
+            </button>
+            <button type="button" class="btn-choice" onclick="performPrisonDeepAction('trade_contraband')">
+                🚬 <b>Kantin & Karaborsa Sigara Ticareti</b>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Kantin fişleriyle çay ve kaçak tütün toplayıp koğuşa dağıt, saygınlık ve sigara kazan.</span>
+            </button>
+            <button type="button" class="btn-choice" onclick="performPrisonDeepAction('yard_walk_allies')">
+                🚶‍♂️ <b>Avluda Volta At & Tespih Sallayarak Dertleş</b>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Temiz hava al, volta arkadaşı edin, stresini boşalt (-30 Stres).</span>
+            </button>
+            <button type="button" class="btn-choice" onclick="performPrisonDeepAction('petition_amnesty_appeal')">
+                📜 <b>Yargı Paketi / İnfaz İndirimi Başvurusu</b>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Adalet Bakanlığı yeni yargı paketine ve denetimli serbestliğe itiraz dilekçesi ver.</span>
+            </button>
+            <button type="button" class="btn-choice" style="border-color:#ef4444; color:#fca5a5;" onclick="performPrisonDeepAction('escape_laundry_tunnel')">
+                🕳️ <b>Çamaşırhane Sepeti & Tünel Firarı</b>
+                <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:2px;">Yüksek riskli firar planı! Yakalanırsan cezan katlanır, başarırsan firarisin!</span>
+            </button>
+        </div>
+
+        <div style="display:flex; gap:6px; margin-top:12px;">
+            <button type="button" class="btn-action-outline" style="flex:1;" onclick="performActivity('prison_act', { activity: 'yard_workout' })">🏋️ Şınav & Barfiks</button>
+            <button type="button" class="btn-action-outline" style="flex:1;" onclick="performActivity('prison_act', { activity: 'library' })">📖 Ceza Kanunu Oku</button>
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:10px; width:100%;" onclick="closeModal('genericModal')">Kapat</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function performPrisonDeepAction(actionId, params = {}) {
+    const res = await performActivity("prison_deep_action", { action_id: actionId, ...params });
+    if (gameState.is_in_prison) {
+        openPrisonModal();
+    } else {
+        closeModal("genericModal");
+    }
+}
+
+// ==========================================
+// 3. ALTERNATİF TIP & TERMAL KAPLICA MODALI
+// ==========================================
+
+function openAlternativeMedicineModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "♨️ Alternatif Tıp & Termal Şifa Kürleri";
+    const body = document.getElementById("genericModalBody");
+
+    const meds = (marketData && marketData.alternative_medicines) || [];
+    const chronic = gameState.chronic_conditions || [];
+
+    body.innerHTML = `
+        ${chronic.length > 0 ? `
+            <div class="panel-card" style="border-color:var(--accent-red); margin-bottom:12px;">
+                <div class="card-title-row">
+                    <span class="card-title">⚠️ Teşhis Konulan Kronik Rahatsızlıklar</span>
+                    <span class="card-badge badge-red">${chronic.length} Rahatsızlık</span>
+                </div>
+                <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:6px;">
+                    ${chronic.map(c => `<span class="person-chip" style="color:#fca5a5;">⚡ ${c}</span>`).join("")}
+                </div>
+                <p class="card-desc" style="margin-top:6px;">Kaplıca kürleri ve geleneksel şifa seansları ağrıları dindirir, stresini sıfırlar ve sağlığına can katar.</p>
+            </div>
+        ` : ''}
+
+        <p class="card-desc" style="margin-bottom:12px;">Doğal termal sular, asırlık hacamat ve sülük terapileri ile nazar arınma ritüelleri:</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            ${meds.map(m => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${m.name}</span>
+                        <span class="card-badge badge-yellow">₺ ${m.cost.toLocaleString("tr-TR")}</span>
+                    </div>
+                    <p class="card-desc" style="margin:6px 0;">${m.desc}</p>
+                    <div class="person-chip-row" style="margin-bottom:8px;">
+                        <span class="person-chip" style="color:#6ee7b7;">💚 Sağlık: +${m.health_gain}</span>
+                        <span class="person-chip" style="color:#60a5fa;">🧘 Stres Azalması: -${m.stress_reduction}</span>
+                    </div>
+                    <button type="button" class="btn-primary" style="width:100%;" onclick="performHealthAgingAction('alternative_medicine', { treatment_id: '${m.id}' })" ${gameState.money < m.cost ? 'disabled style="opacity:0.5;"' : ''}>
+                        ${gameState.money >= m.cost ? 'Şifa Seansına Başla ♨️' : 'Yetersiz Para (₺ ' + m.cost.toLocaleString("tr-TR") + ' gerekli)'}
+                    </button>
+                </div>
+            `).join("")}
+        </div>
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="closeModal('genericModal')">Kapat</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+// ==========================================
+// 4. HUZUREVİ & YAŞLILIK BAKIMI MODALI
+// ==========================================
+
+function openElderlyCareModal() {
+    sound.playClick();
+    document.getElementById("genericModalTitle").textContent = "🏡 Huzurevi & Yaşlı Bakım Hizmetleri";
+    const body = document.getElementById("genericModalBody");
+
+    const homes = (marketData && marketData.nursing_homes) || [];
+    const age = gameState.age;
+    const isEnrolled = !!gameState.nursing_home;
+    const hasCaregiver = !!gameState.elderly_caregiver;
+
+    body.innerHTML = `
+        <div class="panel-card" style="margin-bottom:12px;">
+            <div class="card-title-row">
+                <span class="card-title">👵 Yaşlılık Durum Özeti</span>
+                <span class="card-badge ${age >= 60 ? 'badge-blue' : 'badge-yellow'}">${age} Yaşındasın</span>
+            </div>
+            <p class="card-desc" style="margin-top:6px;">
+                ${isEnrolled ? `Şu an <b>${gameState.nursing_home}</b> bünyesinde kalıyorsun. Yemek ve sağlık takibin yapılıyor.` : 'Şu anda kendi evinde yaşıyorsun.'}
+                <br>
+                ${hasCaregiver ? '👩‍⚕️ <b>Yatılı hasta bakıcın</b> evde 7/24 yanında ve ilaçlarını aksatmıyor.' : 'Evde özel hasta bakıcın bulunmuyor.'}
+            </p>
+            ${isEnrolled ? `
+                <button type="button" class="btn-action-outline" style="border-color:var(--accent-red); color:var(--accent-red); margin-top:8px; width:100%;" onclick="performHealthAgingAction('leave_nursing_home')">
+                    🏡 Huzurevinden Ayrıl / Kendi Evine Geri Dön
+                </button>
+            ` : ''}
+        </div>
+
+        <div class="person-action-group-title" style="margin-bottom:8px;">Huzurevi Seçenekleri (60+ Yaş):</div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+            ${homes.map(h => `
+                <div class="panel-card">
+                    <div class="card-title-row">
+                        <span class="card-title">${h.name}</span>
+                        <span class="card-badge badge-green">Yıllık ₺ ${h.cost_annual.toLocaleString("tr-TR")}</span>
+                    </div>
+                    <p class="card-desc" style="margin:6px 0;">${h.desc}</p>
+                    <div class="person-chip-row" style="margin-bottom:8px;">
+                        <span class="person-chip" style="color:#a78bfa;">⭐ Konfor Puanı: %${h.comfort}</span>
+                    </div>
+                    <button type="button" class="btn-primary" style="width:100%;" onclick="performHealthAgingAction('enroll_nursing_home', { home_id: '${h.id}' })" ${(age < 60 || gameState.nursing_home === h.name || gameState.money < h.cost_annual) ? 'disabled style="opacity:0.5;"' : ''}>
+                        ${age < 60 ? '60 Yaşından Küçükler Başvuramaz' : (gameState.nursing_home === h.name ? 'Şu An Bu Huzurevindesin' : (gameState.money >= h.cost_annual ? 'Huzurevine Yerleş 🏡' : 'Yetersiz Para'))}
+                    </button>
+                </div>
+            `).join("")}
+        </div>
+
+        <div class="person-action-group-title" style="margin-bottom:8px;">Eve Yatılı Hasta Bakıcı (65+ Yaş):</div>
+        <div class="panel-card">
+            <div class="card-title-row">
+                <span class="card-title">👩‍⚕️ Yatılı Profesyonel Refakatçi & Bakıcı</span>
+                <span class="card-badge badge-purple">Depozito: ₺ 45.000 / Yıl: ₺ 60.000</span>
+            </div>
+            <p class="card-desc" style="margin:6px 0;">Tansiyon, şeker, fıtık ve ilaç takiplerini aksatmaz; sıcak çorba pişirir, sağlığını güvenceye alır.</p>
+            ${hasCaregiver ? `
+                <button type="button" class="btn-action-outline" style="border-color:var(--accent-red); color:var(--accent-red); width:100%; margin-top:6px;" onclick="performHealthAgingAction('fire_elderly_caregiver')">
+                    👩‍⚕️ Bakıcı ile Yolları Ayır
+                </button>
+            ` : `
+                <button type="button" class="btn-primary" style="width:100%; margin-top:6px;" onclick="performHealthAgingAction('hire_elderly_caregiver')" ${(age < 65 || gameState.money < 45000) ? 'disabled style="opacity:0.5;"' : ''}>
+                    ${age < 65 ? '65 Yaşından Küçükler Yararlanamaz' : (gameState.money >= 45000 ? 'Yatılı Hasta Bakıcı Tut (₺ 45.000)' : 'Yetersiz Para')}
+                </button>
+            `}
+        </div>
+
+        <button type="button" class="btn-secondary" style="margin-top:12px; width:100%;" onclick="closeModal('genericModal')">Kapat</button>
+    `;
+    openDialogModal("genericModal");
+}
+
+async function performHealthAgingAction(actionId, params = {}) {
+    await performActivity("health_aging_action", { action_id: actionId, ...params });
+    if (document.getElementById("genericModal") && document.getElementById("genericModal").classList.contains("modal-open")) {
+        if (actionId.includes("nursing") || actionId.includes("caregiver")) {
+            openElderlyCareModal();
+        } else if (actionId.includes("alternative")) {
+            openAlternativeMedicineModal();
+        }
+    }
 }

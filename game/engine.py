@@ -13,7 +13,7 @@ from .models import Character, Person, Pet, Asset, Stock, SocialMediaAccount, Li
 from .data import (
     FIRST_NAMES_MALE, FIRST_NAMES_FEMALE, LAST_NAMES, CITIES,
     ZODIAC_SIGNS, PARENT_JOBS, ILLNESSES, INITIAL_STOCKS,
-    PERSONALITIES, INTERESTS_POOL, LOVE_LANGUAGES
+    PERSONALITIES, INTERESTS_POOL, LOVE_LANGUAGES, PRISON_ROLES, CHRONIC_CONDITIONS
 )
 from .events import check_for_annual_event
 from .activities import populate_classmates_if_needed, populate_coworkers_if_needed
@@ -321,12 +321,25 @@ class GameEngine:
             char.prison_years_left -= 1
             char.happiness = max(5, char.happiness - 10)
             char.health = max(10, char.health - 5)
+            
+            # Koğuş Hiyerarşisi & Tütün Dağıtımı
+            if char.prison_role == "👑 Koğuş Ağası":
+                char.prison_contraband_cigarettes += 30
+                char.stress = max(0, char.stress - 15)
+                annual_summary_lines.append("👑 Koğuş Ağası olarak koğuştan yıllık tütün ve çay haracını eksiksiz topladın.")
+            else:
+                char.prison_reputation = min(100, char.prison_reputation + random.randint(3, 8))
+                for r in reversed(PRISON_ROLES):
+                    if char.prison_reputation >= r["min_rep"]:
+                        char.prison_role = r["role"]
+                        break
+
             if char.prison_years_left <= 0:
                 char.is_in_prison = False
                 annual_summary_lines.append("🕊️ Tahliye oldun! Cezaevinden çıkıp özgürlüğüne kavuştun!")
                 char.logs.append(LifeLog(age=char.age, year=char.current_year, text="Cezanı tamamlayıp tahliye oldun.", category="crime", icon="🕊️"))
             else:
-                annual_summary_lines.append(f"🔒 Cezaevinde bir yıl daha geçti. Kalan ceza: {char.prison_years_left} yıl.")
+                annual_summary_lines.append(f"🔒 Cezaevinde bir yıl daha geçti. Rolün: {char.prison_role} (Kalan ceza: {char.prison_years_left} yıl).")
 
         # 2. İş, Yarı Zamanlı İş ve Girişim Gelirleri
         if not char.is_in_prison:
@@ -379,19 +392,30 @@ class GameEngine:
 
             if char.business:
                 char.business.years_active += 1
-                # Gerçek Hayat Zorluğu: Ekonomik dalgalanma veya durgunluk riski
-                fluct = random.uniform(-0.15, 1.15)
-                profit = int(char.business.annual_profit * fluct)
-                char.business.valuation = max(50000, int(char.business.valuation * random.uniform(0.95, 1.16)))
-                if profit >= 0:
-                    annual_income += profit
-                    income_items.append({"label": f"🏢 '{char.business.name}' Şirket Kârı", "amount": profit})
-                    annual_summary_lines.append(f"🏢 '{char.business.name}' yıllık şirket kârı: +{profit:,} TL.")
+                if char.business.is_traditional_shop:
+                    b = char.business
+                    fluct = random.uniform(0.88, 1.25)
+                    calc_profit = int((b.annual_profit + (b.apprentice_skill * 1200) + (b.courier_fleet * 95000)) * fluct)
+                    if b.secret_recipe:
+                        calc_profit = int(calc_profit * 1.25)
+                    b.valuation = max(50000, int(b.valuation * random.uniform(1.02, 1.15)))
+                    annual_income += calc_profit
+                    income_items.append({"label": f"🥙 '{b.name}' Esnaf Hasılatı", "amount": calc_profit})
+                    annual_summary_lines.append(f"🥙 '{b.name}' yıllık esnaf hasılatı: +{calc_profit:,} TL.")
                 else:
-                    loss_amt = abs(profit)
-                    annual_expense += loss_amt
-                    expense_items.append({"label": f"📉 '{char.business.name}' Şirket Zararı", "amount": loss_amt})
-                    annual_summary_lines.append(f"📉 '{char.business.name}' ekonomik durgunluk nedeniyle {loss_amt:,} TL zarar etti!")
+                    # Gerçek Hayat Zorluğu: Ekonomik dalgalanma veya durgunluk riski
+                    fluct = random.uniform(-0.15, 1.15)
+                    profit = int(char.business.annual_profit * fluct)
+                    char.business.valuation = max(50000, int(char.business.valuation * random.uniform(0.95, 1.16)))
+                    if profit >= 0:
+                        annual_income += profit
+                        income_items.append({"label": f"🏢 '{char.business.name}' Şirket Kârı", "amount": profit})
+                        annual_summary_lines.append(f"🏢 '{char.business.name}' yıllık şirket kârı: +{profit:,} TL.")
+                    else:
+                        loss_amt = abs(profit)
+                        annual_expense += loss_amt
+                        expense_items.append({"label": f"📉 '{char.business.name}' Şirket Zararı", "amount": loss_amt})
+                        annual_summary_lines.append(f"📉 '{char.business.name}' ekonomik durgunluk nedeniyle {loss_amt:,} TL zarar etti!")
 
             if char.band and char.band.annual_royalties > 0:
                 roy = char.band.annual_royalties
@@ -471,6 +495,20 @@ class GameEngine:
             annual_expense += char.alimony_annual
             expense_items.append({"label": "⚖️ Eski Eşe Mahkeme Nafakası", "amount": char.alimony_annual})
             annual_summary_lines.append(f"⚖️ Eski eşe ödenen yıllık mahkeme nafakası: -{char.alimony_annual:,} TL.")
+
+        # Huzurevi ve Yaşlı Bakıcı Giderleri
+        if char.nursing_home:
+            nh_cost = 48000 if "Devlet" in char.nursing_home else 320000
+            annual_expense += nh_cost
+            expense_items.append({"label": f"🏡 {char.nursing_home} Aidatı", "amount": nh_cost})
+            char.happiness = min(100, char.happiness + 20)
+            char.stress = max(0, char.stress - 25)
+
+        if char.elderly_caregiver:
+            cg_cost = 45000
+            annual_expense += cg_cost
+            expense_items.append({"label": "👵 Yatılı Hasta Bakıcı Maaşı", "amount": cg_cost})
+            char.health = max(55, char.health)
 
         # 5b. Artan Oranlı Gelir Vergisi, SGK & Servet Vergisi (Gerçek Hayat Zorluğu)
         tax_paid = 0
@@ -674,6 +712,17 @@ class GameEngine:
                         char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="milestone", icon="🕊️"))
 
         # 8b. İş Stresi & Tükenmişlik Sendromu (Gerçek Hayat Zorluğu)
+        # Yaşa Bağlı Kronik Rahatsızlıklar
+        if char.age >= 45 and not char.is_in_prison and random.random() < 0.16:
+            if len(char.chronic_conditions) < 3:
+                av = [c for c in CHRONIC_CONDITIONS if c["name"] not in char.chronic_conditions]
+                if av:
+                    picked_c = random.choice(av)
+                    char.chronic_conditions.append(picked_c["name"])
+                    char.health = max(10, char.health - picked_c["health_penalty"])
+                    char.stress = min(100, char.stress + picked_c["stress_impact"])
+                    char.logs.append(LifeLog(age=char.age, year=char.current_year, text=f"🩺😣 Yaşa Bağlı Rahatsızlık: '{picked_c['name']}' teşhisi konuldu! {picked_c['desc']}", category="health", icon="🩺"))
+
         if char.current_job and not char.is_in_prison:
             char.stress = min(100, char.stress + 6)
             char.current_job.performance = max(20, char.current_job.performance - 4)

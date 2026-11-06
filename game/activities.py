@@ -11,6 +11,8 @@ from .models import (
     SocialMediaAccount, MusicBand, ProSportsCareer
 )
 from .data import (
+    TRADITIONAL_SHOP_TYPES, PRISON_ROLES, PRISON_CONTRABAND_ITEMS,
+    CHRONIC_CONDITIONS, ALTERNATIVE_MEDICINES, NURSING_HOMES,
     HIGH_SCHOOL_TYPES, CAREER_LADDERS, ERASMUS_DESTINATIONS,
     HEADHUNTER_OFFERS, MOONLIGHTING_OPTIONS,
     JOBS_DATABASE, PART_TIME_JOBS, BUSINESS_TYPES, SCHOOL_CLUBS,
@@ -5543,3 +5545,251 @@ def do_workplace_action(char: Character, action_id: str, params: Dict[str, Any] 
         return {"success": True, "message": msg}
 
     return {"success": False, "message": "Geçersiz iş yeri eylemi."}
+
+
+# ==============================================================
+# ESNAF, KOĞUŞ VE SAĞLIK/YAŞLILIK EYLEMLERİ
+# ==============================================================
+
+def do_traditional_shop_action(char: Character, action_id: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+    """Esnaf & Sanayi dükkanı eylemleri: Açılış, Çırak yetiştirme, Gizli sos, Zabıta, Kurye filosu, Toptancı."""
+    params = params or {}
+
+    if action_id == "start_shop":
+        shop_id = params.get("shop_id", "donerci")
+        custom_name = params.get("custom_name", "").strip()
+        shop_spec = next((s for s in TRADITIONAL_SHOP_TYPES if s["id"] == shop_id), TRADITIONAL_SHOP_TYPES[0])
+        cost = shop_spec["capital_required"]
+
+        if char.money < cost:
+            return {"success": False, "message": f"{shop_spec['name']} açmak için {cost:,} TL sermaye gerekli (Kasandaki: {char.money:,} TL)."}
+
+        if char.business:
+            return {"success": False, "message": "Zaten aktif bir şirketin/işletmen var. Önce onu devretmeli veya satmalısın."}
+
+        char.money -= cost
+        shop_name = custom_name if custom_name else f"Öz {char.last_name} {shop_spec['name']}"
+        new_shop = Business(
+            id=f"shop_{len(char.assets)+1}",
+            name=shop_name,
+            sector=shop_spec["sector"],
+            capital_invested=cost,
+            valuation=int(cost * 1.5),
+            annual_profit=shop_spec["base_annual_profit"],
+            stage="Esnaf İşletmesi",
+            is_traditional_shop=True,
+            apprentice_skill=15,
+            secret_recipe=False,
+            courier_fleet=0,
+            hygiene_score=85
+        )
+        char.business = new_shop
+        char.happiness = min(100, char.happiness + 25)
+        msg = f"🥙🎉 ESNAF DÜKKANIN AÇILDI! '{shop_name}' için dualarla kurban kesildi, kurdele kesilip ilk siftah yapıldı! (Hayırlı İşler!)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🥙"))
+        return {"success": True, "message": msg}
+
+    # Aşağıdaki eylemler açık bir esnaf dükkanı gerektirir
+    if not char.business or not char.business.is_traditional_shop:
+        return {"success": False, "message": "Bu eylemi yapabilmek için aktif bir esnaf/sanayi işletmen olmalıdır."}
+
+    b = char.business
+
+    if action_id == "train_apprentice":
+        b.apprentice_skill = min(100, b.apprentice_skill + 20)
+        b.annual_profit = int(b.annual_profit * 1.15)
+        char.happiness = min(100, char.happiness + 15)
+        msg = f"👦🍖 ÇIRAK YETİŞTİRME: 'Eti senin kemiği benim' diyerek çırağı tezgaha geçirdin! Çırak eti incecik kesmeyi ve motor bakımını kaptı! Yıllık kâr %15 arttı! (Çırak Ustalığı: %{b.apprentice_skill})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="👦"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "develop_secret_recipe":
+        b.secret_recipe = True
+        b.reputation = min(100, b.reputation + 22)
+        b.annual_profit = int(b.annual_profit * 1.25)
+        char.happiness = min(100, char.happiness + 20)
+        msg = "🌶️🔥 EFSANE GİZLİ SOS/TARİF! Aylarca üzerinde çalıştığın özel baharatlı gizli reçete tuttu! Müşteriler kapıda sıraya girdi! (İtibar +22, Kâr +%25)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🌶️"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "inspect_hygiene_zabita":
+        if random.random() < 0.80:
+            b.hygiene_score = min(100, b.hygiene_score + 10)
+            b.reputation = min(100, b.reputation + 10)
+            char.happiness = min(100, char.happiness + 15)
+            msg = "👮✅ ZABITA DENETİMİ GEÇİLDİ! Zabıta ekipleri mutfağı, bone ve eldiven kullanımını denetledi. Tertemiz dükkana teşekkür belgesi asıldı! (İtibar +10)"
+        else:
+            fine = 18000
+            char.money -= fine
+            b.hygiene_score = max(30, b.hygiene_score - 15)
+            char.stress = min(100, char.stress + 18)
+            msg = f"👮⚠️ ZABITA CEZA KESTİ! Mutfakta açıkta kalan bir kap malzeme yüzünden {fine:,} TL idari para cezası kesildi! (Stres +18)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="👮"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "expand_courier_fleet":
+        motor_cost = 65000
+        if char.money < motor_cost:
+            return {"success": False, "message": f"Yeni kurye motoru ve ekipman için {motor_cost:,} TL gerekli."}
+        char.money -= motor_cost
+        b.courier_fleet += 1
+        b.annual_profit += 110000
+        char.happiness = min(100, char.happiness + 18)
+        msg = f"🛵💨 KURYE MOTORU FİLOYA KATILDI! Paket servis ağı genişledi, çevre mahallelere de teslimat başladı! Yıllık kâr +110.000 TL arttı! (Toplam Kurye: {b.courier_fleet})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="🛵"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "negotiate_wholesaler":
+        if char.smarts >= 50 or random.random() < 0.70:
+            discount = 35000
+            char.money += discount
+            char.happiness = min(100, char.happiness + 12)
+            msg = f"📦🤝 TOPTANCI İLE ÇETİN PAZARLIK: Halden un, et ve malzemede 'Peşin ödüyorum, indirimi yap!' dedin ve {discount:,} TL nakit iskonto kaptın!"
+        else:
+            msg = "📦 Toptancı pazarlığı kabul etmedi: 'Maliyetler yüksek abi, kurtarmıyor' diyerek geri çevirdi."
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="career", icon="📦"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz esnaf eylemi."}
+
+
+def do_prison_deep_action(char: Character, action_id: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+    """Koğuş hayatı & Cezaevi hiyerarşisi eylemleri: Racon, Sigara ticareti, Volta, İnfaz indirimi, Firar."""
+    params = params or {}
+    if not char.is_in_prison:
+        return {"success": False, "message": "Bu eylemleri gerçekleştirebilmek için cezaevinde olmalısın."}
+
+    if action_id == "challenge_warden_boss":
+        power = char.skills.get("martial_arts", 10) + int(char.smarts * 0.4) + int(char.health * 0.4)
+        if power >= 85 or random.random() < 0.52:
+            char.prison_role = "👑 Koğuş Ağası"
+            char.prison_reputation = 100
+            char.prison_contraband_cigarettes += 40
+            char.happiness = min(100, char.happiness + 30)
+            msg = "👑🗡️ RACON KESİLDİ, KOĞUŞ AĞASI OLDUN! Masaya yumruğu vurup eski ağanın havasını söndürdün! Artık koğuşta senin sözün geçiyor, semaverin ilk çayı sana demleniyor! (Unvan: Koğuş Ağası, Saygınlık: %100)"
+        else:
+            char.health = max(10, char.health - 25)
+            char.prison_reputation = max(5, char.prison_reputation - 15)
+            char.stress = min(100, char.stress + 25)
+            msg = "🤕 Ranzadan düştün! Ağanın adamları seni fena benzetti, bir hafta revirde yattın! (Sağlık -25, Stres +25)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="👑"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "trade_contraband":
+        cigs = random.randint(10, 22)
+        char.prison_contraband_cigarettes += cigs
+        char.prison_reputation = min(100, char.prison_reputation + 10)
+        char.happiness = min(100, char.happiness + 15)
+        msg = f"🚬☕ KARABORSA TİCARETİ! Kantinden topladığın çay ve tütün paketlerini koğuşa dağıttın! +{cigs} Paket Sigara kazandın, koğuşta saygınlığın arttı! (Saygınlık: %{char.prison_reputation})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="🚬"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "yard_walk_allies":
+        char.stress = max(0, char.stress - 30)
+        char.happiness = min(100, char.happiness + 18)
+        char.prison_reputation = min(100, char.prison_reputation + 8)
+        msg = "🚶‍♂️ Havalandırma avlusunda tespih çekip volta attın, koğuşun eski mahkumlarıyla dertleştin. Zihnin ferahladı! (Stres -30, Mutluluk +18)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="🚶‍♂️"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "petition_amnesty_appeal":
+        roll = random.random()
+        if roll < 0.42:
+            reduced = random.randint(1, 2)
+            char.prison_years_left = max(0, char.prison_years_left - reduced)
+            if char.prison_years_left == 0:
+                char.is_in_prison = False
+                msg = "🕊️🎉 MÜJDE! Resmi Gazete'de yayımlanan infaz indirimiyle TAHLİYE EDİLDİN! Cezaevi kapısından başın dik çıktın!"
+            else:
+                msg = f"📜 İNFAZ İNDİRİMİ KABUL EDİLDİ! Avukatının itirazı kabul edildi ve cezan {reduced} yıl kısaltıldı! (Kalan: {char.prison_years_left} yıl)"
+        else:
+            msg = "⚖️ İnfaz hakimliği dosyadaki iyi hal durumunu yetersiz bulup başvuruyu reddetti."
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="📜"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "escape_laundry_tunnel":
+        roll = random.random()
+        if roll < 0.38:
+            char.is_in_prison = False
+            char.prison_years_left = 0
+            if "Cezaevi Firarisi" not in char.criminal_record:
+                char.criminal_record.append("Cezaevi Firarisi")
+            msg = "🏃‍♂️🚨 BÜYÜK FİRAR BAŞARILI! Çamaşırhane arabasına saklanarak cezaevi nizamiyesini aştın! Artık firarisin!"
+        else:
+            char.prison_years_left += 2
+            char.health = max(10, char.health - 20)
+            char.stress = min(100, char.stress + 30)
+            msg = "🚨 Tel örgülere takıldın! Gardiyanlar yakalayıp 15 gün hücre cezası verdi, cezana +2 YIL eklendi!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="crime", icon="🚨"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz cezaevi eylemi."}
+
+
+def do_health_aging_action(char: Character, action_id: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+    """Sağlık, Yaşlılık, Alternatif Tıp & Huzurevi eylemleri."""
+    params = params or {}
+
+    if action_id == "alternative_medicine":
+        treat_id = params.get("treatment_id", "thermal_spa")
+        treat = next((t for t in ALTERNATIVE_MEDICINES if t["id"] == treat_id), ALTERNATIVE_MEDICINES[0])
+        cost = treat["cost"]
+
+        if char.money < cost:
+            return {"success": False, "message": f"{treat['name']} için {cost:,} TL gerekli (Kasandaki: {char.money:,} TL)."}
+
+        char.money -= cost
+        char.health = min(100, char.health + treat["health_gain"])
+        char.stress = max(0, char.stress - treat["stress_reduction"])
+        char.happiness = min(100, char.happiness + 22)
+        if treat["id"] not in char.alternative_treatments:
+            char.alternative_treatments.append(treat["id"])
+
+        msg = f"{treat['name']} tamamlandı! Vücudundaki tüm ağrılar hafifledi, iç huzurun yerine geldi! (Sağlık +{treat['health_gain']}, Stres -{treat['stress_reduction']})"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="♨️"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "enroll_nursing_home":
+        if char.age < 60:
+            return {"success": False, "message": "Huzurevine yerleşmek için en az 60 yaşında olmalısın."}
+        home_id = params.get("home_id", "state_nursing")
+        home = next((h for h in NURSING_HOMES if h["id"] == home_id), NURSING_HOMES[0])
+
+        if char.money < home["cost_annual"]:
+            return {"success": False, "message": f"{home['name']} için yıllık {home['cost_annual']:,} TL gerekli."}
+
+        char.nursing_home = home["name"]
+        char.happiness = min(100, char.happiness + 32)
+        char.stress = max(0, char.stress - 35)
+        msg = f"🏡👴 HUZUREVİNE YERLEŞTİN! '{home['name']}' bünyesinde rahat bir odaya yerleştin. Bahçede akranlarınla tavla oynayıp dertleşiyorsun! (Mutluluk +32, Stres -35)"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="🏡"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "leave_nursing_home":
+        char.nursing_home = None
+        char.happiness = max(10, char.happiness - 10)
+        msg = "🏡 Huzurevinden ayrılıp kendi evine geri döndün."
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="🏡"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "hire_elderly_caregiver":
+        if char.age < 65:
+            return {"success": False, "message": "Yatılı hasta bakıcı tutmak için en az 65 yaşında olmalısın."}
+        cost = 45000
+        if char.money < cost:
+            return {"success": False, "message": f"Yatılı bakıcı depozitosu için {cost:,} TL gerekli."}
+        char.money -= cost
+        char.elderly_caregiver = True
+        char.health = min(100, char.health + 15)
+        char.happiness = min(100, char.happiness + 20)
+        msg = "👵💊 EVE YATILI HASTA BAKICISI TUTULDU! İlaçlarını saatinde veren ve ev yemekleri pişiren teyze işe başladı. Sağlığın emin ellerde!"
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="👵"))
+        return {"success": True, "message": msg}
+
+    elif action_id == "fire_elderly_caregiver":
+        char.elderly_caregiver = False
+        msg = "👵 Yatılı bakıcı ile yollar ayrıldı."
+        char.logs.append(LifeLog(age=char.age, year=char.current_year, text=msg, category="health", icon="👵"))
+        return {"success": True, "message": msg}
+
+    return {"success": False, "message": "Geçersiz sağlık/yaşlılık eylemi."}

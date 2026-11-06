@@ -109,6 +109,11 @@ class Business(BaseModel):
     is_ipo: bool = False
     branches: int = 1
     has_manager: bool = False
+    is_traditional_shop: bool = False   # Esnaf / Sanayi işletmesi mi?
+    apprentice_skill: int = 0           # Çırak yetişmişlik seviyesi (0-100)
+    secret_recipe: bool = False         # Gizli sos / özel reçete formülü
+    courier_fleet: int = 0              # Paket servis motor filosu
+    hygiene_score: int = 85             # Zabıta hijyen puanı
 
 class MusicBand(BaseModel):
     name: str
@@ -244,6 +249,18 @@ class Character(BaseModel):
     syndicate_notoriety: int = 0         # 0 - 100 Korku / Yeraltı Saygınlığı
     syndicate_racket_annual: int = 0     # Yıllık mekan haracı geliri
     crypto_staked: Dict[str, float] = Field(default_factory=dict)
+    
+    # Koğuş Hayatı & Cezaevi Hiyerarşisi
+    prison_reputation: int = 15          # 0 - 100 Koğuş Saygınlığı
+    prison_role: str = "Çaylak"          # Çaylak -> Çaycı -> Kıdemli -> Koğuş Ağası
+    prison_contraband_cigarettes: int = 0# Cezaevi para birimi: Sigara & Çay paketi
+    prison_gang_allegiance: Optional[str] = None
+    
+    # Sağlık, Yaşlılık & Alternatif Tıp
+    chronic_conditions: List[str] = Field(default_factory=list)
+    alternative_treatments: List[str] = Field(default_factory=list)
+    nursing_home: Optional[str] = None
+    elderly_caregiver: bool = False
     
     # Education & Occupation
     education_level: str = "Yok"
